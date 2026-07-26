@@ -1,0 +1,532 @@
+<div class="dashboard-layout">
+  <!-- SIDEBAR (Navegación Izquierda) -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </div>
+      <span class="brand-name">PrestaFlow</span>
+    </div>
+    
+    <nav class="sidebar-nav">
+      @for (item of menuItems; track item.name) {
+        @if (auth.currentUser()?.rol === 'Admin' || (item.name !== 'Caja y Bancos' && item.name !== 'Reportes' && item.name !== 'Configuración')) {
+          <a [routerLink]="item.route" class="nav-item" [class.active]="item.active">
+            <span class="nav-icon">
+              @switch (item.icon) {
+                @case ('dashboard') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                }
+                @case ('currency_exchange') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                }
+                @case ('people') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                }
+                @case ('route') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"></circle><circle cx="18" cy="5" r="3"></circle><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"></path></svg>
+                }
+                @case ('account_balance') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="22" x2="22" y2="22"></line><line x1="5" y1="11" x2="5" y2="18"></line><line x1="12" y1="11" x2="12" y2="18"></line><line x1="19" y1="11" x2="19" y2="18"></line><path d="M12 2 2 7h20L12 2z"></path></svg>
+                }
+                @case ('analytics') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                }
+                @case ('settings') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2 2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                }
+                @case ('receipt_long') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"></path><path d="M16 8H8"></path><path d="M16 12H8"></path><path d="M13 16H8"></path></svg>
+                }
+              }
+            </span>
+            <span class="nav-text">{{ item.name }}</span>
+          </a>
+        }
+      }
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="user-pill-dark" (click)="toggleUserDropdown($event)" title="Opciones de usuario" style="cursor: pointer; position: relative; display: flex; align-items: center; width: 100%;">
+        <div class="avatar">{{ auth.currentUser()?.nombre?.substring(0, 2)?.toUpperCase() || 'AD' }}</div>
+        <div class="user-details" style="flex-grow: 1;">
+          <span class="user-name">{{ auth.currentUser()?.nombre || 'Administrador' }}</span>
+          <span class="user-role">{{ auth.currentUser()?.rol || 'Admin' }}</span>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="inline-icon" style="width: 14px; height: 14px; margin-left: auto; color: #64748b;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+
+      <!-- DROPDOWN DE USUARIO -->
+      @if (showUserDropdown()) {
+        <div class="user-dropdown-menu">
+          <div class="dropdown-header">
+            <span class="header-name">{{ auth.currentUser()?.nombre }}</span>
+            <span class="header-username">@{{ auth.currentUser()?.username }}</span>
+          </div>
+          <div class="dropdown-divider"></div>
+          
+          <a routerLink="/configuracion" class="dropdown-item" (click)="showUserDropdown.set(false)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="item-icon"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2 2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            Configuración
+          </a>
+          
+          <div class="dropdown-divider"></div>
+          
+          <button type="button" class="dropdown-item text-danger" (click)="onLogout()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="item-icon"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            Cerrar Sesión
+          </button>
+        </div>
+      }
+    </div>
+  </aside>
+
+  <!-- MAIN WINDOW -->
+  <main class="main-content">
+    
+    <!-- BARRA SUPERIOR (Header) -->
+    <header class="header">
+      <div class="header-left">
+        <h1 class="header-title">Caja y Bancos</h1>
+        <p class="header-subtitle">Control de tesorería, flujos de efectivo e transferencias de fondos</p>
+      </div>
+
+      <div class="header-right">
+        <!-- Acciones rápidas -->
+        <button class="btn btn-secondary btn-icon-gap" (click)="openTransfer()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-icon"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+          Transferir Fondos
+        </button>
+
+        <button class="btn btn-primary btn-icon-gap" (click)="openMovement()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="inline-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Ajustar Saldo
+        </button>
+      </div>
+    </header>
+
+    <!-- TARJETAS DE RESUMEN DE TESORERÍA (KPIs) -->
+    <section class="kpis-grid">
+      <!-- KPI 1: Saldo Disponible Total -->
+      <div class="kpi-card meta-card">
+        <div class="kpi-overlay"></div>
+        <div class="kpi-header">
+          <span class="kpi-label">Saldo Total Disponible</span>
+          <div class="kpi-icon-container bg-blue-light text-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-content">
+          <h3 class="kpi-value">${{ saldoTotal() | number:'1.2-2' }}</h3>
+          <div class="kpi-footer">
+            <span class="kpi-trend text-blue">Caja Chica + Cuentas Bancarias</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI 2: Total en Cajas -->
+      <div class="kpi-card cobrado-card">
+        <div class="kpi-overlay"></div>
+        <div class="kpi-header">
+          <span class="kpi-label">Efectivo en Cajas</span>
+          <div class="kpi-icon-container bg-green-light text-green">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-content">
+          <h3 class="kpi-value text-green">${{ saldoCaja() | number:'1.2-2' }}</h3>
+          <div class="kpi-footer">
+            <span class="kpi-trend text-green">Físico disponible para préstamos</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI 3: Total en Bancos -->
+      <div class="kpi-card cartera-card">
+        <div class="kpi-overlay"></div>
+        <div class="kpi-header">
+          <span class="kpi-label">Saldo en Bancos</span>
+          <div class="kpi-icon-container bg-blue-light text-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="2" y1="22" x2="22" y2="22"></line>
+              <line x1="5" y1="11" x2="5" y2="18"></line>
+              <line x1="12" y1="11" x2="12" y2="18"></line>
+              <line x1="19" y1="11" x2="19" y2="18"></line>
+              <path d="M12 2 2 7h20L12 2z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-content">
+          <h3 class="kpi-value">${{ saldoBancos() | number:'1.2-2' }}</h3>
+          <div class="kpi-footer">
+            <span class="kpi-trend text-blue">Cuentas corrientes bancarias</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI 4: Flujo Neto de Hoy -->
+      <div class="kpi-card mora-card">
+        <div class="kpi-overlay"></div>
+        <div class="kpi-header">
+          <span class="kpi-label">Flujo de Hoy</span>
+          <div class="kpi-icon-container bg-orange-light text-orange">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-content">
+          <h3 class="kpi-value text-orange">+${{ (ingresosHoy() - egresosHoy()) | number:'1.2-2' }}</h3>
+          <div class="kpi-footer">
+            <span class="kpi-trend text-orange">Ingreso: ${{ ingresosHoy() | number:'1.0-0' }} | Egreso: ${{ egresosHoy() | number:'1.0-0' }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LISTADO DE CUENTAS FINANCIERAS -->
+    <section class="cuentas-grid-layout">
+      @for (cuenta of cuentas(); track cuenta.id) {
+        <div class="cuenta-card-wrapper" [class.caja-wrapper]="cuenta.tipo === 'Caja'" [class.banco-wrapper]="cuenta.tipo === 'Banco'">
+          <div class="cuenta-card-header">
+            <div class="cuenta-card-icon">
+              @if (cuenta.tipo === 'Caja') {
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-svg"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="12" y1="1" x2="12" y2="23"></line><line x1="2" y1="12" x2="22" y2="12"></line></svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-svg"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              }
+            </div>
+            <div class="cuenta-card-title-block">
+              <h4 class="cuenta-nombre">{{ cuenta.nombre }}</h4>
+              <span class="cuenta-tipo-badge">{{ cuenta.tipo }}</span>
+            </div>
+          </div>
+          <div class="cuenta-card-body">
+            <span class="saldo-lbl">Saldo de Cuenta</span>
+            <h3 class="saldo-monto font-mono">${{ cuenta.saldo | number:'1.2-2' }}</h3>
+          </div>
+          <div class="cuenta-card-footer">
+            <button class="btn-account-action btn-adjust" (click)="openMovement(cuenta)">Ajustar</button>
+            <button class="btn-account-action btn-transfer" (click)="openTransfer(cuenta)">Transferir</button>
+          </div>
+        </div>
+      }
+    </section>
+
+    <!-- TABLA DE MOVIMIENTOS HISTORICOS -->
+    <section class="card table-card">
+      <div class="card-header table-filter-header">
+        <!-- Buscador -->
+        <div class="header-search search-loans">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input 
+            type="text" 
+            placeholder="Buscar por concepto o cuenta..." 
+            class="search-input"
+            [value]="searchQuery()"
+            (input)="onSearchInput($event)"
+          />
+          @if (searchQuery()) {
+            <button class="clear-search" (click)="searchQuery.set('')">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          }
+        </div>
+
+        <!-- Píldoras de Filtro -->
+        <div class="filter-pills">
+          <button class="filter-pill" [class.active]="typeFilter() === 'all'" (click)="typeFilter.set('all')">Todos</button>
+          <button class="filter-pill" [class.active]="typeFilter() === 'Ingreso'" (click)="typeFilter.set('Ingreso')">Ingresos</button>
+          <button class="filter-pill" [class.active]="typeFilter() === 'Egreso'" (click)="typeFilter.set('Egreso')">Egresos</button>
+          <button class="filter-pill" [class.active]="typeFilter() === 'Transferencia'" (click)="typeFilter.set('Transferencia')">Transferencias</button>
+        </div>
+      </div>
+
+      <div class="card-body table-body">
+        <div class="table-responsive">
+          <table class="route-table">
+            <thead>
+              <tr>
+                <th>Cód. Transacción</th>
+                <th>Fecha y Hora</th>
+                <th>Cuenta Afectada</th>
+                <th class="text-center">Tipo</th>
+                <th>Concepto / Detalle</th>
+                <th class="text-right">Monto</th>
+                <th class="text-center">Registrado Por</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (tx of filteredTransacciones(); track tx.id) {
+                <tr>
+                  <td class="font-mono font-semibold">TF-{{ tx.id }}</td>
+                  <td>{{ tx.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+                  <td>
+                    <span class="font-semibold" style="color: var(--text-primary);">{{ tx.cuentaNombre }}</span>
+                  </td>
+                  <td class="text-center">
+                    @if (tx.tipo === 'Ingreso') {
+                      <span class="status-badge badge-success">Ingreso</span>
+                    } @else if (tx.tipo === 'Egreso') {
+                      <span class="status-badge badge-danger">Egreso</span>
+                    } @else {
+                      <span class="status-badge badge-primary">Transferencia</span>
+                    }
+                  </td>
+                  <td>
+                    <span class="text-secondary">{{ tx.concepto }}</span>
+                  </td>
+                  <td class="text-right font-mono font-semibold" [class.text-green]="tx.tipo === 'Ingreso'" [class.text-red]="tx.tipo === 'Egreso'">
+                    {{ tx.tipo === 'Egreso' ? '-' : '+' }}${{ tx.monto | number:'1.2-2' }}
+                  </td>
+                  <td class="text-center">
+                    <span class="zone-badge">{{ tx.creadoPor }}</span>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="7" class="no-results">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="no-results-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+                    <p>No se encontraron movimientos registrados en la tesorería.</p>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- MODAL: Registrar Movimiento (Ingreso/Egreso) -->
+@if (showMovementModal()) {
+  <div class="modal-backdrop" (click)="showMovementModal.set(false)">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Ajustar Saldo de Cuenta</h3>
+          <p class="modal-subtitle">Ingrese un ingreso o egreso manual al libro de tesorería</p>
+        </div>
+        <button class="modal-close" (click)="showMovementModal.set(false)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form class="modal-form" (submit)="$event.preventDefault(); submitMovement()">
+          
+          <div class="form-group">
+            <label class="form-label" for="movAccount">Seleccione Cuenta</label>
+            <select 
+              id="movAccount" 
+              class="form-input form-select font-semibold"
+              [value]="selectedAccountId()"
+              (change)="onSelectedAccountChange($event)"
+            >
+              @for (c of cuentas(); track c.id) {
+                <option [value]="c.id">{{ c.nombre }} (Saldo: ${{ c.saldo | number:'1.0-0' }})</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tipo de Movimiento</label>
+            <div class="calculator-inputs" style="grid-template-columns: 1fr 1fr; gap: 12px;">
+              <button 
+                type="button" 
+                class="filter-pill font-semibold text-center" 
+                style="height: 44px; display: block; border-radius: var(--radius-md);"
+                [class.active]="movementType() === 'Ingreso'" 
+                (click)="movementType.set('Ingreso')"
+              >
+                Ingreso (+)
+              </button>
+              <button 
+                type="button" 
+                class="filter-pill font-semibold text-center" 
+                style="height: 44px; display: block; border-radius: var(--radius-md);"
+                [class.active]="movementType() === 'Egreso'" 
+                (click)="movementType.set('Egreso')"
+              >
+                Egreso (-)
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="movAmount">Monto a Ajustar</label>
+            <div class="input-currency-wrapper">
+              <span class="currency-symbol">$</span>
+              <input 
+                type="number" 
+                id="movAmount" 
+                class="form-input font-mono font-bold" 
+                placeholder="0.00"
+                step="0.01"
+                [value]="movementAmount()"
+                (input)="movementAmount.set($any($event.target).value)"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="movConcept">Concepto o Detalle</label>
+            <input 
+              type="text" 
+              id="movConcept" 
+              class="form-input form-input-text" 
+              placeholder="Ej. Pago de factura de luz oficina"
+              [value]="movementConcept()"
+              (input)="movementConcept.set($any($event.target).value)"
+              required
+            />
+          </div>
+
+          <div class="modal-actions calculator-actions" style="margin-top: 16px;">
+            <button type="button" class="btn btn-secondary" (click)="showMovementModal.set(false)">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Registrar Movimiento
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- MODAL: Transferencia entre Cuentas -->
+@if (showTransferModal()) {
+  <div class="modal-backdrop" (click)="showTransferModal.set(false)">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Trasladar Fondos (Transferencia)</h3>
+          <p class="modal-subtitle">Transfiera dinero de una cuenta origen a otra destino</p>
+        </div>
+        <button class="modal-close" (click)="showTransferModal.set(false)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form class="modal-form" (submit)="$event.preventDefault(); submitTransfer()">
+          
+          <div class="form-group">
+            <label class="form-label" for="txSource">Cuenta Origen (Sale)</label>
+            <select 
+              id="txSource" 
+              class="form-input form-select font-semibold"
+              [value]="sourceAccountId()"
+              (change)="onSourceAccountChange($event)"
+            >
+              @for (c of cuentas(); track c.id) {
+                <option [value]="c.id">{{ c.nombre }} (Saldo: ${{ c.saldo | number:'1.0-0' }})</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="txDest">Cuenta Destino (Recibe)</label>
+            <select 
+              id="txDest" 
+              class="form-input form-select font-semibold"
+              [value]="destAccountId()"
+              (change)="onDestAccountChange($event)"
+            >
+              @for (c of cuentas(); track c.id) {
+                @if (c.id !== sourceAccountId()) {
+                  <option [value]="c.id">{{ c.nombre }} (Saldo: ${{ c.saldo | number:'1.0-0' }})</option>
+                }
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="txAmount">Monto a Trasladar</label>
+            <div class="input-currency-wrapper">
+              <span class="currency-symbol">$</span>
+              <input 
+                type="number" 
+                id="txAmount" 
+                class="form-input font-mono font-bold" 
+                placeholder="0.00"
+                step="0.01"
+                [value]="transferAmount()"
+                (input)="transferAmount.set($any($event.target).value)"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="txConcept">Concepto o Detalle</label>
+            <input 
+              type="text" 
+              id="txConcept" 
+              class="form-input form-input-text" 
+              placeholder="Ej. Depósito diario de caja chica a cuenta bancaria"
+              [value]="transferConcept()"
+              (input)="transferConcept.set($any($event.target).value)"
+              required
+            />
+          </div>
+
+          <div class="modal-actions calculator-actions" style="margin-top: 16px;">
+            <button type="button" class="btn btn-secondary" (click)="showTransferModal.set(false)">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Realizar Traslado
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container">
+  @for (toast of toasts(); track toast.id) {
+    <div class="toast" [class.success]="toast.type === 'success'" [class.info]="toast.type === 'info'" [class.warning]="toast.type === 'warning'">
+      <div class="toast-icon">
+        @switch (toast.type) {
+          @case ('success') {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          }
+          @case ('warning') {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          }
+          @case ('info') {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          }
+        }
+      </div>
+      <div class="toast-content">
+        <h4 class="toast-title">{{ toast.title }}</h4>
+        <p class="toast-message">{{ toast.message }}</p>
+      </div>
+      <button class="toast-close" (click)="removeToast(toast.id)" aria-label="Cerrar notificación">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+  }
+</div>

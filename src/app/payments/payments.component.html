@@ -1,0 +1,314 @@
+<div class="dashboard-layout">
+  <!-- SIDEBAR (Navegación Izquierda) -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </div>
+      <span class="brand-name">PrestaFlow</span>
+    </div>
+        <nav class="sidebar-nav">
+      @for (item of menuItems; track item.name) {
+        @if (auth.currentUser()?.rol === 'Admin' || (item.name !== 'Caja y Bancos' && item.name !== 'Reportes' && item.name !== 'Configuración')) {
+          <a [routerLink]="item.route" class="nav-item" [class.active]="item.active">
+            <span class="nav-icon">
+              @switch (item.icon) {
+                @case ('dashboard') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                }
+                @case ('currency_exchange') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                }
+                @case ('people') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                }
+                @case ('receipt_long') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"></path><path d="M16 8H8"></path><path d="M16 12H8"></path><path d="M13 16H8"></path></svg>
+                }
+                @case ('account_balance') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="22" x2="22" y2="22"></line><line x1="5" y1="11" x2="5" y2="18"></line><line x1="12" y1="11" x2="12" y2="18"></line><line x1="19" y1="11" x2="19" y2="18"></line><path d="M12 2 2 7h20L12 2z"></path></svg>
+                }
+                @case ('analytics') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                }
+                @case ('settings') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2 2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                }
+              }
+            </span>
+            <span class="nav-text">{{ item.name }}</span>
+          </a>
+        }
+      }
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="user-pill-dark" (click)="toggleUserDropdown($event)" title="Opciones de usuario" style="cursor: pointer; position: relative; display: flex; align-items: center; width: 100%;">
+        <div class="avatar">{{ auth.currentUser()?.nombre?.substring(0, 2)?.toUpperCase() || 'AD' }}</div>
+        <div class="user-details" style="flex-grow: 1;">
+          <span class="user-name">{{ auth.currentUser()?.nombre || 'Administrador' }}</span>
+          <span class="user-role">{{ auth.currentUser()?.rol || 'Admin' }}</span>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="inline-icon" style="width: 14px; height: 14px; margin-left: auto; color: #64748b;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+
+      <!-- DROPDOWN DE USUARIO -->
+      @if (showUserDropdown()) {
+        <div class="user-dropdown-menu">
+          <div class="dropdown-header">
+            <span class="header-name">{{ auth.currentUser()?.nombre }}</span>
+            <span class="header-username">@{{ auth.currentUser()?.username }}</span>
+          </div>
+          <div class="dropdown-divider"></div>
+          
+          <a routerLink="/configuracion" class="dropdown-item" (click)="showUserDropdown.set(false)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="item-icon"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2 2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            Configuración
+          </a>
+          
+          <div class="dropdown-divider"></div>
+          
+          <button type="button" class="dropdown-item text-danger" (click)="onLogout()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="item-icon"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            Cerrar Sesión
+          </button>
+        </div>
+      }
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <!-- Header -->
+    <header class="header">
+      <div>
+        <h1 class="page-title">Historial de Pagos</h1>
+        <p class="page-subtitle">Registro cronológico de abonos y cuotas recibidas de clientes</p>
+      </div>
+      <div class="header-actions">
+        <div class="current-date">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="calendar-icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <span>Historial Completo</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- KPIs Grid -->
+    <section class="kpis-grid">
+      <div class="kpi-card purple-gradient">
+        <div class="kpi-icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="kpi-icon"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="12" y1="10" x2="12" y2="10"></line><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path><path d="M6 12h.01M18 12h.01"></path></svg>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-label text-white-muted">Total Recaudado</span>
+          <h3 class="kpi-value text-white">L. {{ totalAbonado() | number:'1.2-2' }}</h3>
+          <span class="kpi-trend text-white-muted">Flujo de cobros ingresado</span>
+        </div>
+      </div>
+
+      <div class="kpi-card green-gradient">
+        <div class="kpi-icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="kpi-icon"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"></path><path d="M16 8H8"></path><path d="M16 12H8"></path><path d="M13 16H8"></path></svg>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-label text-white-muted">Transacciones</span>
+          <h3 class="kpi-value text-white">{{ countAbonos() }}</h3>
+          <span class="kpi-trend text-white-muted">Abonos validados</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Historial Table Card -->
+    <section class="card table-card">
+      <div class="card-header table-filter-header">
+        <!-- Buscador -->
+        <div class="header-search search-loans">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input 
+            type="text" 
+            placeholder="Buscar por cliente, préstamo o transacción..." 
+            class="search-input"
+            [value]="searchQuery()"
+            (input)="onSearchInput($event)"
+          />
+          @if (searchQuery()) {
+            <button class="clear-search" (click)="searchQuery.set('')">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          }
+        </div>
+
+        <!-- Píldoras de Filtro -->
+        <div class="filter-pills">
+          <button class="filter-pill" [class.active]="methodFilter() === 'all'" (click)="methodFilter.set('all')">Todos</button>
+          <button class="filter-pill" [class.active]="methodFilter() === 'Efectivo'" (click)="methodFilter.set('Efectivo')">Efectivo</button>
+          <button class="filter-pill" [class.active]="methodFilter() === 'Transferencia'" (click)="methodFilter.set('Transferencia')">Transferencias</button>
+        </div>
+      </div>
+
+      <div class="card-body table-body">
+        <div class="table-responsive">
+          <table class="route-table">
+            <thead>
+              <tr>
+                <th>Cód. Transacción</th>
+                <th>Cód. Préstamo</th>
+                <th>Cliente</th>
+                <th>Fecha y Hora</th>
+                <th class="text-center">Método</th>
+                <th class="text-right">Monto</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (payment of filteredPayments(); track payment.id) {
+                <tr class="table-row-hover">
+                  <td class="font-mono font-semibold">TX-{{ payment.id }}</td>
+                  <td class="font-mono font-semibold color-primary">{{ payment.prestamoCodigo }}</td>
+                  <td>
+                    <div class="client-info-cell">
+                      <span class="font-semibold block" style="color: var(--text-primary);">{{ payment.clienteNombre }}</span>
+                      <span class="text-muted block text-xs">ID: {{ payment.clienteIdentidad }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="client-info-cell">
+                      <span class="font-medium block">{{ payment.fechaPago | date:'dd/MM/yyyy' }}</span>
+                      <span class="text-muted block text-xs">{{ payment.fechaPago | date:'hh:mm a' }}</span>
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    @if (payment.metodoPago === 'Efectivo') {
+                      <span class="status-badge badge-success">Efectivo</span>
+                    } @else {
+                      <span class="status-badge badge-info">Transferencia</span>
+                    }
+                  </td>
+                  <td class="text-right font-mono font-bold text-green">
+                    +L. {{ payment.monto | number:'1.2-2' }}
+                  </td>
+                  <td class="text-center">
+                    <div class="actions-cell">
+                      <button class="btn-table-action btn-receipt" title="Ver Recibo" (click)="openReceipt(payment)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="action-icon-svg"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"></path><path d="M16 8H8"></path><path d="M16 12H8"></path><path d="M13 16H8"></path></svg>
+                      </button>
+                      <button class="btn-table-action btn-whatsapp" title="Enviar por WhatsApp" (click)="shareOnWhatsApp(payment)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="wa-icon-svg"><path fill="currentColor" d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L3 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="7" class="no-results">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="no-results-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+                    <p>No se encontraron abonos registrados en el historial.</p>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- MODAL FLOTANTE: Detalle de Recibo -->
+@if (showReceiptModal()) {
+  <div class="modal-backdrop" (click)="closeReceipt()">
+    <div class="modal-card receipt-card" (click)="$event.stopPropagation()">
+      <div class="modal-header hide-for-print">
+        <h3 class="modal-title">Recibo de Cobro</h3>
+        <button class="modal-close" (click)="closeReceipt()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="receipt-wrapper">
+        <div class="receipt-header">
+          <div class="receipt-logo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="logo-svg"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <span>PrestaFlow</span>
+          </div>
+          <span class="receipt-title">COMPROBANTE DE PAGO</span>
+        </div>
+
+        <div class="receipt-body">
+          <div class="receipt-row-meta">
+            <div>
+              <span class="receipt-meta-label">CÓDIGO PAGO</span>
+              <span class="receipt-meta-value font-mono">TX-{{ selectedPayment()?.id }}</span>
+            </div>
+            <div class="text-right">
+              <span class="receipt-meta-label">FECHA Y HORA</span>
+              <span class="receipt-meta-value">{{ selectedPayment()?.fechaPago | date:'dd/MM/yyyy hh:mm a' }}</span>
+            </div>
+          </div>
+
+          <div class="receipt-divider"></div>
+
+          <div class="receipt-details">
+            <div class="detail-item">
+              <span class="detail-label">Recibido de:</span>
+              <span class="detail-value text-bold">{{ selectedPayment()?.clienteNombre }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Identidad:</span>
+              <span class="detail-value font-mono">{{ selectedPayment()?.clienteIdentidad }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Teléfono:</span>
+              <span class="detail-value font-mono">{{ selectedPayment()?.clientePhone }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Préstamo Afectado:</span>
+              <span class="detail-value font-mono font-bold color-primary">{{ selectedPayment()?.prestamoCodigo }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Método de Cobro:</span>
+              <span class="detail-value">{{ selectedPayment()?.metodoPago }}</span>
+            </div>
+            @if (selectedPayment()?.referencia) {
+              <div class="detail-item">
+                <span class="detail-label">Referencia / Comprobante:</span>
+                <span class="detail-value font-mono">{{ selectedPayment()?.referencia }}</span>
+              </div>
+            }
+            <div class="detail-item">
+              <span class="detail-label">Registrado por:</span>
+              <span class="detail-value">{{ selectedPayment()?.creadoPor }}</span>
+            </div>
+          </div>
+
+          <div class="receipt-divider"></div>
+
+          <div class="receipt-total-section">
+            <span class="total-label">MONTO ABONADO</span>
+            <span class="total-amount">L. {{ selectedPayment()?.monto | number:'1.2-2' }}</span>
+          </div>
+
+          <div class="receipt-footer-msg">
+            <p>¡Gracias por tu pago puntual!</p>
+            <p class="legal-msg">Este es un comprobante de abono electrónico generado automáticamente por PrestaFlow.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="receipt-actions hide-for-print">
+        <button class="btn-receipt-action btn-print-receipt" (click)="printReceipt()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon-svg"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> Imprimir
+        </button>
+        <button class="btn-receipt-action btn-send-receipt" (click)="shareOnWhatsApp(selectedPayment()!)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="wa-action-icon"><path fill="currentColor" d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L3 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg> WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+}

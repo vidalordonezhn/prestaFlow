@@ -1,1 +1,351 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* System Backgrounds */
+  --bg-primary: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-sidebar: #0f172a;
+  
+  /* Text Colors */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-on-dark: #f8fafc;
+  
+  /* Semantic Financial Colors */
+  /* Verde - Cobrado / Ingresos */
+  --color-green: #10b981;
+  --color-green-dark: #059669;
+  --color-green-light: rgba(16, 185, 129, 0.1);
+  --color-green-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  
+  /* Rojo - Mora / Atrasos */
+  --color-red: #ef4444;
+  --color-red-dark: #dc2626;
+  --color-red-light: rgba(239, 68, 68, 0.1);
+  --color-red-gradient: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  
+  /* Naranja / Amarillo - Pendiente del Día */
+  --color-orange: #f59e0b;
+  --color-orange-dark: #d97706;
+  --color-orange-light: rgba(245, 158, 11, 0.1);
+  --color-orange-gradient: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  
+  /* Azul / Morado - Capital Prestado */
+  --color-blue: #6366f1;
+  --color-blue-dark: #4f46e5;
+  --color-blue-light: rgba(99, 102, 241, 0.1);
+  --color-blue-gradient: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+  
+  /* Borders and Grays */
+  --border-color: #e2e8f0;
+  --bg-hover: #f1f5f9;
+  
+  /* Typography */
+  --font-title: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+  
+  /* Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.35s ease;
+}
+
+/* Base resets */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-body);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-title);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Custom Scrollbar for modern look */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Global Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.95;
+  }
+}
+
+/* Toasts Container Global Overlay */
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 320px;
+  max-width: 420px;
+  background-color: var(--bg-card);
+  border-left: 4px solid var(--color-blue);
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  animation: slideInRight var(--transition-normal) forwards;
+  transition: all var(--transition-fast);
+}
+
+.toast.success {
+  border-left-color: var(--color-green);
+}
+
+.toast.info {
+  border-left-color: var(--color-blue);
+}
+
+.toast.warning {
+  border-left-color: var(--color-orange);
+}
+
+.toast-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.toast.success .toast-icon {
+  background-color: var(--color-green-light);
+  color: var(--color-green-dark);
+}
+
+.toast-content {
+  flex-grow: 1;
+}
+
+.toast-title {
+  font-family: var(--font-title);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.toast-message {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition-fast);
+}
+
+.toast-close:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* MENÚ DESPLEGABLE DE USUARIO EN EL SIDEBAR */
+.sidebar-footer {
+  position: relative;
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  bottom: 74px;
+  left: 16px;
+  right: 16px;
+  background-color: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 200;
+  animation: dropdownFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  @media (max-width: 1024px) {
+    left: 4px;
+    right: 4px;
+    width: 200px;
+    bottom: 60px;
+  }
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdown-header {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+
+  .header-name {
+    font-family: var(--font-title);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: white;
+  }
+
+  .header-username {
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.06);
+  margin: 4px 0;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #cbd5e1;
+  text-decoration: none;
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  text-align: left;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  width: 100%;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: white;
+  }
+
+  &.text-danger {
+    color: #f87171;
+
+    &:hover {
+      background-color: rgba(239, 68, 68, 0.08);
+      color: #ef4444;
+    }
+  }
+}
+
+.item-icon {
+  width: 16px;
+  height: 16px;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+/* Cabecera Header Dropdown Positioning */
+.user-dropdown-menu.header-dropdown {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  left: auto;
+  bottom: auto;
+  width: 220px;
+}

@@ -1,0 +1,613 @@
+<div class="dashboard-layout">
+  <!-- SIDEBAR (Navegación Izquierda) -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </div>
+      <span class="brand-name">PrestaFlow</span>
+    </div>
+    
+    <nav class="sidebar-nav">
+      @for (item of menuItems; track item.name) {
+        @if (auth.currentUser()?.rol === 'Admin' || (item.name !== 'Caja y Bancos' && item.name !== 'Reportes' && item.name !== 'Configuración')) {
+          <a [routerLink]="item.route" class="nav-item" [class.active]="item.active">
+            <span class="nav-icon">
+              @switch (item.icon) {
+                @case ('dashboard') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                }
+                @case ('currency_exchange') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                }
+                @case ('people') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                }
+                @case ('route') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"></circle><circle cx="18" cy="5" r="3"></circle><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"></path></svg>
+                }
+                @case ('account_balance') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="22" x2="22" y2="22"></line><line x1="5" y1="11" x2="5" y2="18"></line><line x1="12" y1="11" x2="12" y2="18"></line><line x1="19" y1="11" x2="19" y2="18"></line><path d="M12 2 2 7h20L12 2z"></path></svg>
+                }
+                @case ('analytics') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                }
+                @case ('settings') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2 2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                }
+                @case ('receipt_long') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"></path><path d="M16 8H8"></path><path d="M16 12H8"></path><path d="M13 16H8"></path></svg>
+                }
+              }
+            </span>
+            <span class="nav-text">{{ item.name }}</span>
+          </a>
+        }
+      }
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="user-pill-dark" (click)="toggleUserDropdown($event)" title="Opciones de usuario" style="cursor: pointer; position: relative; display: flex; align-items: center; width: 100%;">
+        <div class="avatar">{{ auth.currentUser()?.nombre?.substring(0, 2)?.toUpperCase() || 'AD' }}</div>
+        <div class="user-details" style="flex-grow: 1;">
+          <span class="user-name">{{ auth.currentUser()?.nombre || 'Administrador' }}</span>
+          <span class="user-role">{{ auth.currentUser()?.rol || 'Admin' }}</span>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="inline-icon" style="width: 14px; height: 14px; margin-left: auto; color: #64748b;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+
+      <!-- DROPDOWN DE USUARIO -->
+      @if (showUserDropdown()) {
+        <div class="user-dropdown-menu">
+          <div class="dropdown-header">
+            <span class="header-name">{{ auth.currentUser()?.nombre }}</span>
+            <span class="header-username">@{{ auth.currentUser()?.username }}</span>
+          </div>
+          <div class="dropdown-divider"></div>
+          
+          <a routerLink="/configuracion" class="dropdown-item" (click)="showUserDropdown.set(false)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="item-icon"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2 2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            Configuración
+          </a>
+          
+          <div class="dropdown-divider"></div>
+          
+          <button type="button" class="dropdown-item text-danger" (click)="onLogout()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="item-icon"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            Cerrar Sesión
+          </button>
+        </div>
+      }
+    </div>
+  </aside>
+
+  <!-- MAIN WINDOW (Contenido del Clientes) -->
+  <main class="main-content">
+    
+    <!-- BARRA SUPERIOR (Header) -->
+    <header class="header">
+      <div class="header-left">
+        <h1 class="header-title">Gestión de Clientes</h1>
+        <p class="header-subtitle">Administración de perfiles, direcciones y fichas crediticias</p>
+      </div>
+
+      <div class="header-right">
+        <!-- Botón para registrar cliente -->
+        <button class="btn btn-primary btn-icon-gap" (click)="openCreateClient()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="inline-icon"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
+          Nuevo Cliente
+        </button>
+      </div>
+    </header>
+
+    <!-- TARJETAS DE RESUMEN (KPIs - 4 columnas) -->
+    <section class="kpis-grid">
+      <!-- KPI 1: Clientes Totales -->
+      <div class="kpi-card cartera-card">
+        <div class="kpi-overlay"></div>
+        <div class="kpi-header">
+          <span class="kpi-label">Clientes Registrados</span>
+          <div class="kpi-icon-container bg-blue-light text-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-content">
+          <h3 class="kpi-value">${{ kpiTotalClientes() | number:'1.0-0' }}</h3>
+          <div class="kpi-footer">
+            <span class="kpi-trend text-blue">Base de datos de clientes</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI 2: Clientes Activos (Con saldo adeudado) -->
+      <div class="kpi-card cobrado-card">
+        <div class="kpi-overlay"></div>
+        <div class="kpi-header">
+          <span class="kpi-label">Clientes Activos</span>
+          <div class="kpi-icon-container bg-green-light text-green">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-content">
+          <h3 class="kpi-value text-green">{{ kpiClientesActivos() }}</h3>
+          <div class="kpi-footer">
+            <span class="kpi-trend text-green">Con préstamos vigentes</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI 3: Clientes en Mora -->
+      <div class="kpi-card mora-card" [class.danger-pulse]="kpiClientesMora() > 0">
+        <div class="kpi-overlay"></div>
+        <div class="kpi-header">
+          <span class="kpi-label">Clientes en Mora</span>
+          <div class="kpi-icon-container bg-red-light text-red">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-content">
+          <h3 class="kpi-value text-red">{{ kpiClientesMora() }}</h3>
+          <div class="kpi-footer">
+            <span class="kpi-trend text-red">Con cuotas retrasadas</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI 4: Nuevos del Mes -->
+      <div class="kpi-card meta-card">
+        <div class="kpi-overlay"></div>
+        <div class="kpi-header">
+          <span class="kpi-label">Nuevos del Mes</span>
+          <div class="kpi-icon-container bg-orange-light text-orange">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+        </div>
+        <div class="kpi-content">
+          <h3 class="kpi-value text-orange">{{ kpiNuevosDelMes() }}</h3>
+          <div class="kpi-footer">
+            <span class="kpi-trend text-orange">Registrados recientemente</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LISTADO Y BUSQUEDA DE CLIENTES -->
+    <section class="card table-card">
+      <div class="card-header table-filter-header">
+        <!-- Buscador de Clientes -->
+        <div class="header-search search-loans">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input 
+            type="text" 
+            placeholder="Buscar por nombre, identidad o teléfono..." 
+            class="search-input"
+            [value]="searchQuery()"
+            (input)="onSearchInput($event)"
+          />
+          @if (searchQuery()) {
+            <button class="clear-search" (click)="searchQuery.set('')">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          }
+        </div>
+
+        <!-- Píldoras de Filtro por Comportamiento -->
+        <div class="filter-pills">
+          <button class="filter-pill" [class.active]="statusFilter() === 'all'" (click)="statusFilter.set('all')">Todos</button>
+          <button class="filter-pill" [class.active]="statusFilter() === 'al-dia'" (click)="statusFilter.set('al-dia')">Al Día</button>
+          <button class="filter-pill" [class.active]="statusFilter() === 'mora'" (click)="statusFilter.set('mora')">En Mora</button>
+          <button class="filter-pill" [class.active]="statusFilter() === 'sin-credito'" (click)="statusFilter.set('sin-credito')">Sin Crédito</button>
+        </div>
+      </div>
+
+      <div class="card-body table-body">
+        <div class="table-responsive">
+          <table class="route-table">
+            <thead>
+              <tr>
+                <th>Cliente / Identidad</th>
+                <th>Teléfono</th>
+                <th>Zona de Cobro</th>
+                <th class="text-center">Préstamos Activos</th>
+                <th class="text-right">Saldo Deudor</th>
+                <th class="text-center">Estado Financiero</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (client of filteredClients(); track client.id) {
+                <tr>
+                  <td>
+                    <div class="client-cell-avatar">
+                      <div class="avatar-circle">
+                        {{ client.name.substring(0, 2).toUpperCase() }}
+                      </div>
+                      <div class="client-cell">
+                        <span class="client-name">{{ client.name }}</span>
+                        <span class="client-id font-mono">{{ client.id }}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <a [href]="'tel:' + client.phone" class="phone-link">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-icon"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                      {{ client.phone }}
+                    </a>
+                  </td>
+                  <td>
+                    <div class="address-cell">
+                      <span class="zone-badge">{{ client.zone }}</span>
+                    </div>
+                  </td>
+                  <td class="text-center font-semibold">
+                    {{ client.loansCount }}
+                  </td>
+                  <td class="text-right font-mono font-semibold text-secondary">
+                    ${{ client.balance | number:'1.0-0' }}
+                  </td>
+                  <td class="text-center">
+                    @if (client.status === 'Al Día') {
+                      <span class="status-badge badge-primary">Al día</span>
+                    } @else if (client.status === 'En Mora') {
+                      <span class="status-badge badge-danger badge-pulse">En Mora</span>
+                    } @else {
+                      <span class="status-badge badge-warning">Sin Crédito</span>
+                    }
+                  </td>
+                  <td class="text-center">
+                    <button class="action-btn pay-btn" (click)="openDetails(client)">
+                      Ver Ficha
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="7" class="no-results">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="no-results-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+                    <p>No se encontraron clientes registrados.</p>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- MODAL: Ficha del Cliente / Historial Crediticio -->
+@if (showDetailsModal()) {
+  <div class="modal-backdrop" (click)="showDetailsModal.set(false)">
+    <div class="modal-card modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Ficha Crediticia del Cliente</h3>
+          <p class="modal-subtitle">Historial de créditos, comportamiento e información de localización</p>
+        </div>
+        <button class="modal-close" (click)="showDetailsModal.set(false)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="modal-body modal-grid-layout">
+        <!-- Bloque Izquierdo: Información Personal y de Referencias -->
+        <div class="profile-info-panel">
+          <div class="profile-avatar-block">
+            <div class="profile-large-avatar">
+              {{ selectedClient()?.name?.substring(0, 2)?.toUpperCase() }}
+            </div>
+            <div class="profile-header-text">
+              <h4 class="profile-client-name">{{ selectedClient()?.name }}</h4>
+              <span class="profile-client-id font-mono">ID: {{ selectedClient()?.id }}</span>
+            </div>
+          </div>
+
+          <div class="profile-details-group">
+            <h5 class="profile-section-title">Datos de Localización</h5>
+            <div class="profile-detail-row">
+              <span class="detail-label">Teléfono:</span>
+              <a [href]="'tel:' + selectedClient()?.phone" class="detail-value text-blue">{{ selectedClient()?.phone }}</a>
+            </div>
+            <div class="profile-detail-row">
+              <span class="detail-label">Zona de Cobro:</span>
+              <span class="detail-value"><span class="zone-badge">{{ selectedClient()?.zone }}</span></span>
+            </div>
+            <div class="profile-detail-row">
+              <span class="detail-label">Dirección Completa:</span>
+              <span class="detail-value text-secondary">{{ selectedClient()?.address }}</span>
+            </div>
+          </div>
+
+          <div class="profile-details-group reference-box">
+            <h5 class="profile-section-title text-orange">Contacto de Referencia / Aval</h5>
+            <div class="profile-detail-row">
+              <span class="detail-label">Referencia familiar:</span>
+              <span class="detail-value font-semibold">{{ selectedClient()?.refName }}</span>
+            </div>
+            <div class="profile-detail-row">
+              <span class="detail-label">Teléfono Referencia:</span>
+              <a [href]="'tel:' + selectedClient()?.refPhone" class="detail-value text-blue">{{ selectedClient()?.refPhone }}</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bloque Derecho: Proyección Financiera e Historial de Créditos -->
+        <div class="profile-financial-panel">
+          <div class="profile-score-header">
+            <h5 class="profile-section-title">Resumen Financiero</h5>
+            
+            <!-- Semáforo de Comportamiento -->
+            @switch (selectedClient()?.score) {
+              @case ('Excelente') {
+                <span class="status-badge badge-success">Comportamiento: Excelente</span>
+              }
+              @case ('Regular') {
+                <span class="status-badge badge-primary">Comportamiento: Regular</span>
+              }
+              @case ('Mora') {
+                <span class="status-badge badge-danger badge-pulse">Comportamiento: Moroso</span>
+              }
+              @default {
+                <span class="status-badge badge-warning">Comportamiento: Sin Historial</span>
+              }
+            }
+          </div>
+
+          <div class="modal-details-summary grid-3-cols">
+            <div class="summary-box font-mono">
+              <span class="box-label">Total Prestado</span>
+              <span class="box-value">${{ clientTotalPrestado() | number:'1.0-0' }}</span>
+              <span class="box-hint">+intereses pactados</span>
+            </div>
+            <div class="summary-box font-mono">
+              <span class="box-label">Monto Abonado</span>
+              <span class="box-value text-green">${{ clientTotalPagado() | number:'1.0-0' }}</span>
+              <span class="box-hint">Efectivo cobrado</span>
+            </div>
+            <div class="summary-box font-mono">
+              <span class="box-label">Saldo Pendiente</span>
+              <span class="box-value text-orange">${{ clientTotalAdeudado() | number:'1.0-0' }}</span>
+              <span class="box-hint">Restante por cobrar</span>
+            </div>
+          </div>
+
+          <div class="amortization-container mt-12">
+            <h5 class="profile-section-title">Historial de Créditos</h5>
+            
+            <div class="table-responsive modal-table-scroll profile-loans-scroll">
+              <table class="route-table">
+                <thead>
+                  <tr>
+                    <th>Cód. Préstamo</th>
+                    <th>Otorgado</th>
+                    <th class="text-right">Monto</th>
+                    <th class="text-center">Cuotas</th>
+                    <th class="text-center">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (hist of selectedClientLoans(); track hist.loanId) {
+                    <tr>
+                      <td class="font-mono font-semibold">{{ hist.loanId }}</td>
+                      <td>{{ hist.date | date:'dd/MM/yyyy' }}</td>
+                      <td class="text-right font-mono font-semibold">${{ hist.amount | number:'1.0-0' }}</td>
+                      <td class="text-center font-mono">{{ hist.cuotas }}</td>
+                      <td class="text-center">
+                        @if (hist.status === 'Pagado') {
+                          <span class="status-badge badge-success">Pagado</span>
+                        } @else if (hist.status === 'Mora') {
+                          <span class="status-badge badge-danger">En Mora</span>
+                        } @else {
+                          <span class="status-badge badge-primary">Activo</span>
+                        }
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="5" class="no-results py-12">
+                        <p>Este cliente no tiene créditos registrados en su historial.</p>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="showDetailsModal.set(false)" style="margin-left: auto; width: 120px;">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- MODAL: Crear Nuevo Cliente -->
+@if (showCreateModal()) {
+  <div class="modal-backdrop" (click)="showCreateModal.set(false)">
+    <div class="modal-card modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Registrar Nuevo Cliente</h3>
+          <p class="modal-subtitle">Ingrese los datos demográficos y de contacto del deudor</p>
+        </div>
+        <button class="modal-close" (click)="showCreateModal.set(false)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="modal-body modal-grid-layout">
+        <!-- Formulario Izquierda: Datos Personales -->
+        <form class="modal-form loan-form" (submit)="$event.preventDefault(); submitClient()">
+          <h4 class="section-subtitle">Datos Personales</h4>
+          
+          <div class="form-group">
+            <label class="form-label" for="clientName">Nombre Completo</label>
+            <input 
+              type="text" 
+              id="clientName" 
+              class="form-input form-input-text" 
+              placeholder="Ej. Manuel de Jesús Zelaya"
+              [value]="newClientName()"
+              (input)="newClientName.set($any($event.target).value)"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="clientId">Identidad / Cédula</label>
+            <input 
+              type="text" 
+              id="clientId" 
+              class="form-input font-mono font-bold" 
+              placeholder="Ej. 0801-1990-12345"
+              [value]="newClientId()"
+              (input)="newClientId.set($any($event.target).value)"
+              required
+            />
+          </div>
+
+          <div class="calculator-inputs">
+            <div class="form-group">
+              <label class="form-label" for="clientPhone">Teléfono Celular</label>
+              <input 
+                type="text" 
+                id="clientPhone" 
+                class="form-input form-input-text" 
+                placeholder="Ej. +504 9911-2233"
+                [value]="newClientPhone()"
+                (input)="newClientPhone.set($any($event.target).value)"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="clientZone">Zona de Cobro</label>
+              <select 
+                id="clientZone" 
+                class="form-input form-select font-semibold"
+                [value]="newClientZone()"
+                (change)="newClientZone.set($any($event.target).value)"
+              >
+                <option value="Tegucigalpa - Centro">Tegucigalpa - Centro</option>
+                <option value="Tegucigalpa - Palmira">Tegucigalpa - Palmira</option>
+                <option value="Tegucigalpa - Hato">Tegucigalpa - Hato</option>
+                <option value="Tegucigalpa - Kennedy">Tegucigalpa - Kennedy</option>
+                <option value="Tegucigalpa - Lomas">Tegucigalpa - Lomas</option>
+                <option value="Comayagüela - Pedregal">Comayagüela - Pedregal</option>
+                <option value="Tegucigalpa - Manchen">Tegucigalpa - Manchen</option>
+                <option value="Tegucigalpa - San Felipe">Tegucigalpa - San Felipe</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="clientAddress">Dirección de Domicilio</label>
+            <input 
+              type="text" 
+              id="clientAddress" 
+              class="form-input form-input-text" 
+              placeholder="Calle, bloque, número de casa, puntos de referencia..."
+              [value]="newClientAddress()"
+              (input)="newClientAddress.set($any($event.target).value)"
+            />
+          </div>
+        </form>
+
+        <!-- Formulario Derecha: Referencias y Acciones -->
+        <div class="calculator-projection-panel">
+          <div class="projection-header">
+            <h4 class="projection-title">Referencias y Aval</h4>
+          </div>
+
+          <div class="projection-content">
+            <p class="input-hint mb-4" style="margin-top: -8px;">Ingrese un familiar directo o aval comercial para localización alternativa del cobro en caso de mora.</p>
+            
+            <div class="form-group">
+              <label class="form-label" for="refName">Nombre Referencia / Aval</label>
+              <input 
+                type="text" 
+                id="refName" 
+                class="form-input form-input-text" 
+                placeholder="Ej. Martha Zelaya (Hermana)"
+                [value]="newClientRefName()"
+                (input)="newClientRefName.set($any($event.target).value)"
+              />
+            </div>
+
+            <div class="form-group mt-4">
+              <label class="form-label" for="refPhone">Teléfono Referencia</label>
+              <input 
+                type="text" 
+                id="refPhone" 
+                class="form-input form-input-text" 
+                placeholder="Ej. +504 9911-4455"
+                [value]="newClientRefPhone()"
+                (input)="newClientRefPhone.set($any($event.target).value)"
+              />
+            </div>
+          </div>
+
+          <div class="modal-actions calculator-actions">
+            <button type="button" class="btn btn-secondary" (click)="showCreateModal.set(false)">
+              Cancelar
+            </button>
+            <button type="button" class="btn btn-primary" (click)="submitClient()">
+              Guardar Perfil
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container">
+  @for (toast of toasts(); track toast.id) {
+    <div class="toast" [class.success]="toast.type === 'success'" [class.info]="toast.type === 'info'" [class.warning]="toast.type === 'warning'">
+      <div class="toast-icon">
+        @switch (toast.type) {
+          @case ('success') {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          }
+          @case ('warning') {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          }
+          @case ('info') {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          }
+        }
+      </div>
+      <div class="toast-content">
+        <h4 class="toast-title">{{ toast.title }}</h4>
+        <p class="toast-message">{{ toast.message }}</p>
+      </div>
+      <button class="toast-close" (click)="removeToast(toast.id)" aria-label="Cerrar notificación">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+  }
+</div>
