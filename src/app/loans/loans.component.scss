@@ -687,10 +687,12 @@
 }
 
 .modal-card.modal-lg {
-  max-width: 820px;
+  max-width: 1040px; /* Wider to comfortably fit 8-column amortization table */
+  width: 95%;
   
   @media (max-width: 800px) {
     max-width: 100%;
+    width: 100%;
     height: 100dvh;
     max-height: 100dvh;
     border-radius: 0;
@@ -763,42 +765,66 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   
-  @media (max-width: 600px) {
+  @media (max-width: 800px) {
     grid-template-columns: repeat(2, 1fr);
   }
   
-  @media (max-width: 400px) {
+  @media (max-width: 480px) {
     grid-template-columns: 1fr;
   }
 }
 
 .summary-box {
-  background-color: var(--bg-primary);
+  background-color: var(--bg-hover);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 14px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+  padding-left: 22px;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: var(--color-blue);
+  }
+  
+  &:nth-child(2)::before { background-color: #10b981; } // Green
+  &:nth-child(3)::before { background-color: #8b5cf6; } // Purple
+  &:nth-child(4)::before { background-color: #f59e0b; } // Orange
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(99, 102, 241, 0.25);
+  }
 }
 
 .box-label {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
 }
 
 .box-value {
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .box-hint {
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 
 .amortization-container {
@@ -825,10 +851,12 @@
     position: sticky;
     top: 0;
     z-index: 10;
+    white-space: nowrap;
   }
   
   .route-table td {
     padding: 12px 18px;
+    white-space: nowrap; /* Prevents text and currency values wrapping */
   }
 }
 

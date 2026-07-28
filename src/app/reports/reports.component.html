@@ -166,6 +166,24 @@
       </div>
     </section>
 
+    <!-- Historial de Cartera -->
+    <section class="kpis-grid" style="grid-template-columns: repeat(2, 1fr); margin-top: 16px; margin-bottom: 24px; gap: 16px;">
+      <div class="kpi-card" style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid rgba(255, 255, 255, 0.05); padding: 16px;">
+        <div class="kpi-content">
+          <span class="kpi-label" style="color: #94a3b8; font-weight: 500; font-size: 0.8125rem;">Capital Histórico Prestado</span>
+          <h3 class="kpi-value text-white" style="font-size: 1.625rem; font-family: monospace; font-weight: 700; margin: 4px 0;">L. {{ kpiCartera().capitalHistoricoPrestado | number:'1.2-2' }}</h3>
+          <span class="kpi-trend" style="color: #64748b; font-size: 0.75rem;">Total de capital colocado históricamente</span>
+        </div>
+      </div>
+      <div class="kpi-card" style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid rgba(255, 255, 255, 0.05); padding: 16px;">
+        <div class="kpi-content">
+          <span class="kpi-label" style="color: #94a3b8; font-weight: 500; font-size: 0.8125rem;">Capital Vivo Actual</span>
+          <h3 class="kpi-value text-white" style="font-size: 1.625rem; font-family: monospace; font-weight: 700; margin: 4px 0;">L. {{ kpiCartera().capitalActual | number:'1.2-2' }}</h3>
+          <span class="kpi-trend" style="color: #38bdf8; font-size: 0.75rem;">Capital pendiente neto por recuperar (restando abonos)</span>
+        </div>
+      </div>
+    </section>
+
     <!-- Gráfico / Barra de Distribución y Métricas Recaudación -->
     <section class="reports-grid">
       <div class="card distribution-card">
@@ -182,18 +200,23 @@
 
           <!-- Barra de Distribución Dinámica -->
           <div class="bar-chart-container">
-            <div class="bar-chart-track">
-              <div class="bar-segment bar-capital" [style.width.%]="ingresosFiltrados().capitalPercent"></div>
-              <div class="bar-segment bar-interes" [style.width.%]="ingresosFiltrados().interesPercent"></div>
+            <div class="bar-chart-track" style="display: flex; height: 16px; border-radius: 8px; overflow: hidden; background: rgba(255, 255, 255, 0.05); margin-bottom: 16px;">
+              <div class="bar-segment bar-capital" [style.width.%]="ingresosFiltrados().capitalPercent" style="background: var(--color-primary); height: 100%;"></div>
+              <div class="bar-segment bar-interes" [style.width.%]="ingresosFiltrados().interesPercent" style="background: #eab308; height: 100%;"></div>
+              <div class="bar-segment bar-mora" [style.width.%]="ingresosFiltrados().moraPercent" style="background: #ef4444; height: 100%;"></div>
             </div>
-            <div class="bar-chart-labels">
-              <div class="chart-label-item">
-                <span class="legend-color legend-capital"></span>
+            <div class="bar-chart-labels" style="display: flex; flex-direction: column; gap: 8px;">
+              <div class="chart-label-item" style="display: flex; align-items: center; gap: 8px; font-size: 0.8125rem; color: #94a3b8;">
+                <span class="legend-color legend-capital" style="display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: var(--color-primary);"></span>
                 <span>Retorno Capital: <strong>{{ ingresosFiltrados().capitalPercent | number:'1.1-1' }}%</strong> (L. {{ ingresosFiltrados().capital | number:'1.2-2' }})</span>
               </div>
-              <div class="chart-label-item">
-                <span class="legend-color legend-interes"></span>
+              <div class="chart-label-item" style="display: flex; align-items: center; gap: 8px; font-size: 0.8125rem; color: #94a3b8;">
+                <span class="legend-color legend-interes" style="display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: #eab308;"></span>
                 <span>Interés Ganado: <strong>{{ ingresosFiltrados().interesPercent | number:'1.1-1' }}%</strong> (L. {{ ingresosFiltrados().interes | number:'1.2-2' }})</span>
+              </div>
+              <div class="chart-label-item" style="display: flex; align-items: center; gap: 8px; font-size: 0.8125rem; color: #94a3b8;">
+                <span class="legend-color legend-mora" style="display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: #ef4444;"></span>
+                <span>Mora Recaudada: <strong>{{ ingresosFiltrados().moraPercent | number:'1.1-1' }}%</strong> (L. {{ ingresosFiltrados().mora | number:'1.2-2' }})</span>
               </div>
             </div>
           </div>
@@ -265,12 +288,12 @@
       </div>
     </section>
 
-    <!-- Control de Riesgo de Mora -->
+    <!-- Reporte Trimestral de Saldos Rezagados -->
     <section class="card table-card">
       <div class="table-filter-header">
         <div>
-          <h2 class="section-title">Control de Riesgo de Mora (Cuotas Vencidas)</h2>
-          <p class="section-subtitle">Deudores activos con retrasos ordenados por nivel de riesgo</p>
+          <h2 class="section-title">Reporte Trimestral de Saldos Rezagados</h2>
+          <p class="section-subtitle">Análisis de mora y saldos rezagados acumulados a la fecha por rango de riesgo</p>
         </div>
         <button class="btn-export" (click)="exportToExcel()">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon-svg"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
@@ -279,6 +302,25 @@
       </div>
 
       <div class="table-body">
+        <!-- Resumen del Reporte Trimestral de Saldos Rezagados -->
+        <div class="kpis-grid-3" style="margin: 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+          <div class="kpi-card" style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.1); padding: 12px 16px; border-radius: 8px;">
+            <span class="kpi-label" style="color: #fca5a5; font-size: 0.75rem; font-weight: 500;">Saldos Rezagados del Trimestre</span>
+            <h4 style="color: #ef4444; font-size: 1.375rem; font-family: monospace; font-weight: 700; margin: 4px 0;">L. {{ saldosRezagadosTrimestre().totalAtrasado | number:'1.2-2' }}</h4>
+            <span style="color: #94a3b8; font-size: 0.6875rem;">Monto vencido total acumulado</span>
+          </div>
+          <div class="kpi-card" style="background: rgba(234, 179, 8, 0.05); border: 1px solid rgba(234, 179, 8, 0.1); padding: 12px 16px; border-radius: 8px;">
+            <span class="kpi-label" style="color: #fef08a; font-size: 0.75rem; font-weight: 500;">Cartera Vencida (> 30 días)</span>
+            <h4 style="color: #eab308; font-size: 1.375rem; font-weight: 700; margin: 4px 0;">{{ saldosRezagadosTrimestre().carteraVencida }} Clientes</h4>
+            <span style="color: #94a3b8; font-size: 0.6875rem;">Clientes con mora mayor a un mes</span>
+          </div>
+          <div class="kpi-card" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 12px 16px; border-radius: 8px;">
+            <span class="kpi-label" style="color: #fca5a5; font-size: 0.75rem; font-weight: 500;">Pérdida Crítica (> 90 días)</span>
+            <h4 style="color: #f87171; font-size: 1.375rem; font-weight: 700; margin: 4px 0;">{{ saldosRezagadosTrimestre().riesgoPerdida }} Clientes</h4>
+            <span style="color: #94a3b8; font-size: 0.6875rem;">Cuentas de alto riesgo sin abonos en 3 meses</span>
+          </div>
+        </div>
+
         <div class="table-responsive">
           <table class="route-table">
             <thead>

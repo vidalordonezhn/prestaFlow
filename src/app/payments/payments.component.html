@@ -289,6 +289,23 @@
 
           <div class="receipt-divider"></div>
 
+          <div class="receipt-details" style="margin-top: 12px; background: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.03);">
+            <div class="detail-item">
+              <span class="detail-label" style="color: #94a3b8;">Abono a Capital:</span>
+              <span class="detail-value font-mono" style="color: #cbd5e1;">L. {{ selectedPayment()?.montoPrincipal | number:'1.2-2' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label" style="color: #94a3b8;">Pago de Interés:</span>
+              <span class="detail-value font-mono" style="color: #cbd5e1;">L. {{ selectedPayment()?.montoInteres | number:'1.2-2' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label" style="color: #f87171;">Cargos de Mora:</span>
+              <span class="detail-value font-mono" style="color: #f87171;">L. {{ selectedPayment()?.montoMora | number:'1.2-2' }}</span>
+            </div>
+          </div>
+
+          <div class="receipt-divider"></div>
+
           <div class="receipt-total-section">
             <span class="total-label">MONTO ABONADO</span>
             <span class="total-amount">L. {{ selectedPayment()?.monto | number:'1.2-2' }}</span>

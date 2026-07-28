@@ -8,12 +8,15 @@ export interface ResumenCartera {
   interesPendiente: number;
   totalProyectado: number;
   clientesMoraActiva: number;
+  capitalHistoricoPrestado: number;
+  capitalActual: number;
 }
 
 export interface IngresosReporte {
   total: number;
   capital: number;
   interes: number;
+  mora: number;
 }
 
 export interface MoraDeudor {

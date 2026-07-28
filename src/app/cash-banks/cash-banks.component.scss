@@ -256,48 +256,7 @@
   }
 }
 
-/* BOTONES */
-.btn {
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  font-weight: 600;
-  height: 40px;
-  padding: 0 20px;
-  border-radius: var(--radius-md);
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-fast);
-  box-shadow: var(--shadow-sm);
-}
 
-.btn-primary {
-  background: var(--color-blue-gradient);
-  color: white;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-}
-
-.btn-secondary {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-
-  &:hover {
-    background-color: var(--bg-primary);
-    border-color: var(--text-muted);
-  }
-}
 
 .btn-icon-gap {
   gap: 8px;

@@ -349,3 +349,138 @@ h1, h2, h3, h4, h5, h6 {
   bottom: auto;
   width: 220px;
 }
+
+/* ==========================================================================
+   BUTTON SYSTEM (Premium Visual Styles)
+   ========================================================================== */
+.btn {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0 24px;
+  height: 44px;
+  border-radius: 12px; /* Más moderno y redondeado */
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  -webkit-font-smoothing: antialiased;
+
+  /* Efecto de escalado y elevación en hover */
+  &:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  &:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Botón Primario: Gradiente vibrante con brillo de Neón Indigo-Azul */
+.btn-primary {
+  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  color: white !important;
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  /* Efecto de destello metálico continuo */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.25),
+      transparent
+    );
+    transition: 0.6s ease;
+    z-index: -1;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, #5a52ff 0%, #4ea5ff 100%);
+    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.45);
+
+    &::before {
+      left: 100%;
+    }
+  }
+}
+
+/* Botón Secundario: Estilo Glassmorphic translúcido de alta gama */
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text-secondary) !important;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--text-primary) !important;
+    border-color: rgba(148, 163, 184, 0.4);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* Botón Peligro/Mora: Gradiente suave carmesí con glow */
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+
+  &:hover {
+    background: linear-gradient(135deg, #f87171 0%, #b91c1c 100%);
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+  }
+}
+
+/* Botón de Éxito: Gradiente esmeralda */
+.btn-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white !important;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+
+  &:hover {
+    background: linear-gradient(135deg, #34d399 0%, #047857 100%);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+  }
+}
+
+/* ==========================================================================
+   ALIGNMENT UTILITIES FOR TABLES
+   ========================================================================== */
+.text-right {
+  text-align: right !important;
+}
+
+.text-left {
+  text-align: left !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+

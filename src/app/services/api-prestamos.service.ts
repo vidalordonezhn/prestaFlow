@@ -3,6 +3,20 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+export interface CuotaResponse {
+  id: number;
+  numeroCuota: number;
+  fechaVencimiento: string;
+  montoPrincipal: number;
+  montoInteres: number;
+  montoMoratorio: number;
+  montoPagadoPrincipal: number;
+  montoPagadoInteres: number;
+  montoPagadoMora: number;
+  estado: 'Pendiente' | 'Parcial' | 'Pagado' | 'Vencido';
+  fechaUltimoCalculoMora?: string;
+}
+
 export interface PrestamoResponse {
   id: number;
   codigo: string;
@@ -16,7 +30,12 @@ export interface PrestamoResponse {
   cuotasPagadas: number;
   status: 'Activo' | 'Pagado' | 'Mora';
   frecuencia: 'Diario' | 'Semanal' | 'Mensual';
+  tipoPrestamo: string;
+  metodoDesembolso: string;
+  tipoInteres: 'Fijo' | 'Variable';
+  tasaMoraPorcentaje: number;
   fechaOtorgado: string;
+  cuotas: CuotaResponse[];
 }
 
 export interface PrestamoCreate {
@@ -26,6 +45,10 @@ export interface PrestamoCreate {
   plazoCuotas: number;
   frecuencia: 'Diario' | 'Semanal' | 'Mensual';
   cuentaDesembolsoId: number;
+  tipoPrestamo: string;
+  metodoDesembolso: string;
+  tipoInteres: 'Fijo' | 'Variable';
+  tasaMoraPorcentaje: number;
 }
 
 @Injectable({

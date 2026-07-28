@@ -448,7 +448,7 @@
 <!-- MODAL: Crear Nuevo Cliente -->
 @if (showCreateModal()) {
   <div class="modal-backdrop" (click)="showCreateModal.set(false)">
-    <div class="modal-card modal-lg" (click)="$event.stopPropagation()">
+    <div class="modal-card modal-medium" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <div>
           <h3 class="modal-title">Registrar Nuevo Cliente</h3>
@@ -459,126 +459,121 @@
         </button>
       </div>
 
-      <div class="modal-body modal-grid-layout">
-        <!-- Formulario Izquierda: Datos Personales -->
-        <form class="modal-form loan-form" (submit)="$event.preventDefault(); submitClient()">
-          <h4 class="section-subtitle">Datos Personales</h4>
+      <div class="modal-body custom-form-body">
+        <form class="modal-form-flow" (submit)="$event.preventDefault(); submitClient()">
           
-          <div class="form-group">
-            <label class="form-label" for="clientName">Nombre Completo</label>
-            <input 
-              type="text" 
-              id="clientName" 
-              class="form-input form-input-text" 
-              placeholder="Ej. Manuel de Jesús Zelaya"
-              [value]="newClientName()"
-              (input)="newClientName.set($any($event.target).value)"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="clientId">Identidad / Cédula</label>
-            <input 
-              type="text" 
-              id="clientId" 
-              class="form-input font-mono font-bold" 
-              placeholder="Ej. 0801-1990-12345"
-              [value]="newClientId()"
-              (input)="newClientId.set($any($event.target).value)"
-              required
-            />
-          </div>
-
-          <div class="calculator-inputs">
-            <div class="form-group">
-              <label class="form-label" for="clientPhone">Teléfono Celular</label>
-              <input 
-                type="text" 
-                id="clientPhone" 
-                class="form-input form-input-text" 
-                placeholder="Ej. +504 9911-2233"
-                [value]="newClientPhone()"
-                (input)="newClientPhone.set($any($event.target).value)"
-              />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="clientZone">Zona de Cobro</label>
-              <select 
-                id="clientZone" 
-                class="form-input form-select font-semibold"
-                [value]="newClientZone()"
-                (change)="newClientZone.set($any($event.target).value)"
-              >
-                <option value="Tegucigalpa - Centro">Tegucigalpa - Centro</option>
-                <option value="Tegucigalpa - Palmira">Tegucigalpa - Palmira</option>
-                <option value="Tegucigalpa - Hato">Tegucigalpa - Hato</option>
-                <option value="Tegucigalpa - Kennedy">Tegucigalpa - Kennedy</option>
-                <option value="Tegucigalpa - Lomas">Tegucigalpa - Lomas</option>
-                <option value="Comayagüela - Pedregal">Comayagüela - Pedregal</option>
-                <option value="Tegucigalpa - Manchen">Tegucigalpa - Manchen</option>
-                <option value="Tegucigalpa - San Felipe">Tegucigalpa - San Felipe</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="clientAddress">Dirección de Domicilio</label>
-            <input 
-              type="text" 
-              id="clientAddress" 
-              class="form-input form-input-text" 
-              placeholder="Calle, bloque, número de casa, puntos de referencia..."
-              [value]="newClientAddress()"
-              (input)="newClientAddress.set($any($event.target).value)"
-            />
-          </div>
-        </form>
-
-        <!-- Formulario Derecha: Referencias y Acciones -->
-        <div class="calculator-projection-panel">
-          <div class="projection-header">
-            <h4 class="projection-title">Referencias y Aval</h4>
-          </div>
-
-          <div class="projection-content">
-            <p class="input-hint mb-4" style="margin-top: -8px;">Ingrese un familiar directo o aval comercial para localización alternativa del cobro en caso de mora.</p>
+          <!-- Seccion 1: Datos Personales -->
+          <div class="form-section">
+            <h4 class="section-title-premium">Datos Personales y Localización</h4>
             
-            <div class="form-group">
-              <label class="form-label" for="refName">Nombre Referencia / Aval</label>
-              <input 
-                type="text" 
-                id="refName" 
-                class="form-input form-input-text" 
-                placeholder="Ej. Martha Zelaya (Hermana)"
-                [value]="newClientRefName()"
-                (input)="newClientRefName.set($any($event.target).value)"
-              />
+            <div class="form-row-grid-2-1">
+              <div class="form-group">
+                <label class="form-label" for="clientName">Nombre Completo</label>
+                <input 
+                  type="text" 
+                  id="clientName" 
+                  class="form-input form-input-text" 
+                  placeholder="Ej. Manuel de Jesús Zelaya"
+                  [value]="newClientName()"
+                  (input)="newClientName.set($any($event.target).value)"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="clientId">Identidad / Cédula</label>
+                <input 
+                  type="text" 
+                  id="clientId" 
+                  class="form-input font-mono font-bold" 
+                  placeholder="Ej. 0801-1990-12345"
+                  [value]="newClientId()"
+                  (input)="newClientId.set($any($event.target).value)"
+                  required
+                />
+              </div>
             </div>
 
-            <div class="form-group mt-4">
-              <label class="form-label" for="refPhone">Teléfono Referencia</label>
+            <div class="form-row-grid-2">
+              <div class="form-group">
+                <label class="form-label" for="clientPhone">Teléfono Celular</label>
+                <input 
+                  type="text" 
+                  id="clientPhone" 
+                  class="form-input form-input-text" 
+                  placeholder="Ej. +504 9911-2233"
+                  [value]="newClientPhone()"
+                  (input)="newClientPhone.set($any($event.target).value)"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="clientZone">Zona de Cobro</label>
+                <input 
+                  type="text" 
+                  id="clientZone" 
+                  class="form-input form-input-text" 
+                  placeholder="Ej. Tegucigalpa - Centro"
+                  [value]="newClientZone()"
+                  (input)="newClientZone.set($any($event.target).value)"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="clientAddress">Dirección de Domicilio</label>
               <input 
                 type="text" 
-                id="refPhone" 
+                id="clientAddress" 
                 class="form-input form-input-text" 
-                placeholder="Ej. +504 9911-4455"
-                [value]="newClientRefPhone()"
-                (input)="newClientRefPhone.set($any($event.target).value)"
+                placeholder="Calle, bloque, número de casa, puntos de referencia..."
+                [value]="newClientAddress()"
+                (input)="newClientAddress.set($any($event.target).value)"
               />
             </div>
           </div>
 
-          <div class="modal-actions calculator-actions">
-            <button type="button" class="btn btn-secondary" (click)="showCreateModal.set(false)">
+          <!-- Seccion 2: Referencias -->
+          <div class="form-section-card">
+            <h4 class="section-title-premium secondary">Referencias y Aval</h4>
+            <p class="input-hint-premium">Ingrese un contacto alternativo o aval comercial para localización en caso de mora.</p>
+            
+            <div class="form-row-grid-2-1">
+              <div class="form-group">
+                <label class="form-label" for="refName">Nombre Referencia / Aval</label>
+                <input 
+                  type="text" 
+                  id="refName" 
+                  class="form-input form-input-text" 
+                  placeholder="Ej. Martha Zelaya (Hermana)"
+                  [value]="newClientRefName()"
+                  (input)="newClientRefName.set($any($event.target).value)"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="refPhone">Teléfono Referencia</label>
+                <input 
+                  type="text" 
+                  id="refPhone" 
+                  class="form-input form-input-text" 
+                  placeholder="Ej. +504 9911-4455"
+                  [value]="newClientRefPhone()"
+                  (input)="newClientRefPhone.set($any($event.target).value)"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Acciones -->
+          <div class="modal-actions-centered">
+            <button type="button" class="btn btn-secondary btn-medium" (click)="showCreateModal.set(false)">
               Cancelar
             </button>
-            <button type="button" class="btn btn-primary" (click)="submitClient()">
-              Guardar Perfil
+            <button type="submit" class="btn btn-primary btn-medium">
+              Guardar Perfil de Cliente
             </button>
           </div>
-        </div>
+
+        </form>
       </div>
     </div>
   </div>

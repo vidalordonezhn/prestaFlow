@@ -24,6 +24,7 @@ export class ReportsComponent implements OnInit {
 
   protected readonly menuItems = [
     { name: 'Dashboard', icon: 'dashboard', active: false, route: '/' },
+    { name: 'Cobros de Hoy', icon: 'route', active: false, route: '/cobros' },
     { name: 'Préstamos', icon: 'currency_exchange', active: false, route: '/prestamos' },
     { name: 'Clientes', icon: 'people', active: false, route: '/clientes' },
     { name: 'Historial de Pagos', icon: 'receipt_long', active: false, route: '/pagos' },
@@ -42,13 +43,16 @@ export class ReportsComponent implements OnInit {
     capitalColocado: 0,
     interesPendiente: 0,
     totalProyectado: 0,
-    clientesMoraActiva: 0
+    clientesMoraActiva: 0,
+    capitalHistoricoPrestado: 0,
+    capitalActual: 0
   });
 
   protected readonly rawIngresos = signal<IngresosReporte>({
     total: 0,
     capital: 0,
-    interes: 0
+    interes: 0,
+    mora: 0
   });
 
   protected readonly deudoresMora = signal<MoraDeudor[]>([]);
@@ -60,17 +64,33 @@ export class ReportsComponent implements OnInit {
     const data = this.rawIngresos();
     const capitalPct = data.total > 0 ? (data.capital / data.total) * 100 : 0;
     const interesPct = data.total > 0 ? (data.interes / data.total) * 100 : 0;
+    const moraPct = data.total > 0 ? (data.mora / data.total) * 100 : 0;
 
     return {
       ...data,
       capitalPercent: capitalPct,
-      interesPercent: interesPct
+      interesPercent: interesPct,
+      moraPercent: moraPct
     };
   });
 
   // Balance Total calculado dinámicamente
   protected readonly balanceTotal = computed(() => {
     return this.cuentasFinancieras().reduce((sum, c) => sum + c.saldo, 0);
+  });
+
+  // Estadísticas del Reporte Trimestral de Saldos Rezagados
+  protected readonly saldosRezagadosTrimestre = computed(() => {
+    const deudores = this.deudoresMora();
+    const totalAtrasado = deudores.reduce((sum, d) => sum + d.montoAtrasado, 0);
+    const carteraVencida = deudores.filter(d => d.diasRetraso > 30).length;
+    const riesgoPerdida = deudores.filter(d => d.diasRetraso > 90).length;
+
+    return {
+      totalAtrasado,
+      carteraVencida,
+      riesgoPerdida
+    };
   });
 
   ngOnInit(): void {
@@ -172,6 +192,7 @@ export class ReportsComponent implements OnInit {
     const periodStr = `${this.startDate()} al ${this.endDate()}`;
 
     const csvRows: string[] = [];
+    csvRows.push('sep=,'); // Force Excel to recognize comma as the separator
 
     // 1. TÍTULO Y METADATOS
     csvRows.push('PrestaFlow - Reporte de Cartera y Rendimiento');
@@ -257,6 +278,7 @@ export class ReportsComponent implements OnInit {
     const periodStr = `${this.startDate()} al ${this.endDate()}`;
 
     const csvRows: string[] = [];
+    csvRows.push('sep=,'); // Force Excel to recognize comma as the separator
 
     csvRows.push('PrestaFlow - Diario de Movimientos de Cajas y Bancos');
     csvRows.push(`Fecha de Emisión: ${todayStr}`);

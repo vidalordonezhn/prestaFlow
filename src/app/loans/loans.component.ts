@@ -9,6 +9,7 @@ import { ApiCajaService, CuentaResponse } from '../services/api-caja.service';
 
 interface Loan {
   id: string;
+  dbId: number;
   clientName: string;
   clientPhone: string;
   startDate: Date;
@@ -20,12 +21,21 @@ interface Loan {
   status: 'Activo' | 'Pagado' | 'Mora';
   statusDetail: 'Al día' | 'Atrasado' | 'Completado';
   frecuencia: 'Diario' | 'Semanal' | 'Mensual';
+  tipoPrestamo: string;
+  metodoDesembolso: string;
+  tipoInteres: 'Fijo' | 'Variable';
+  tasaMoraPorcentaje: number;
+  cuotas: any[];
 }
 
 interface AmortizationItem {
   numeroCuota: number;
   fechaVencimiento: Date;
   monto: number;
+  montoPrincipal: number;
+  montoInteres: number;
+  montoMoratorio: number;
+  montoPagado: number;
   status: 'Pagada' | 'Pendiente' | 'Vencida';
 }
 
@@ -97,6 +107,10 @@ export class LoansComponent implements OnInit {
   protected readonly newInterestRate = signal<number>(10);
   protected readonly newTerm = signal<number>(20);
   protected readonly newFrequency = signal<'Diario' | 'Semanal' | 'Mensual'>('Diario');
+  protected readonly newLoanType = signal<string>('Personal');
+  protected readonly newDisbursementMethod = signal<string>('Efectivo');
+  protected readonly newInterestType = signal<'Fijo' | 'Variable'>('Fijo');
+  protected readonly newTasaMora = signal<number>(5);
 
   // List of Loans
   protected readonly loans = signal<Loan[]>([]);
@@ -104,6 +118,7 @@ export class LoansComponent implements OnInit {
   // Sidebar Menu Items
   protected readonly menuItems = [
     { name: 'Dashboard', icon: 'dashboard', active: false, route: '/' },
+    { name: 'Cobros de Hoy', icon: 'route', active: false, route: '/cobros' },
     { name: 'Préstamos', icon: 'currency_exchange', active: true, route: '/prestamos' },
     { name: 'Clientes', icon: 'people', active: false, route: '/clientes' },
     { name: 'Historial de Pagos', icon: 'receipt_long', active: false, route: '/pagos' },
@@ -178,41 +193,29 @@ export class LoansComponent implements OnInit {
     return result;
   });
 
-  // Dynamic Amortization Table Generator
+  // Amortization Table mapped from physical db cuotas
   protected readonly amortizationTable = computed<AmortizationItem[]>(() => {
     const loan = this.selectedLoan();
-    if (!loan) return [];
+    if (!loan || !loan.cuotas) return [];
 
-    const items: AmortizationItem[] = [];
-    const cuotaMonto = loan.cuotaMonto;
-    
-    for (let i = 1; i <= loan.plazoCuotas; i++) {
-      const dueDate = new Date(loan.startDate);
-      // Increment days/weeks/months according to frequency
-      if (loan.frecuencia === 'Diario') {
-        dueDate.setDate(dueDate.getDate() + i);
-      } else if (loan.frecuencia === 'Semanal') {
-        dueDate.setDate(dueDate.getDate() + (i * 7));
-      } else {
-        dueDate.setMonth(dueDate.getMonth() + i);
-      }
-
+    return loan.cuotas.map((c: any) => {
       let status: 'Pagada' | 'Pendiente' | 'Vencida' = 'Pendiente';
-      if (i <= loan.cuotasPagadas) {
-        status = 'Pagada';
-      } else if (dueDate < this.currentDate() && loan.status === 'Mora') {
-        status = 'Vencida';
-      }
+      if (c.estado === 'Pagado') status = 'Pagada';
+      else if (c.estado === 'Vencido') status = 'Vencida';
+      
+      const totalMonto = c.montoPrincipal + c.montoInteres + c.montoMoratorio;
 
-      items.push({
-        numeroCuota: i,
-        fechaVencimiento: dueDate,
-        monto: cuotaMonto,
+      return {
+        numeroCuota: c.numeroCuota,
+        fechaVencimiento: new Date(c.fechaVencimiento),
+        monto: totalMonto,
+        montoPrincipal: c.montoPrincipal,
+        montoInteres: c.montoInteres,
+        montoMoratorio: c.montoMoratorio,
+        montoPagado: c.montoPagadoPrincipal + c.montoPagadoInteres + c.montoPagadoMora,
         status
-      });
-    }
-
-    return items;
+      };
+    });
   });
 
   // Event Handlers
@@ -252,6 +255,7 @@ export class LoansComponent implements OnInit {
       next: (res) => {
         const mapped = res.map(p => ({
           id: p.codigo,
+          dbId: p.id,
           clientName: p.clienteNombre,
           clientPhone: p.clientePhone,
           startDate: new Date(p.fechaOtorgado),
@@ -262,7 +266,12 @@ export class LoansComponent implements OnInit {
           cuotasPagadas: p.cuotasPagadas,
           status: p.status,
           statusDetail: p.status === 'Pagado' ? 'Completado' as const : p.status === 'Mora' ? 'Atrasado' as const : 'Al día' as const,
-          frecuencia: p.frecuencia
+          frecuencia: p.frecuencia,
+          tipoPrestamo: p.tipoPrestamo,
+          metodoDesembolso: p.metodoDesembolso,
+          tipoInteres: p.tipoInteres,
+          tasaMoraPorcentaje: p.tasaMoraPorcentaje,
+          cuotas: p.cuotas
         }));
         this.loans.set(mapped);
       },
@@ -367,7 +376,11 @@ export class LoansComponent implements OnInit {
       interesPorcentaje: interest,
       plazoCuotas: term,
       frecuencia: frequency,
-      cuentaDesembolsoId: accountId
+      cuentaDesembolsoId: accountId,
+      tipoPrestamo: this.newLoanType(),
+      metodoDesembolso: this.newDisbursementMethod(),
+      tipoInteres: this.newInterestType(),
+      tasaMoraPorcentaje: this.newTasaMora()
     }).subscribe({
       next: (res) => {
         this.triggerToast(

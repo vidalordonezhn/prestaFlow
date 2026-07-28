@@ -119,7 +119,7 @@
           </div>
         </div>
         <div class="kpi-content">
-          <h3 class="kpi-value">${{ kpiTotalColocado() | number:'1.0-0' }}</h3>
+          <h3 class="kpi-value">L. {{ kpiTotalColocado() | number:'1.0-0' }}</h3>
           <div class="kpi-footer">
             <span class="kpi-trend text-blue">Histórico total prestado</span>
           </div>
@@ -139,7 +139,7 @@
           </div>
         </div>
         <div class="kpi-content">
-          <h3 class="kpi-value text-orange">${{ kpiCapitalPendiente() | number:'1.0-0' }}</h3>
+          <h3 class="kpi-value text-orange">L. {{ kpiCapitalPendiente() | number:'1.0-0' }}</h3>
           <div class="kpi-footer">
             <span class="kpi-trend text-orange">Capital + Interés restante</span>
           </div>
@@ -159,7 +159,7 @@
           </div>
         </div>
         <div class="kpi-content">
-          <h3 class="kpi-value text-green">${{ kpiInteresGenerado() | number:'1.0-0' }}</h3>
+          <h3 class="kpi-value text-green">L. {{ kpiInteresGenerado() | number:'1.0-0' }}</h3>
           <div class="kpi-footer">
             <span class="kpi-trend text-green">Rentabilidad proyectada</span>
           </div>
@@ -247,16 +247,16 @@
                     <span class="date-text">{{ loan.startDate | date:'dd MMM yyyy' }}</span>
                   </td>
                   <td class="text-right font-mono font-semibold">
-                    ${{ loan.capital | number:'1.0-0' }}
+                    L. {{ loan.capital | number:'1.0-0' }}
                   </td>
                   <td class="text-center font-semibold text-secondary">
                     {{ loan.interesPorcentaje }}%
                   </td>
                   <td class="text-right font-mono font-semibold text-secondary">
                     @if (loan.status === 'Pagado') {
-                      $0
+                      L. 0
                     } @else {
-                      ${{ (loan.cuotaMonto * (loan.plazoCuotas - loan.cuotasPagadas)) | number:'1.0-0' }}
+                      L. {{ (loan.cuotaMonto * (loan.plazoCuotas - loan.cuotasPagadas)) | number:'1.0-0' }}
                     }
                   </td>
                   <td>
@@ -320,7 +320,7 @@
       </div>
 
       <div class="modal-body">
-        <div class="modal-details-summary">
+        <div class="modal-details-summary" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 16px;">
           <div class="summary-box">
             <span class="box-label">Cliente</span>
             <span class="box-value">{{ selectedLoan()?.clientName }}</span>
@@ -328,13 +328,13 @@
           </div>
           <div class="summary-box font-mono">
             <span class="box-label">Capital Inicial</span>
-            <span class="box-value font-mono">${{ selectedLoan()?.capital | number:'1.0-0' }}</span>
+            <span class="box-value font-mono">L. {{ selectedLoan()?.capital | number:'1.2-2' }}</span>
             <span class="box-hint">+{{ selectedLoan()?.interesPorcentaje }}% interés</span>
           </div>
           <div class="summary-box">
             <span class="box-label">Frecuencia / Plazo</span>
             <span class="box-value">{{ selectedLoan()?.frecuencia }}</span>
-            <span class="box-hint">{{ selectedLoan()?.plazoCuotas }} cuotas de ${{ selectedLoan()?.cuotaMonto | number:'1.0-0' }}</span>
+            <span class="box-hint">{{ selectedLoan()?.plazoCuotas }} cuotas de L. {{ selectedLoan()?.cuotaMonto | number:'1.2-2' }}</span>
           </div>
           <div class="summary-box">
             <span class="box-label">Progreso</span>
@@ -342,6 +342,29 @@
               {{ ((selectedLoan()?.cuotasPagadas || 0) / (selectedLoan()?.plazoCuotas || 1)) | percent:'1.0-0' }}
             </span>
             <span class="box-hint">{{ selectedLoan()?.cuotasPagadas }} de {{ selectedLoan()?.plazoCuotas }} pagadas</span>
+          </div>
+        </div>
+
+        <div class="modal-details-summary" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 24px;">
+          <div class="summary-box">
+            <span class="box-label">Tipo de Préstamo</span>
+            <span class="box-value">{{ selectedLoan()?.tipoPrestamo }}</span>
+            <span class="box-hint">Clasificación de Cartera</span>
+          </div>
+          <div class="summary-box">
+            <span class="box-label">Método Desembolso</span>
+            <span class="box-value">{{ selectedLoan()?.metodoDesembolso }}</span>
+            <span class="box-hint">Desembolsado en Cuenta</span>
+          </div>
+          <div class="summary-box">
+            <span class="box-label">Esquema de Interés</span>
+            <span class="box-value text-orange">{{ selectedLoan()?.tipoInteres }}</span>
+            <span class="box-hint">Método de Amortización</span>
+          </div>
+          <div class="summary-box font-mono">
+            <span class="box-label">Tasa Mora Mensual</span>
+            <span class="box-value text-danger">{{ selectedLoan()?.tasaMoraPorcentaje }}%</span>
+            <span class="box-hint">Cálculo Diario por Atraso</span>
           </div>
         </div>
 
@@ -354,7 +377,11 @@
                 <tr>
                   <th class="text-center">Cuota #</th>
                   <th>Fecha de Vencimiento</th>
-                  <th class="text-right">Monto Cuota</th>
+                  <th class="text-right">Principal</th>
+                  <th class="text-right">Interés</th>
+                  <th class="text-right">Mora</th>
+                  <th class="text-right">Pagado</th>
+                  <th class="text-right">Total Cuota</th>
                   <th class="text-center">Estado</th>
                 </tr>
               </thead>
@@ -362,8 +389,12 @@
                 @for (cuota of amortizationTable(); track cuota.numeroCuota) {
                   <tr [class.row-paid]="cuota.status === 'Pagada'">
                     <td class="text-center font-mono font-semibold">{{ cuota.numeroCuota }}</td>
-                    <td>{{ cuota.fechaVencimiento | date:'EEEE, d \'de\' MMMM \'de\' yyyy' }}</td>
-                    <td class="text-right font-mono font-semibold">${{ cuota.monto | number:'1.0-0' }}</td>
+                    <td>{{ cuota.fechaVencimiento | date:'dd/MM/yyyy' }}</td>
+                    <td class="text-right font-mono">L. {{ cuota.montoPrincipal | number:'1.2-2' }}</td>
+                    <td class="text-right font-mono">L. {{ cuota.montoInteres | number:'1.2-2' }}</td>
+                    <td class="text-right font-mono text-red-400">L. {{ cuota.montoMoratorio | number:'1.2-2' }}</td>
+                    <td class="text-right font-mono text-green-400">L. {{ cuota.montoPagado | number:'1.2-2' }}</td>
+                    <td class="text-right font-mono font-semibold">L. {{ cuota.monto | number:'1.2-2' }}</td>
                     <td class="text-center">
                       @if (cuota.status === 'Pagada') {
                         <span class="status-badge badge-success">Pagada</span>
@@ -467,12 +498,13 @@
 
           <div class="calculator-inputs">
             <div class="form-group">
-              <label class="form-label" for="amount">Monto Capital ($)</label>
+              <label class="form-label" for="amount">Monto Capital (L.)</label>
               <div class="input-currency-wrapper">
-                <span class="currency-symbol">$</span>
+                <span class="currency-symbol">L.</span>
                 <input 
                   type="number" 
                   id="amount" 
+                  step="0.01"
                   class="form-input font-mono font-bold"
                   [value]="newLendAmount()"
                   (input)="newLendAmount.set(+$any($event.target).value)"
@@ -488,6 +520,7 @@
                 <input 
                   type="number" 
                   id="interest" 
+                  step="0.01"
                   class="form-input font-mono font-bold"
                   [value]="newInterestRate()"
                   (input)="newInterestRate.set(+$any($event.target).value)"
@@ -521,6 +554,62 @@
                 <option value="Mensual">Mensual</option>
               </select>
             </div>
+
+            <div class="form-group">
+              <label class="form-label" for="loanType">Tipo de Préstamo</label>
+              <select 
+                id="loanType" 
+                class="form-input form-select font-semibold"
+                [value]="newLoanType()"
+                (change)="newLoanType.set($any($event.target).value)"
+              >
+                <option value="Personal">Personal / Prestatario</option>
+                <option value="Hipotecario">Hipotecario</option>
+                <option value="Fiduciario">Fiduciario</option>
+                <option value="Prendario">Prendario</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="disbursementMethod">Método de Desembolso</label>
+              <select 
+                id="disbursementMethod" 
+                class="form-input form-select font-semibold"
+                [value]="newDisbursementMethod()"
+                (change)="newDisbursementMethod.set($any($event.target).value)"
+              >
+                <option value="Efectivo">Efectivo</option>
+                <option value="Transferencia">Transferencia Externa</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="interestType">Tipo de Interés</label>
+              <select 
+                id="interestType" 
+                class="form-input form-select font-semibold"
+                [value]="newInterestType()"
+                (change)="newInterestType.set($any($event.target).value)"
+              >
+                <option value="Fijo">Fijo</option>
+                <option value="Variable">Variable (Saldos Caídos)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="tasaMora">Interés Moratorio Mensual (%)</label>
+              <div class="input-currency-wrapper">
+                <span class="currency-symbol">%</span>
+                <input 
+                  type="number" 
+                  id="tasaMora" 
+                  class="form-input font-mono font-bold"
+                  [value]="newTasaMora()"
+                  (input)="newTasaMora.set(+$any($event.target).value)"
+                  required
+                />
+              </div>
+            </div>
           </div>
         </form>
 
@@ -537,23 +626,23 @@
           <div class="projection-content">
             <div class="projection-row">
               <span class="proj-label">Monto Solicitado:</span>
-              <span class="proj-value font-mono">${{ newLendAmount() | number:'1.0-0' }}</span>
+              <span class="proj-value font-mono">L. {{ newLendAmount() | number:'1.0-0' }}</span>
             </div>
             <div class="projection-row">
               <span class="proj-label">Intereses Proyectados ({{ newInterestRate() }}%):</span>
-              <span class="proj-value font-mono text-orange">+${{ (newLendAmount() * (newInterestRate() / 100)) | number:'1.0-0' }}</span>
+              <span class="proj-value font-mono text-orange">+L. {{ (newLendAmount() * (newInterestRate() / 100)) | number:'1.0-0' }}</span>
             </div>
             
             <div class="projection-divider"></div>
             
             <div class="projection-row total-row">
               <span class="proj-label">Monto Total a Cobrar:</span>
-              <span class="proj-value font-mono text-blue">${{ calculatedTotal() | number:'1.0-0' }}</span>
+              <span class="proj-value font-mono text-blue">L. {{ calculatedTotal() | number:'1.0-0' }}</span>
             </div>
 
             <div class="projection-quota-box">
               <span class="quota-box-label">Cuota Proyectada (Frecuencia {{ newFrequency() }}):</span>
-              <h2 class="quota-box-value text-green font-mono">${{ calculatedInstallment() | number:'1.0-0' }}</h2>
+              <h2 class="quota-box-value text-green font-mono">L. {{ calculatedInstallment() | number:'1.0-0' }}</h2>
               <span class="quota-box-hint">
                 Plan de {{ newTerm() }} cuotas consecutivas
               </span>

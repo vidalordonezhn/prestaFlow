@@ -60,6 +60,7 @@ export class CashBanksComponent implements OnInit {
   // Sidebar Menu Items
   protected readonly menuItems = [
     { name: 'Dashboard', icon: 'dashboard', active: false, route: '/' },
+    { name: 'Cobros de Hoy', icon: 'route', active: false, route: '/cobros' },
     { name: 'Préstamos', icon: 'currency_exchange', active: false, route: '/prestamos' },
     { name: 'Clientes', icon: 'people', active: false, route: '/clientes' },
     { name: 'Historial de Pagos', icon: 'receipt_long', active: false, route: '/pagos' },

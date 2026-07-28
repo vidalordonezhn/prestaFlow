@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { CobrosComponent } from './cobros/cobros.component';
 import { LoansComponent } from './loans/loans.component';
 import { ClientsComponent } from './clients/clients.component';
 import { LoginComponent } from './login/login.component';
@@ -18,6 +19,11 @@ export const routes: Routes = [
   { 
     path: '', 
     component: DashboardComponent, 
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'cobros', 
+    component: CobrosComponent, 
     canActivate: [authGuard] 
   },
   { 

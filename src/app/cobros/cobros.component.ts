@@ -17,20 +17,6 @@ interface Client {
   zone: string;
 }
 
-interface Payment {
-  id: string;
-  clientName: string;
-  amount: number;
-  time: string;
-  status: 'Efectivo' | 'Transferencia';
-}
-
-interface ChartDay {
-  day: string;
-  expected: number;
-  collected: number;
-}
-
 interface Toast {
   id: number;
   type: 'success' | 'info' | 'warning';
@@ -39,13 +25,13 @@ interface Toast {
 }
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-cobros',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss'
+  templateUrl: './cobros.component.html',
+  styleUrl: './cobros.component.scss'
 })
-export class DashboardComponent implements OnInit {
+export class CobrosComponent implements OnInit {
   protected readonly auth = inject(ApiAuthService);
   private readonly router = inject(Router);
   private readonly apiPrestamosService = inject(ApiPrestamosService);
@@ -56,7 +42,6 @@ export class DashboardComponent implements OnInit {
 
   // Sidebar User Dropdown Menu
   protected readonly showUserDropdown = signal<boolean>(false);
-  protected readonly showHeaderDropdown = signal<boolean>(false);
 
   // Search Signal
   protected readonly searchQuery = signal('');
@@ -90,35 +75,6 @@ export class DashboardComponent implements OnInit {
     return loan.cuotas.filter((c: any) => c.estado !== 'Pagado');
   });
 
-  // Session Payments (added dynamically by user)
-  protected readonly sessionPayments = signal<Payment[]>([]);
-
-  // Base Historical Payments (preloaded)
-  protected readonly basePayments = signal<Payment[]>([]);
-
-  // Merge Base and Session payments for display
-  protected readonly latestPayments = computed<Payment[]>(() => {
-    return [...this.sessionPayments(), ...this.basePayments()];
-  });
-
-  // Base financial collection values
-  protected readonly metaDelDia = signal(15000);
-  protected readonly activePortfolio = signal(384200);
-  
-  // Session collection accumulator
-  protected readonly sessionCollected = signal(0);
-  protected readonly baseCollectedToday = signal(8450);
-
-  // Computed KPIs
-  protected readonly totalCollectedToday = computed(() => {
-    return this.baseCollectedToday() + this.sessionCollected();
-  });
-
-  protected readonly arrearsCount = computed(() => {
-    // Count clients who are marked as mora and haven't paid yet
-    return this.clients().filter(c => c.mora && !c.pagado).length;
-  });
-
   // Filtering Today's Route
   protected readonly filteredClients = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
@@ -132,31 +88,10 @@ export class DashboardComponent implements OnInit {
     );
   });
 
-  // Chart data: Last 7 days. Today is the last item and updates reactively.
-  protected readonly chartDays = computed<ChartDay[]>(() => {
-    return [
-      { day: 'Lun', expected: 12000, collected: 11500 },
-      { day: 'Mar', expected: 13500, collected: 13000 },
-      { day: 'Mié', expected: 11000, collected: 9500 },
-      { day: 'Jue', expected: 14000, collected: 13800 },
-      { day: 'Vie', expected: 15000, collected: 14200 },
-      { day: 'Sáb', expected: 8000, collected: 7800 },
-      { day: 'Hoy', expected: this.metaDelDia(), collected: this.totalCollectedToday() }
-    ];
-  });
-
-  // SVG Chart Dimensions & Computations
-  protected readonly chartHeight = 180;
-  protected readonly chartWidth = 460;
-  protected readonly maxChartValue = computed(() => {
-    const maxVal = Math.max(...this.chartDays().map(d => Math.max(d.expected, d.collected)));
-    return Math.ceil((maxVal * 1.1) / 1000) * 1000; // Add 10% headroom and round to nearest 1000
-  });
-
   // Sidebar Menu Items
   protected readonly menuItems = [
-    { name: 'Dashboard', icon: 'dashboard', active: true, route: '/' },
-    { name: 'Cobros de Hoy', icon: 'route', active: false, route: '/cobros' },
+    { name: 'Dashboard', icon: 'dashboard', active: false, route: '/' },
+    { name: 'Cobros de Hoy', icon: 'route', active: true, route: '/cobros' },
     { name: 'Préstamos', icon: 'currency_exchange', active: false, route: '/prestamos' },
     { name: 'Clientes', icon: 'people', active: false, route: '/clientes' },
     { name: 'Historial de Pagos', icon: 'receipt_long', active: false, route: '/pagos' },
@@ -164,17 +99,6 @@ export class DashboardComponent implements OnInit {
     { name: 'Reportes', icon: 'analytics', active: false, route: '/reportes' },
     { name: 'Configuración', icon: 'settings', active: false, route: '/configuracion' }
   ];
-
-  constructor() {
-    // Initial welcome toast
-    setTimeout(() => {
-      this.triggerToast(
-        'info', 
-        '¡Bienvenido de nuevo!', 
-        'PrestaFlow cargado con éxito. 8 cobros programados para hoy.'
-      );
-    }, 800);
-  }
 
   // Handle Search Input
   protected onSearchInput(event: Event): void {
@@ -186,48 +110,15 @@ export class DashboardComponent implements OnInit {
     this.cargarDatos();
   }
 
-  private cargarDatos(): void {
-    console.log('PrestaFlow Dashboard: Iniciando carga de pagos...');
-    this.apiPagosService.getPagos().subscribe({
-      next: (res) => {
-        console.log('PrestaFlow Dashboard: Pagos cargados con éxito:', res);
-        const mappedPayments = res.map(p => ({
-          id: `TX-${p.id}`,
-          clientName: p.clienteNombre,
-          amount: p.monto,
-          time: new Date(p.fechaPago).toLocaleTimeString('es-HN', { hour: '2-digit', minute: '2-digit', hour12: false }),
-          status: p.metodoPago
-        }));
-        this.sessionPayments.set(mappedPayments);
-
-        const hoy = new Date().toDateString();
-        const recolectadoHoy = res
-          .filter(p => new Date(p.fechaPago).toDateString() === hoy)
-          .reduce((sum, curr) => sum + curr.monto, 0);
-
-        this.sessionCollected.set(recolectadoHoy);
-      },
-      error: (err) => {
-        console.error('PrestaFlow Dashboard: Error al cargar pagos:', err);
-        this.triggerToast(
-          'warning',
-          'Error de Carga',
-          `No se pudieron cargar los abonos: ${err.message || err.statusText || 'Error de red'}`
-        );
-      }
-    });
-
-    console.log('PrestaFlow Dashboard: Iniciando carga de préstamos...');
+  protected cargarDatos(): void {
+    console.log('PrestaFlow Cobros: Iniciando carga de préstamos...');
     this.apiPrestamosService.getPrestamos().subscribe({
       next: (resPrestamos) => {
-        console.log('PrestaFlow Dashboard: Préstamos cargados con éxito:', resPrestamos);
         this.activeLoansList.set(resPrestamos);
         this.apiPagosService.getPagos().subscribe({
           next: (resPagos) => {
-            console.log('PrestaFlow Dashboard: Pagos de ruta cargados con éxito:', resPagos);
             const hoy = new Date().toDateString();
             const prestamosActivos = resPrestamos.filter(p => p.status === 'Activo' || p.status === 'Mora');
-            console.log('PrestaFlow Dashboard: Préstamos activos filtrados para ruta:', prestamosActivos);
 
             const routeClients = prestamosActivos.map(p => {
               const pagadoHoy = resPagos.some(pago => 
@@ -248,21 +139,15 @@ export class DashboardComponent implements OnInit {
               };
             });
 
-            console.log('PrestaFlow Dashboard: Clientes de ruta mapeados:', routeClients);
             this.clients.set(routeClients);
           },
           error: (err) => {
-            console.error('PrestaFlow Dashboard: Error al cargar pagos secundarios para ruta:', err);
+            console.error('PrestaFlow Cobros: Error al cargar pagos:', err);
           }
         });
       },
       error: (err) => {
-        console.error('PrestaFlow Dashboard: Error al cargar préstamos:', err);
-        this.triggerToast(
-          'warning',
-          'Error de Carga',
-          `No se pudieron cargar los préstamos de la ruta: ${err.message || err.statusText || 'Error de red'}`
-        );
+        console.error('PrestaFlow Cobros: Error al cargar préstamos:', err);
       }
     });
   }
@@ -306,7 +191,7 @@ export class DashboardComponent implements OnInit {
           'Abono Registrado',
           `Pago de L. ${amountPaid.toLocaleString('es-HN')} de ${client.name} registrado con éxito.`
         );
-        this.cargarDatos(); // Refrescar los datos del dashboard de inmediato
+        this.cargarDatos(); // Refrescar cobros
         this.closeRegisterPayment();
       },
       error: (err) => {
@@ -316,40 +201,25 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // Toast Notification Dispatcher
+  // Toasts
   private triggerToast(type: 'success' | 'info' | 'warning', title: string, message: string): void {
     const id = ++this.toastIdCounter;
     const newToast: Toast = { id, type, title, message };
-    
     this.toasts.update(current => [...current, newToast]);
-
-    // Auto-remove toast after 4.5 seconds
     setTimeout(() => {
       this.toasts.update(current => current.filter(t => t.id !== id));
-    }, 4500);
+    }, 4000);
   }
 
-  // Remove toast manually on click
-  protected removeToast(id: number): void {
-    this.toasts.update(current => current.filter(t => t.id !== id));
-  }
-
+  // Dropdown menus
   protected toggleUserDropdown(event: Event): void {
     event.stopPropagation();
-    this.showHeaderDropdown.set(false);
     this.showUserDropdown.update(v => !v);
-  }
-
-  protected toggleHeaderDropdown(event: Event): void {
-    event.stopPropagation();
-    this.showUserDropdown.set(false);
-    this.showHeaderDropdown.update(v => !v);
   }
 
   @HostListener('document:click')
   protected closeUserDropdown(): void {
     this.showUserDropdown.set(false);
-    this.showHeaderDropdown.set(false);
   }
 
   protected onLogout(): void {

@@ -1,0 +1,328 @@
+<div class="dashboard-layout">
+  <!-- SIDEBAR (Navegación Izquierda) -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </div>
+      <span class="brand-name">PrestaFlow</span>
+    </div>
+    <nav class="sidebar-nav">
+      @for (item of menuItems; track item.name) {
+        @if (auth.currentUser()?.rol === 'Admin' || (item.name !== 'Caja y Bancos' && item.name !== 'Reportes' && item.name !== 'Configuración')) {
+          <a [routerLink]="item.route" class="nav-item" [class.active]="item.active">
+            <span class="nav-icon">
+              @switch (item.icon) {
+                @case ('dashboard') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                }
+                @case ('route') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h11"></path></svg>
+                }
+                @case ('currency_exchange') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                }
+                @case ('people') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                }
+                @case ('receipt_long') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"></path><path d="M16 8H8"></path><path d="M16 12H8"></path><path d="M13 16H8"></path></svg>
+                }
+                @case ('account_balance') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="22" x2="22" y2="22"></line><line x1="5" y1="11" x2="5" y2="18"></line><line x1="12" y1="11" x2="12" y2="18"></line><line x1="19" y1="11" x2="19" y2="18"></line><path d="M12 2 2 7h20L12 2z"></path></svg>
+                }
+                @case ('analytics') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                }
+                @case ('settings') {
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2 2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                }
+              }
+            </span>
+            <span class="nav-text">{{ item.name }}</span>
+          </a>
+        }
+      }
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-pill-dark" (click)="toggleUserDropdown($event)" title="Opciones de usuario" style="cursor: pointer; position: relative; display: flex; align-items: center; width: 100%;">
+        <div class="avatar">{{ auth.currentUser()?.nombre?.substring(0, 2)?.toUpperCase() || 'AD' }}</div>
+        <div class="user-details" style="flex-grow: 1;">
+          <span class="user-name">{{ auth.currentUser()?.nombre || 'Administrador' }}</span>
+          <span class="user-role">{{ auth.currentUser()?.rol || 'Admin' }}</span>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="inline-icon" style="width: 14px; height: 14px; margin-left: auto; color: #64748b;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+      @if (showUserDropdown()) {
+        <div class="user-dropdown-menu">
+          <div class="dropdown-header">
+            <span class="header-name">{{ auth.currentUser()?.nombre }}</span>
+            <span class="header-username">@{{ auth.currentUser()?.username }}</span>
+          </div>
+          <div class="dropdown-divider"></div>
+          <a routerLink="/configuracion" class="dropdown-item" (click)="showUserDropdown.set(false)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="item-icon"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2 2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            Configuración
+          </a>
+          <div class="dropdown-divider"></div>
+          <button type="button" class="dropdown-item text-danger" (click)="onLogout()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="item-icon"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            Cerrar Sesión
+          </button>
+        </div>
+      }
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <header class="header">
+      <div>
+        <h1 class="page-title">Cobros de Hoy</h1>
+        <p class="page-subtitle">Ruta diaria de cobranza asignada para hoy</p>
+      </div>
+    </header>
+
+    <!-- Ruta de Cobro de Hoy -->
+    <section class="card table-card" style="margin-top: 24px;">
+      <div class="card-header table-filter-header">
+        <div class="header-search search-loans">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input 
+            type="text" 
+            placeholder="Buscar por cliente, identidad o zona..." 
+            class="search-input"
+            [value]="searchQuery()"
+            (input)="onSearchInput($event)"
+          />
+          @if (searchQuery()) {
+            <button class="clear-search" (click)="searchQuery.set('')">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          }
+        </div>
+        <div class="table-actions">
+          <span class="table-summary-text">
+            Mostrando <strong>{{ filteredClients().length }}</strong> de {{ clients().length }} clientes
+          </span>
+        </div>
+      </div>
+
+      <div class="card-body table-body">
+        <div class="table-responsive">
+          <table class="route-table">
+            <thead>
+              <tr>
+                <th>Cliente / Identidad</th>
+                <th>Teléfono</th>
+                <th>Zona / Dirección</th>
+                <th class="text-right">Cuota a Pagar</th>
+                <th class="text-center">Estado</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (client of filteredClients(); track client.id) {
+                <tr [class.row-paid]="client.pagado">
+                  <td>
+                    <div class="client-cell">
+                      <span class="client-name">{{ client.name }}</span>
+                      <span class="client-id font-mono">{{ client.id }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <a [href]="'tel:' + client.phone" class="phone-link">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-icon"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                      {{ client.phone }}
+                    </a>
+                  </td>
+                  <td>
+                    <div class="address-cell">
+                      <span class="zone-badge">{{ client.zone }}</span>
+                      <span class="address-text">{{ client.address }}</span>
+                    </div>
+                  </td>
+                  <td class="text-right font-mono font-semibold">
+                    L. {{ client.cuota | number:'1.2-2' }}
+                  </td>
+                  <td class="text-center">
+                    @if (client.pagado) {
+                      <span class="status-badge badge-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="inline-icon"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        Pagado
+                      </span>
+                    } @else if (client.mora) {
+                      <span class="status-badge badge-danger">En Mora</span>
+                    } @else {
+                      <span class="status-badge badge-warning">Pendiente</span>
+                    }
+                  </td>
+                  <td class="text-center">
+                    @if (client.pagado) {
+                      <button class="btn btn-secondary btn-icon-gap" disabled style="height: 34px; padding: 0 12px; font-size: 0.75rem; border-radius: 8px;">
+                        Completado
+                      </button>
+                    } @else {
+                      <button class="btn btn-primary btn-icon-gap" (click)="openRegisterPayment(client)" style="height: 34px; padding: 0 12px; font-size: 0.75rem; border-radius: 8px;">
+                        Registrar Pago
+                      </button>
+                    }
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="no-results" style="padding: 48px; text-align: center; color: var(--text-muted);">
+                    No hay cobros pendientes de ruta programados para hoy.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- MODAL FLOTANTE: Registrar Pago -->
+@if (showPaymentModal()) {
+  <div class="modal-backdrop" (click)="closeRegisterPayment()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Registrar Cobro</h3>
+          <p class="modal-subtitle">Ingrese los datos para efectuar el abono del cliente</p>
+        </div>
+        <button class="modal-close" (click)="closeRegisterPayment()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-client-info" style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px; padding: 12px; background: rgba(255, 255, 255, 0.02); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.05);">
+          <div class="modal-client-avatar" style="width: 48px; height: 48px; border-radius: 50%; background: var(--color-blue-gradient); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.125rem;">
+            {{ selectedClient()?.name?.substring(0,2)?.toUpperCase() }}
+          </div>
+          <div class="modal-client-details" style="display: flex; flex-direction: column; gap: 2px;">
+            <h4 class="modal-client-name" style="margin: 0; font-size: 0.9375rem; font-weight: 700; color: var(--text-primary);">{{ selectedClient()?.name }}</h4>
+            <span class="modal-client-id font-mono" style="font-size: 0.75rem; color: var(--text-muted);">ID: {{ selectedClient()?.id }}</span>
+          </div>
+        </div>
+
+        <!-- Lista de Cuotas Pendientes -->
+        @if (selectedLoanPendingCuotas().length > 0) {
+          <div class="pending-installments-section" style="margin-bottom: 20px;">
+            <label class="form-label" style="margin-bottom: 8px; display: block; font-weight: 600; color: #94a3b8;">Cuotas Pendientes / Vencidas</label>
+            <div class="pending-installments-list" style="max-height: 150px; overflow-y: auto; background: rgba(0, 0, 0, 0.2); border-radius: 8px; padding: 10px; border: 1px solid rgba(255, 255, 255, 0.05);">
+              @for (cuota of selectedLoanPendingCuotas(); track cuota.numeroCuota) {
+                <div class="pending-installment-item" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.03); font-size: 0.8125rem;">
+                  <div>
+                    <span style="font-weight: 600; color: #cbd5e1;">Cuota #{{ cuota.numeroCuota }}</span>
+                    <span style="font-size: 0.75rem; color: #64748b; margin-left: 8px;">Vence: {{ cuota.fechaVencimiento | date:'dd/MM/yyyy' }}</span>
+                  </div>
+                  <div style="text-align: right; display: flex; align-items: center; gap: 8px;">
+                    @if (cuota.estado === 'Vencido') {
+                      <span style="font-weight: 700; color: #f87171; background: rgba(239, 68, 68, 0.1); padding: 2px 6px; border-radius: 4px; font-size: 0.6875rem;">MORA</span>
+                    }
+                    <span style="font-family: monospace; font-weight: 700; color: #38bdf8;">L. {{ (cuota.montoPrincipal - cuota.montoPagadoPrincipal + cuota.montoInteres - cuota.montoPagadoInteres + cuota.montoMoratorio - cuota.montoPagadoMora) | number:'1.2-2' }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <form class="modal-form" (submit)="$event.preventDefault(); submitPayment()">
+          <div class="form-group" style="display: flex; flex-direction: column; gap: 8px;">
+            <label class="form-label" for="amount">Monto Recibido (L.)</label>
+            <div class="input-currency-wrapper" style="position: relative; display: flex; align-items: center;">
+              <span class="currency-symbol" style="position: absolute; left: 14px; font-weight: 600; color: var(--text-primary);">L.</span>
+              <input 
+                type="number" 
+                id="amount" 
+                step="0.01"
+                class="form-input font-mono font-bold"
+                [value]="paymentAmount()"
+                (input)="paymentAmount.set(+$any($event.target).value)"
+                style="padding-left: 32px;"
+                required
+              />
+            </div>
+            <p class="input-hint" style="font-size: 0.75rem; color: var(--text-muted);">Cuota pactada hoy: L. {{ selectedClient()?.cuota | number:'1.2-2' }}</p>
+          </div>
+
+          <div class="form-group" style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px;">
+            <label class="form-label">Tipo de Pago</label>
+            <div class="radio-group" style="display: flex; gap: 12px;">
+              <label class="radio-label" [class.selected]="paymentMethod() === 'Efectivo'" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; transition: all var(--transition-fast);">
+                <input 
+                  type="radio" 
+                  name="paymentMethod" 
+                  value="Efectivo"
+                  class="radio-input"
+                  [checked]="paymentMethod() === 'Efectivo'"
+                  (change)="paymentMethod.set('Efectivo')"
+                  style="display: none;"
+                />
+                <span class="radio-text">Efectivo</span>
+              </label>
+
+              <label class="radio-label" [class.selected]="paymentMethod() === 'Transferencia'" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; transition: all var(--transition-fast);">
+                <input 
+                  type="radio" 
+                  name="paymentMethod" 
+                  value="Transferencia"
+                  class="radio-input"
+                  [checked]="paymentMethod() === 'Transferencia'"
+                  (change)="paymentMethod.set('Transferencia')"
+                  style="display: none;"
+                />
+                <span class="radio-text">Transferencia</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="modal-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px;">
+            <button type="button" class="btn btn-secondary" (click)="closeRegisterPayment()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Registrar Abono
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container">
+  @for (toast of toasts(); track toast.id) {
+    <div class="toast" [class.success]="toast.type === 'success'" [class.info]="toast.type === 'info'" [class.warning]="toast.type === 'warning'">
+      <div class="toast-icon">
+        @switch (toast.type) {
+          @case ('success') {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          }
+          @case ('warning') {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          }
+          @case ('info') {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          }
+        }
+      </div>
+      <div class="toast-content">
+        <div class="toast-title">{{ toast.title }}</div>
+        <div class="toast-message">{{ toast.message }}</div>
+      </div>
+    </div>
+  }
+</div>

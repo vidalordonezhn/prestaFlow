@@ -11,6 +11,9 @@ export interface PagoResponse {
   clienteIdentidad: string;
   clientePhone: string;
   monto: number;
+  montoPrincipal: number;
+  montoInteres: number;
+  montoMora: number;
   fechaPago: string;
   metodoPago: 'Efectivo' | 'Transferencia';
   referencia?: string;
