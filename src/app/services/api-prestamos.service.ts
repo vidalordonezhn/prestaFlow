@@ -70,4 +70,11 @@ export class ApiPrestamosService {
   createPrestamo(prestamo: PrestamoCreate): Observable<PrestamoResponse> {
     return this.http.post<PrestamoResponse>(`${environment.apiUrl}/api/prestamos`, prestamo);
   }
+
+  /**
+   * Capitaliza los intereses de una cuota de préstamo, agregándolos al capital.
+   */
+  capitalizarInteres(prestamoId: number, cuotaId: number): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/api/prestamos/${prestamoId}/capitalizar-interes`, { cuotaId });
+  }
 }

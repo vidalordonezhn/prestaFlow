@@ -162,7 +162,10 @@
                 <th>Cliente</th>
                 <th>Fecha y Hora</th>
                 <th class="text-center">Método</th>
-                <th class="text-right">Monto</th>
+                <th class="text-right">Abono Principal</th>
+                <th class="text-right">Abono Interés</th>
+                <th class="text-right">Cargos Mora</th>
+                <th class="text-right">Monto Total</th>
                 <th class="text-center">Acciones</th>
               </tr>
             </thead>
@@ -189,6 +192,15 @@
                     } @else {
                       <span class="status-badge badge-info">Transferencia</span>
                     }
+                  </td>
+                  <td class="text-right font-mono" style="color: var(--text-secondary);">
+                    L. {{ payment.montoPrincipal | number:'1.2-2' }}
+                  </td>
+                  <td class="text-right font-mono" style="color: var(--text-secondary);">
+                    L. {{ payment.montoInteres | number:'1.2-2' }}
+                  </td>
+                  <td class="text-right font-mono text-red-400">
+                    L. {{ payment.montoMora | number:'1.2-2' }}
                   </td>
                   <td class="text-right font-mono font-bold text-green">
                     +L. {{ payment.monto | number:'1.2-2' }}
@@ -313,7 +325,7 @@
 
           <div class="receipt-footer-msg">
             <p>¡Gracias por tu pago puntual!</p>
-            <p class="legal-msg">Este es un comprobante de abono electrónico generado automáticamente por PrestaFlow.</p>
+            <p class="legal-msg">{{ settingsService.reciboNotaPie() }}</p>
           </div>
         </div>
       </div>

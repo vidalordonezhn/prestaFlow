@@ -376,25 +376,32 @@
               <thead>
                 <tr>
                   <th class="text-center">Cuota #</th>
-                  <th>Fecha de Vencimiento</th>
+                  <th class="text-right">Saldo Inicial</th>
+                  <th>Fecha Vencimiento</th>
                   <th class="text-right">Principal</th>
                   <th class="text-right">Interés</th>
                   <th class="text-right">Mora</th>
-                  <th class="text-right">Pagado</th>
                   <th class="text-right">Total Cuota</th>
+                  <th class="text-right">Pagado</th>
+                  <th class="text-right">Saldo Restante</th>
                   <th class="text-center">Estado</th>
+                  @if (auth.currentUser()?.rol === 'Admin') {
+                    <th class="text-center">Acción</th>
+                  }
                 </tr>
               </thead>
               <tbody>
                 @for (cuota of amortizationTable(); track cuota.numeroCuota) {
                   <tr [class.row-paid]="cuota.status === 'Pagada'">
                     <td class="text-center font-mono font-semibold">{{ cuota.numeroCuota }}</td>
+                    <td class="text-right font-mono text-muted">L. {{ cuota.saldoInicial | number:'1.2-2' }}</td>
                     <td>{{ cuota.fechaVencimiento | date:'dd/MM/yyyy' }}</td>
                     <td class="text-right font-mono">L. {{ cuota.montoPrincipal | number:'1.2-2' }}</td>
                     <td class="text-right font-mono">L. {{ cuota.montoInteres | number:'1.2-2' }}</td>
                     <td class="text-right font-mono text-red-400">L. {{ cuota.montoMoratorio | number:'1.2-2' }}</td>
-                    <td class="text-right font-mono text-green-400">L. {{ cuota.montoPagado | number:'1.2-2' }}</td>
                     <td class="text-right font-mono font-semibold">L. {{ cuota.monto | number:'1.2-2' }}</td>
+                    <td class="text-right font-mono text-green-400">L. {{ cuota.montoPagado | number:'1.2-2' }}</td>
+                    <td class="text-right font-mono font-bold" style="color: var(--text-primary);">L. {{ cuota.saldoFinal | number:'1.2-2' }}</td>
                     <td class="text-center">
                       @if (cuota.status === 'Pagada') {
                         <span class="status-badge badge-success">Pagada</span>
@@ -404,6 +411,24 @@
                         <span class="status-badge badge-warning">Pendiente</span>
                       }
                     </td>
+                    @if (auth.currentUser()?.rol === 'Admin') {
+                      <td class="text-center">
+                        @if (cuota.status !== 'Pagada' && (cuota.montoInteres - cuota.montoPagadoPrincipal) > 0) {
+                          <button 
+                            class="btn-table-action btn-receipt" 
+                            title="Capitalizar Interés" 
+                            (click)="capitalizarInteresCuota(cuota.id)"
+                            style="background-color: rgba(99, 102, 241, 0.1); color: var(--color-blue); border: 1px solid rgba(99, 102, 241, 0.2); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all var(--transition-fast);"
+                            onmouseover="this.style.backgroundColor='rgba(99, 102, 241, 0.2)'"
+                            onmouseout="this.style.backgroundColor='rgba(99, 102, 241, 0.1)'"
+                          >
+                            Capitalizar
+                          </button>
+                        } @else {
+                          <span class="text-muted" style="font-size: 0.75rem;">-</span>
+                        }
+                      </td>
+                    }
                   </tr>
                 }
               </tbody>

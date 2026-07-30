@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { ApiAuthService } from '../services/api-auth.service';
 import { ApiPagosService, PagoResponse } from '../services/api-pagos.service';
+import { SettingsService } from '../services/settings.service';
 
 @Component({
   selector: 'app-payments',
@@ -13,6 +14,7 @@ import { ApiPagosService, PagoResponse } from '../services/api-pagos.service';
 })
 export class PaymentsComponent implements OnInit {
   protected readonly auth = inject(ApiAuthService);
+  protected readonly settingsService = inject(SettingsService);
   private readonly router = inject(Router);
   private readonly apiPagosService = inject(ApiPagosService);
 

@@ -50,6 +50,7 @@ export class SettingsComponent implements OnInit {
   protected readonly editFrecuenciaSemanal = signal<boolean>(true);
   protected readonly editFrecuenciaQuincenal = signal<boolean>(true);
   protected readonly editFrecuenciaMensual = signal<boolean>(true);
+  protected readonly editReciboNota = signal<string>('');
 
   // Formulario: Registrar Banco/Caja
   protected readonly newCuentaNombre = signal<string>('');
@@ -94,6 +95,8 @@ export class SettingsComponent implements OnInit {
     this.editFrecuenciaSemanal.set(frecs.includes('Semanal'));
     this.editFrecuenciaQuincenal.set(frecs.includes('Quincenal'));
     this.editFrecuenciaMensual.set(frecs.includes('Mensual'));
+    
+    this.editReciboNota.set(this.settingsService.reciboNotaPie());
   }
 
   protected guardarParametros(): void {
@@ -108,7 +111,7 @@ export class SettingsComponent implements OnInit {
       return;
     }
 
-    this.settingsService.saveSettings(this.editTasa(), this.editMoneda(), frecs);
+    this.settingsService.saveSettings(this.editTasa(), this.editMoneda(), frecs, this.editReciboNota());
     this.showSuccess('Parámetros del sistema actualizados con éxito.');
   }
 

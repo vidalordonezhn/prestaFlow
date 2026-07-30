@@ -4,6 +4,7 @@ import { RouterLink, Router } from '@angular/router';
 import { ApiAuthService } from '../services/api-auth.service';
 import { ApiPrestamosService } from '../services/api-prestamos.service';
 import { ApiPagosService } from '../services/api-pagos.service';
+import { SettingsService } from '../services/settings.service';
 
 interface Client {
   id: string;
@@ -33,6 +34,7 @@ interface Toast {
 })
 export class CobrosComponent implements OnInit {
   protected readonly auth = inject(ApiAuthService);
+  protected readonly settingsService = inject(SettingsService);
   private readonly router = inject(Router);
   private readonly apiPrestamosService = inject(ApiPrestamosService);
   private readonly apiPagosService = inject(ApiPagosService);
@@ -57,6 +59,10 @@ export class CobrosComponent implements OnInit {
   // Payment Form Signals
   protected readonly paymentAmount = signal<number>(0);
   protected readonly paymentMethod = signal<'Efectivo' | 'Transferencia'>('Efectivo');
+
+  // Receipt Modal Control Signals
+  protected readonly showReceiptModal = signal(false);
+  protected readonly selectedPayment = signal<any | null>(null);
 
   // Client Data Signal
   protected readonly clients = signal<Client[]>([]);
@@ -193,12 +199,50 @@ export class CobrosComponent implements OnInit {
         );
         this.cargarDatos(); // Refrescar cobros
         this.closeRegisterPayment();
+
+        // Immediately trigger the receipt modal for this payment!
+        this.selectedPayment.set(res);
+        this.showReceiptModal.set(true);
       },
       error: (err) => {
         const msg = err.error?.mensaje || 'No se pudo registrar el cobro en el sistema.';
         this.triggerToast('warning', 'Error de Operación', msg);
       }
     });
+  }
+
+  // Close Receipt Modal
+  protected closeReceipt(): void {
+    this.showReceiptModal.set(false);
+    this.selectedPayment.set(null);
+  }
+
+  // Share Receipt on WhatsApp
+  protected shareOnWhatsApp(payment: any): void {
+    if (!payment) return;
+    const cleanPhone = payment.clientePhone.replace(/[^0-9]/g, '');
+    const formattedPhone = cleanPhone.startsWith('504') ? cleanPhone : `504${cleanPhone}`;
+    
+    const dateFormatted = new Date(payment.fechaPago).toLocaleDateString('es-HN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+    const timeFormatted = new Date(payment.fechaPago).toLocaleTimeString('es-HN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+    
+    const message = `Hola *${payment.clienteNombre}*, hemos registrado tu abono de *L. ${payment.monto.toLocaleString('es-HN', { minimumFractionDigits: 2 })}* para tu préstamo *${payment.prestamoCodigo}* con fecha del ${dateFormatted} a las ${timeFormatted}. ¡Muchas gracias por tu puntualidad! *PrestaFlow*`;
+    
+    const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+  }
+
+  // Print Receipt
+  protected printReceipt(): void {
+    window.print();
   }
 
   // Toasts

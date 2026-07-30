@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ApiAuthService } from '../services/api-auth.service';
 import { ApiReportesService, ResumenCartera, IngresosReporte, MoraDeudor } from '../services/api-reportes.service';
 import { ApiCajaService, CuentaResponse, TransaccionResponse } from '../services/api-caja.service';
+import { ApiPagosService, PagoResponse } from '../services/api-pagos.service';
 
 @Component({
   selector: 'app-reports',
@@ -18,6 +19,7 @@ export class ReportsComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly apiReportesService = inject(ApiReportesService);
   private readonly apiCajaService = inject(ApiCajaService);
+  private readonly apiPagosService = inject(ApiPagosService);
 
   // Sidebar User Dropdown Menu
   protected readonly showUserDropdown = signal<boolean>(false);
@@ -58,6 +60,7 @@ export class ReportsComponent implements OnInit {
   protected readonly deudoresMora = signal<MoraDeudor[]>([]);
   protected readonly cuentasFinancieras = signal<any[]>([]);
   protected readonly movimientosContables = signal<TransaccionResponse[]>([]);
+  protected readonly pagos = signal<PagoResponse[]>([]);
 
   // Computado de ingresos basados en los datos de la API
   protected readonly ingresosFiltrados = computed(() => {
@@ -102,6 +105,14 @@ export class ReportsComponent implements OnInit {
     this.cargarDeudoresMora();
     this.cargarCuentas();
     this.cargarMovimientosContables();
+    this.cargarPagos();
+  }
+
+  protected cargarPagos(): void {
+    this.apiPagosService.getPagos().subscribe({
+      next: (res) => this.pagos.set(res),
+      error: (err) => console.error('Error al cargar pagos en reportes', err)
+    });
   }
 
   protected cargarResumenCartera(): void {
@@ -255,6 +266,36 @@ export class ReportsComponent implements OnInit {
         `${d.diasRetraso} días`,
         `L. ${d.montoAtrasado.toFixed(2)}`,
         d.nivelRiesgo
+      ];
+      csvRows.push(row.map(val => `"${val.replace(/"/g, '""')}"`).join(','));
+    });
+    csvRows.push('');
+
+    // 7. SECCIÓN: DETALLE DE ABONOS RECIBIDOS
+    csvRows.push('DETALLE DE ABONOS RECIBIDOS (PERÍODO SELECCIONADO)');
+    csvRows.push('Fecha,Cód. Transacción,Cód. Préstamo,Nombre Cliente,Identidad,Método Pago,Referencia,Abono Principal (L.),Abono Interés (L.),Cargos Mora (L.),Monto Total (L.)');
+
+    const start = new Date(this.startDate() + 'T00:00:00');
+    const end = new Date(this.endDate() + 'T23:59:59');
+    
+    const abonosPeriodo = this.pagos().filter(p => {
+      const d = new Date(p.fechaPago);
+      return d >= start && d <= end;
+    });
+
+    abonosPeriodo.forEach(p => {
+      const row = [
+        new Date(p.fechaPago).toLocaleDateString('es-HN'),
+        `TX-${p.id}`,
+        p.prestamoCodigo,
+        p.clienteNombre,
+        `="${p.clienteIdentidad}"`,
+        p.metodoPago,
+        p.referencia || '',
+        `L. ${p.montoPrincipal.toFixed(2)}`,
+        `L. ${p.montoInteres.toFixed(2)}`,
+        `L. ${p.montoMora.toFixed(2)}`,
+        `L. ${p.monto.toFixed(2)}`
       ];
       csvRows.push(row.map(val => `"${val.replace(/"/g, '""')}"`).join(','));
     });

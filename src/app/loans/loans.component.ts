@@ -194,18 +194,26 @@ export class LoansComponent implements OnInit {
   });
 
   // Amortization Table mapped from physical db cuotas
-  protected readonly amortizationTable = computed<AmortizationItem[]>(() => {
+  protected readonly amortizationTable = computed<any[]>(() => {
     const loan = this.selectedLoan();
     if (!loan || !loan.cuotas) return [];
 
-    return loan.cuotas.map((c: any) => {
+    const sortedCuotas = [...loan.cuotas].sort((a: any, b: any) => a.numeroCuota - b.numeroCuota);
+    let currentCapital = loan.capital;
+
+    return sortedCuotas.map((c: any) => {
       let status: 'Pagada' | 'Pendiente' | 'Vencida' = 'Pendiente';
       if (c.estado === 'Pagado') status = 'Pagada';
       else if (c.estado === 'Vencido') status = 'Vencida';
       
       const totalMonto = c.montoPrincipal + c.montoInteres + c.montoMoratorio;
+      const saldoInicial = currentCapital;
+      const saldoFinal = Math.max(0, currentCapital - c.montoPrincipal);
+      
+      currentCapital = saldoFinal;
 
       return {
+        id: c.id,
         numeroCuota: c.numeroCuota,
         fechaVencimiento: new Date(c.fechaVencimiento),
         monto: totalMonto,
@@ -213,6 +221,8 @@ export class LoansComponent implements OnInit {
         montoInteres: c.montoInteres,
         montoMoratorio: c.montoMoratorio,
         montoPagado: c.montoPagadoPrincipal + c.montoPagadoInteres + c.montoPagadoMora,
+        saldoInicial,
+        saldoFinal,
         status
       };
     });
@@ -228,6 +238,57 @@ export class LoansComponent implements OnInit {
   protected openDetails(loan: Loan): void {
     this.selectedLoan.set(loan);
     this.showDetailsModal.set(true);
+  }
+
+  protected capitalizarInteresCuota(cuotaId: number): void {
+    const loan = this.selectedLoan();
+    if (!loan) return;
+
+    if (!confirm('¿Estás seguro de que deseas capitalizar el interés pendiente de esta cuota? Esto sumará el interés al capital principal del préstamo y recalculará las cuotas futuras.')) {
+      return;
+    }
+
+    this.apiPrestamosService.capitalizarInteres(loan.dbId, cuotaId).subscribe({
+      next: (res) => {
+        this.triggerToast('success', 'Éxito', 'Interés capitalizado y cuotas recalculadas correctamente.');
+        
+        // Refrescar listado de préstamos y actualizar modal
+        this.apiPrestamosService.getPrestamos().subscribe({
+          next: (resPrestamos) => {
+            const mapped = resPrestamos.map(p => ({
+              id: p.codigo,
+              dbId: p.id,
+              clientName: p.clienteNombre,
+              clientPhone: p.clientePhone,
+              startDate: new Date(p.fechaOtorgado),
+              capital: p.capital,
+              interesPorcentaje: p.interesPorcentaje,
+              plazoCuotas: p.plazoCuotas,
+              cuotaMonto: p.cuotaMonto,
+              cuotasPagadas: p.cuotasPagadas,
+              status: p.status,
+              statusDetail: p.status === 'Pagado' ? 'Completado' as const : p.status === 'Mora' ? 'Atrasado' as const : 'Al día' as const,
+              frecuencia: p.frecuencia,
+              tipoPrestamo: p.tipoPrestamo,
+              metodoDesembolso: p.metodoDesembolso,
+              tipoInteres: p.tipoInteres,
+              tasaMoraPorcentaje: p.tasaMoraPorcentaje,
+              cuotas: p.cuotas
+            }));
+            this.loans.set(mapped);
+            
+            const updatedLoan = mapped.find(p => p.dbId === loan.dbId);
+            if (updatedLoan) {
+              this.selectedLoan.set(updatedLoan);
+            }
+          }
+        });
+      },
+      error: (err) => {
+        const msg = err.error?.mensaje || 'No se pudo realizar la capitalización de intereses.';
+        this.triggerToast('warning', 'Error de Capitalización', msg);
+      }
+    });
   }
 
   ngOnInit(): void {
