@@ -19,6 +19,9 @@ interface Loan {
   plazoCuotas: number;
   cuotaMonto: number;
   cuotasPagadas: number;
+  totalPagar: number;
+  totalPagado: number;
+  saldoRestante: number;
   status: 'Activo' | 'Pagado' | 'Mora';
   statusDetail: 'Al día' | 'Atrasado' | 'Completado';
   frecuencia: 'Diario' | 'Semanal' | 'Mensual';
@@ -137,9 +140,7 @@ export class LoansComponent implements OnInit {
   protected readonly kpiCapitalPendiente = computed(() => {
     return this.loans().reduce((acc, curr) => {
       if (curr.status === 'Pagado') return acc;
-      const totalToPay = curr.cuotaMonto * curr.plazoCuotas;
-      const paidToDate = curr.cuotaMonto * curr.cuotasPagadas;
-      return acc + (totalToPay - paidToDate);
+      return acc + curr.saldoRestante;
     }, 0);
   });
 
@@ -204,15 +205,22 @@ export class LoansComponent implements OnInit {
     let currentCapital = loan.capital;
 
     return sortedCuotas.map((c: any) => {
-      let status: 'Pagada' | 'Pendiente' | 'Vencida' = 'Pendiente';
-      if (c.estado === 'Pagado') status = 'Pagada';
-      else if (c.estado === 'Vencido') status = 'Vencida';
+      const totalMonto = c.montoPrincipal + c.montoInteres + (c.montoMoratorio || 0);
+      const totalPagadoCuota = (c.montoPagadoPrincipal || 0) + (c.montoPagadoInteres || 0) + (c.montoPagadoMora || 0);
       
-      const totalMonto = c.montoPrincipal + c.montoInteres + c.montoMoratorio;
+      let status: 'Pagada' | 'Pendiente' | 'Vencida' | 'Parcial' = 'Pendiente';
+      if (c.estado === 'Pagado' || totalPagadoCuota >= totalMonto) {
+        status = 'Pagada';
+      } else if (totalPagadoCuota > 0) {
+        status = 'Parcial';
+      } else if (c.estado === 'Vencido') {
+        status = 'Vencida';
+      }
+      
       const saldoInicial = currentCapital;
-      const saldoFinal = Math.max(0, currentCapital - c.montoPrincipal);
+      const saldoFinal = Math.max(0, currentCapital - (c.montoPagadoPrincipal > 0 ? c.montoPagadoPrincipal : (status === 'Pagada' ? c.montoPrincipal : 0)));
       
-      currentCapital = saldoFinal;
+      currentCapital = Math.max(0, currentCapital - c.montoPrincipal);
 
       return {
         id: c.id,
@@ -221,8 +229,8 @@ export class LoansComponent implements OnInit {
         monto: totalMonto,
         montoPrincipal: c.montoPrincipal,
         montoInteres: c.montoInteres,
-        montoMoratorio: c.montoMoratorio,
-        montoPagado: c.montoPagadoPrincipal + c.montoPagadoInteres + c.montoPagadoMora,
+        montoMoratorio: c.montoMoratorio || 0,
+        montoPagado: totalPagadoCuota,
         saldoInicial,
         saldoFinal,
         status
@@ -316,26 +324,47 @@ export class LoansComponent implements OnInit {
   private cargarPrestamos(): void {
     this.apiPrestamosService.getPrestamos().subscribe({
       next: (res) => {
-        const mapped = res.map(p => ({
-          id: p.codigo,
-          dbId: p.id,
-          clientName: p.clienteNombre,
-          clientPhone: p.clientePhone,
-          startDate: new Date(p.fechaOtorgado),
-          capital: p.capital,
-          interesPorcentaje: p.interesPorcentaje,
-          plazoCuotas: p.plazoCuotas,
-          cuotaMonto: p.cuotaMonto,
-          cuotasPagadas: p.cuotasPagadas,
-          status: p.status,
-          statusDetail: p.status === 'Pagado' ? 'Completado' as const : p.status === 'Mora' ? 'Atrasado' as const : 'Al día' as const,
-          frecuencia: p.frecuencia,
-          tipoPrestamo: p.tipoPrestamo,
-          metodoDesembolso: p.metodoDesembolso,
-          tipoInteres: p.tipoInteres,
-          tasaMoraPorcentaje: p.tasaMoraPorcentaje,
-          cuotas: p.cuotas
-        }));
+        const mapped: Loan[] = res.map(p => {
+          let totalPagar = 0;
+          let totalPagado = 0;
+          let cuotasPagadasCount = 0;
+
+          if (p.cuotas && p.cuotas.length > 0) {
+            totalPagar = p.cuotas.reduce((sum, c) => sum + (c.montoPrincipal + c.montoInteres + (c.montoMoratorio || 0)), 0);
+            totalPagado = p.cuotas.reduce((sum, c) => sum + ((c.montoPagadoPrincipal || 0) + (c.montoPagadoInteres || 0) + (c.montoPagadoMora || 0)), 0);
+            cuotasPagadasCount = p.cuotas.filter(c => c.estado === 'Pagado').length;
+          } else {
+            totalPagar = p.cuotaMonto * p.plazoCuotas;
+            cuotasPagadasCount = p.cuotasPagadas || 0;
+            totalPagado = p.cuotaMonto * cuotasPagadasCount;
+          }
+
+          const saldoRestante = Math.max(0, totalPagar - totalPagado);
+
+          return {
+            id: p.codigo,
+            dbId: p.id,
+            clientName: p.clienteNombre,
+            clientPhone: p.clientePhone,
+            startDate: new Date(p.fechaOtorgado),
+            capital: p.capital,
+            interesPorcentaje: p.interesPorcentaje,
+            plazoCuotas: p.plazoCuotas,
+            cuotaMonto: p.cuotaMonto,
+            cuotasPagadas: cuotasPagadasCount,
+            totalPagar,
+            totalPagado,
+            saldoRestante,
+            status: p.status,
+            statusDetail: p.status === 'Pagado' ? 'Completado' as const : p.status === 'Mora' ? 'Atrasado' as const : 'Al día' as const,
+            frecuencia: p.frecuencia,
+            tipoPrestamo: p.tipoPrestamo,
+            metodoDesembolso: p.metodoDesembolso,
+            tipoInteres: p.tipoInteres,
+            tasaMoraPorcentaje: p.tasaMoraPorcentaje,
+            cuotas: p.cuotas
+          };
+        });
         this.loans.set(mapped);
       },
       error: () => this.triggerToast('warning', 'Error de Carga', 'No se pudieron obtener los préstamos de la base de datos.')

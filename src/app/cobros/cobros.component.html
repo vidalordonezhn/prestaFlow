@@ -69,7 +69,14 @@
                     </div>
                   </td>
                   <td class="text-right font-mono font-semibold">
-                    L. {{ client.cuota | number:'1.2-2' }}
+                    @if (client.pagado && (client.totalAbonadoHoy || 0) > 0) {
+                      <div>
+                        <span style="color: #10b981; font-weight: 700;">L. {{ client.totalAbonadoHoy | number:'1.2-2' }}</span>
+                        <span style="display: block; font-size: 0.6875rem; color: var(--text-secondary); font-weight: normal;">(Cuota: L. {{ client.cuota | number:'1.2-2' }})</span>
+                      </div>
+                    } @else {
+                      L. {{ client.cuota | number:'1.2-2' }}
+                    }
                   </td>
                   <td class="text-center">
                     @if (client.pagado) {

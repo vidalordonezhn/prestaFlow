@@ -13,6 +13,7 @@ interface Client {
   phone: string;
   cuota: number;
   pagado: boolean;
+  totalAbonadoHoy?: number;
   mora: boolean;
   address: string;
   zone: string;
@@ -127,10 +128,12 @@ export class CobrosComponent implements OnInit {
             const prestamosActivos = resPrestamos.filter(p => p.status === 'Activo' || p.status === 'Mora');
 
             const routeClients = prestamosActivos.map(p => {
-              const pagadoHoy = resPagos.some(pago => 
+              const pagosHoy = resPagos.filter(pago => 
                 pago.prestamoId === p.id && 
                 new Date(pago.fechaPago).toDateString() === hoy
               );
+              const pagadoHoy = pagosHoy.length > 0;
+              const totalAbonadoHoy = pagosHoy.reduce((sum, pago) => sum + pago.monto, 0);
 
               return {
                 id: p.codigo,
@@ -139,6 +142,7 @@ export class CobrosComponent implements OnInit {
                 phone: p.clientePhone,
                 cuota: p.cuotaMonto,
                 pagado: pagadoHoy,
+                totalAbonadoHoy: totalAbonadoHoy,
                 mora: p.status === 'Mora',
                 address: 'Dirección Registrada',
                 zone: p.frecuencia === 'Diario' ? 'Ruta Diaria' : p.frecuencia === 'Semanal' ? 'Ruta Semanal' : 'Ruta Mensual'

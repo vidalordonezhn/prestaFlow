@@ -168,9 +168,9 @@
                   </td>
                   <td class="text-right font-mono font-semibold text-secondary">
                     @if (loan.status === 'Pagado') {
-                      L. 0
+                      L. 0.00
                     } @else {
-                      L. {{ (loan.cuotaMonto * (loan.plazoCuotas - loan.cuotasPagadas)) | number:'1.0-0' }}
+                      L. {{ loan.saldoRestante | number:'1.2-2' }}
                     }
                   </td>
                   <td>
@@ -180,11 +180,11 @@
                              [class.bg-green]="loan.status === 'Pagado'" 
                              [class.bg-blue]="loan.status === 'Activo'"
                              [class.bg-red]="loan.status === 'Mora'"
-                             [style.width.%]="(loan.cuotasPagadas / loan.plazoCuotas) * 100">
+                             [style.width.%]="loan.totalPagar > 0 ? (loan.totalPagado / loan.totalPagar) * 100 : 0">
                         </div>
                       </div>
                       <span class="progress-label font-mono">
-                        {{ loan.cuotasPagadas }}/{{ loan.plazoCuotas }} cuotas
+                        {{ loan.cuotasPagadas }}/{{ loan.plazoCuotas }} cuotas (L. {{ loan.totalPagado | number:'1.0-0' }})
                       </span>
                     </div>
                   </td>
@@ -250,11 +250,18 @@
             <span class="box-hint">{{ selectedLoan()?.plazoCuotas }} cuotas de L. {{ selectedLoan()?.cuotaMonto | number:'1.2-2' }}</span>
           </div>
           <div class="summary-box">
-            <span class="box-label">Progreso</span>
-            <span class="box-value text-blue">
-              {{ ((selectedLoan()?.cuotasPagadas || 0) / (selectedLoan()?.plazoCuotas || 1)) | percent:'1.0-0' }}
+            <span class="box-label">Saldo Pendiente</span>
+            <span class="box-value font-mono font-bold" [style.color]="(selectedLoan()?.saldoRestante || 0) === 0 ? '#10b981' : 'var(--color-blue)'">
+              L. {{ selectedLoan()?.saldoRestante | number:'1.2-2' }}
             </span>
-            <span class="box-hint">{{ selectedLoan()?.cuotasPagadas }} de {{ selectedLoan()?.plazoCuotas }} pagadas</span>
+            <span class="box-hint">De un total de L. {{ selectedLoan()?.totalPagar | number:'1.2-2' }}</span>
+          </div>
+          <div class="summary-box">
+            <span class="box-label">Progreso de Pago</span>
+            <span class="box-value text-blue">
+              {{ (((selectedLoan()?.totalPagado || 0) / (selectedLoan()?.totalPagar || 1))) | percent:'1.0-0' }}
+            </span>
+            <span class="box-hint">L. {{ selectedLoan()?.totalPagado | number:'1.2-2' }} recaudado</span>
           </div>
           <div class="summary-box">
             <span class="box-label">Tipo de Préstamo</span>
@@ -315,6 +322,8 @@
                     <td class="text-center">
                       @if (cuota.status === 'Pagada') {
                         <span class="status-badge badge-success">Pagada</span>
+                      } @else if (cuota.status === 'Parcial') {
+                        <span class="status-badge badge-info" style="background-color: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">Abono Parcial</span>
                       } @else if (cuota.status === 'Vencida') {
                         <span class="status-badge badge-danger">Vencida</span>
                       } @else {
