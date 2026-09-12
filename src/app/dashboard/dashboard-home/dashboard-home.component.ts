@@ -1,10 +1,8 @@
 import { Component, signal, computed, inject, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
-import { ApiAuthService } from '../services/api-auth.service';
-import { ApiPrestamosService } from '../services/api-prestamos.service';
-import { ApiPagosService } from '../services/api-pagos.service';
-import { SettingsService } from '../services/settings.service';
+import { ApiAuthService } from '../../services/api-auth.service';
+import { ApiPrestamosService } from '../../services/api-prestamos.service';
+import { ApiPagosService } from '../../services/api-pagos.service';
 
 interface Client {
   id: string;
@@ -18,6 +16,20 @@ interface Client {
   zone: string;
 }
 
+interface Payment {
+  id: string;
+  clientName: string;
+  amount: number;
+  time: string;
+  status: 'Efectivo' | 'Transferencia';
+}
+
+interface ChartDay {
+  day: string;
+  expected: number;
+  collected: number;
+}
+
 interface Toast {
   id: number;
   type: 'success' | 'info' | 'warning';
@@ -26,26 +38,21 @@ interface Toast {
 }
 
 @Component({
-  selector: 'app-cobros',
+  selector: 'app-dashboard-home',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './cobros.component.html',
-  styleUrl: './cobros.component.scss'
+  templateUrl: './dashboard-home.component.html',
+  styleUrl: './dashboard-home.component.scss'
 })
-export class CobrosComponent implements OnInit {
+export class DashboardHomeComponent implements OnInit {
   protected readonly auth = inject(ApiAuthService);
-  protected readonly settingsService = inject(SettingsService);
-  private readonly router = inject(Router);
   private readonly apiPrestamosService = inject(ApiPrestamosService);
   private readonly apiPagosService = inject(ApiPagosService);
 
   // Current Date
   protected readonly currentDate = signal(new Date());
 
-  // Sidebar User Dropdown Menu
-  protected readonly showUserDropdown = signal<boolean>(false);
-
-  // Search Signal
+  // Search Signal for clients in route
   protected readonly searchQuery = signal('');
 
   // Toast Stack Signal
@@ -59,10 +66,6 @@ export class CobrosComponent implements OnInit {
   // Payment Form Signals
   protected readonly paymentAmount = signal<number>(0);
   protected readonly paymentMethod = signal<'Efectivo' | 'Transferencia'>('Efectivo');
-
-  // Receipt Modal Control Signals
-  protected readonly showReceiptModal = signal(false);
-  protected readonly selectedPayment = signal<any | null>(null);
 
   // Client Data Signal
   protected readonly clients = signal<Client[]>([]);
@@ -81,6 +84,34 @@ export class CobrosComponent implements OnInit {
     return loan.cuotas.filter((c: any) => c.estado !== 'Pagado');
   });
 
+  // Session Payments (added dynamically by user)
+  protected readonly sessionPayments = signal<Payment[]>([]);
+
+  // Base Historical Payments (preloaded)
+  protected readonly basePayments = signal<Payment[]>([]);
+
+  // Merge Base and Session payments for display
+  protected readonly latestPayments = computed<Payment[]>(() => {
+    return [...this.sessionPayments(), ...this.basePayments()];
+  });
+
+  // Base financial collection values
+  protected readonly metaDelDia = signal(15000);
+  protected readonly activePortfolio = signal(384200);
+  
+  // Session collection accumulator
+  protected readonly sessionCollected = signal(0);
+  protected readonly baseCollectedToday = signal(8450);
+
+  // Computed KPIs
+  protected readonly totalCollectedToday = computed(() => {
+    return this.baseCollectedToday() + this.sessionCollected();
+  });
+
+  protected readonly arrearsCount = computed(() => {
+    return this.clients().filter(c => c.mora && !c.pagado).length;
+  });
+
   // Filtering Today's Route
   protected readonly filteredClients = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
@@ -94,19 +125,37 @@ export class CobrosComponent implements OnInit {
     );
   });
 
-  // Sidebar Menu Items
-  protected readonly menuItems = [
-    { name: 'Dashboard', icon: 'dashboard', active: false, route: '/' },
-    { name: 'Cobros de Hoy', icon: 'route', active: true, route: '/cobros' },
-    { name: 'Préstamos', icon: 'currency_exchange', active: false, route: '/prestamos' },
-    { name: 'Clientes', icon: 'people', active: false, route: '/clientes' },
-    { name: 'Historial de Pagos', icon: 'receipt_long', active: false, route: '/pagos' },
-    { name: 'Caja y Bancos', icon: 'account_balance', active: false, route: '/caja-bancos' },
-    { name: 'Reportes', icon: 'analytics', active: false, route: '/reportes' },
-    { name: 'Configuración', icon: 'settings', active: false, route: '/configuracion' }
-  ];
+  // Chart data: Last 7 days. Today is the last item and updates reactively.
+  protected readonly chartDays = computed<ChartDay[]>(() => {
+    return [
+      { day: 'Lun', expected: 12000, collected: 11500 },
+      { day: 'Mar', expected: 13500, collected: 13000 },
+      { day: 'Mié', expected: 11000, collected: 9500 },
+      { day: 'Jue', expected: 14000, collected: 13800 },
+      { day: 'Vie', expected: 15000, collected: 14200 },
+      { day: 'Sáb', expected: 8000, collected: 7800 },
+      { day: 'Hoy', expected: this.metaDelDia(), collected: this.totalCollectedToday() }
+    ];
+  });
 
-  // Handle Search Input
+  // SVG Chart Dimensions & Computations
+  protected readonly chartHeight = 180;
+  protected readonly chartWidth = 460;
+  protected readonly maxChartValue = computed(() => {
+    const maxVal = Math.max(...this.chartDays().map(d => Math.max(d.expected, d.collected)));
+    return Math.ceil((maxVal * 1.1) / 1000) * 1000;
+  });
+
+  constructor() {
+    setTimeout(() => {
+      this.triggerToast(
+        'info', 
+        '¡Bienvenido de nuevo!', 
+        'PrestaFlow cargado con éxito. 8 cobros programados para hoy.'
+      );
+    }, 800);
+  }
+
   protected onSearchInput(event: Event): void {
     const inputElement = event.target as HTMLInputElement;
     this.searchQuery.set(inputElement.value);
@@ -116,8 +165,34 @@ export class CobrosComponent implements OnInit {
     this.cargarDatos();
   }
 
-  protected cargarDatos(): void {
-    console.log('PrestaFlow Cobros: Iniciando carga de préstamos...');
+  private cargarDatos(): void {
+    this.apiPagosService.getPagos().subscribe({
+      next: (res) => {
+        const mappedPayments = res.map(p => ({
+          id: `TX-${p.id}`,
+          clientName: p.clienteNombre,
+          amount: p.monto,
+          time: new Date(p.fechaPago).toLocaleTimeString('es-HN', { hour: '2-digit', minute: '2-digit', hour12: false }),
+          status: p.metodoPago
+        }));
+        this.sessionPayments.set(mappedPayments);
+
+        const hoy = new Date().toDateString();
+        const recolectadoHoy = res
+          .filter(p => new Date(p.fechaPago).toDateString() === hoy)
+          .reduce((sum, curr) => sum + curr.monto, 0);
+
+        this.sessionCollected.set(recolectadoHoy);
+      },
+      error: (err) => {
+        this.triggerToast(
+          'warning',
+          'Error de Carga',
+          `No se pudieron cargar los abonos: ${err.message || err.statusText || 'Error de red'}`
+        );
+      }
+    });
+
     this.apiPrestamosService.getPrestamos().subscribe({
       next: (resPrestamos) => {
         this.activeLoansList.set(resPrestamos);
@@ -148,17 +223,20 @@ export class CobrosComponent implements OnInit {
             this.clients.set(routeClients);
           },
           error: (err) => {
-            console.error('PrestaFlow Cobros: Error al cargar pagos:', err);
+            console.error('Error al cargar pagos secundarios para ruta:', err);
           }
         });
       },
       error: (err) => {
-        console.error('PrestaFlow Cobros: Error al cargar préstamos:', err);
+        this.triggerToast(
+          'warning',
+          'Error de Carga',
+          `No se pudieron cargar los préstamos de la ruta: ${err.message || err.statusText || 'Error de red'}`
+        );
       }
     });
   }
 
-  // Open Payment Modal
   protected openRegisterPayment(client: Client): void {
     if (client.pagado) return;
     this.selectedClient.set(client);
@@ -167,13 +245,11 @@ export class CobrosComponent implements OnInit {
     this.showPaymentModal.set(true);
   }
 
-  // Close Payment Modal
   protected closeRegisterPayment(): void {
     this.showPaymentModal.set(false);
     this.selectedClient.set(null);
   }
 
-  // Submit Payment
   protected submitPayment(): void {
     const client = this.selectedClient();
     if (!client || !client.loanId) return;
@@ -191,18 +267,14 @@ export class CobrosComponent implements OnInit {
       monto: amountPaid,
       metodoPago: methodPaid
     }).subscribe({
-      next: (res) => {
+      next: () => {
         this.triggerToast(
           'success',
           'Abono Registrado',
           `Pago de L. ${amountPaid.toLocaleString('es-HN')} de ${client.name} registrado con éxito.`
         );
-        this.cargarDatos(); // Refrescar cobros
+        this.cargarDatos();
         this.closeRegisterPayment();
-
-        // Immediately trigger the receipt modal for this payment!
-        this.selectedPayment.set(res);
-        this.showReceiptModal.set(true);
       },
       error: (err) => {
         const msg = err.error?.mensaje || 'No se pudo registrar el cobro en el sistema.';
@@ -211,63 +283,18 @@ export class CobrosComponent implements OnInit {
     });
   }
 
-  // Close Receipt Modal
-  protected closeReceipt(): void {
-    this.showReceiptModal.set(false);
-    this.selectedPayment.set(null);
-  }
-
-  // Share Receipt on WhatsApp
-  protected shareOnWhatsApp(payment: any): void {
-    if (!payment) return;
-    const cleanPhone = payment.clientePhone.replace(/[^0-9]/g, '');
-    const formattedPhone = cleanPhone.startsWith('504') ? cleanPhone : `504${cleanPhone}`;
-    
-    const dateFormatted = new Date(payment.fechaPago).toLocaleDateString('es-HN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-    const timeFormatted = new Date(payment.fechaPago).toLocaleTimeString('es-HN', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    });
-    
-    const message = `Hola *${payment.clienteNombre}*, hemos registrado tu abono de *L. ${payment.monto.toLocaleString('es-HN', { minimumFractionDigits: 2 })}* para tu préstamo *${payment.prestamoCodigo}* con fecha del ${dateFormatted} a las ${timeFormatted}. ¡Muchas gracias por tu puntualidad! *PrestaFlow*`;
-    
-    const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
-  }
-
-  // Print Receipt
-  protected printReceipt(): void {
-    window.print();
-  }
-
-  // Toasts
   private triggerToast(type: 'success' | 'info' | 'warning', title: string, message: string): void {
     const id = ++this.toastIdCounter;
     const newToast: Toast = { id, type, title, message };
+    
     this.toasts.update(current => [...current, newToast]);
+
     setTimeout(() => {
       this.toasts.update(current => current.filter(t => t.id !== id));
-    }, 4000);
+    }, 4500);
   }
 
-  // Dropdown menus
-  protected toggleUserDropdown(event: Event): void {
-    event.stopPropagation();
-    this.showUserDropdown.update(v => !v);
-  }
-
-  @HostListener('document:click')
-  protected closeUserDropdown(): void {
-    this.showUserDropdown.set(false);
-  }
-
-  protected onLogout(): void {
-    this.auth.logout();
-    this.router.navigate(['/login']);
+  protected removeToast(id: number): void {
+    this.toasts.update(current => current.filter(t => t.id !== id));
   }
 }

@@ -1,93 +1,9 @@
-<div class="dashboard-layout">
-  <!-- SIDEBAR (Navegación Izquierda) -->
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-logo">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
-          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-      </div>
-      <span class="brand-name">PrestaFlow</span>
-    </div>
-    
-    <nav class="sidebar-nav">
-      @for (item of menuItems; track item.name) {
-        @if (auth.currentUser()?.rol === 'Admin' || (item.name !== 'Caja y Bancos' && item.name !== 'Reportes' && item.name !== 'Configuración')) {
-          <a [routerLink]="item.route" class="nav-item" [class.active]="item.active">
-            <span class="nav-icon">
-              @switch (item.icon) {
-                @case ('dashboard') {
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
-                }
-                @case ('currency_exchange') {
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                }
-                @case ('people') {
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                }
-                @case ('receipt_long') {
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"></path><path d="M16 8H8"></path><path d="M16 12H8"></path><path d="M13 16H8"></path></svg>
-                }
-                @case ('account_balance') {
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="22" x2="22" y2="22"></line><line x1="5" y1="11" x2="5" y2="18"></line><line x1="12" y1="11" x2="12" y2="18"></line><line x1="19" y1="11" x2="19" y2="18"></line><path d="M12 2 2 7h20L12 2z"></path></svg>
-                }
-                @case ('analytics') {
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                }
-                @case ('settings') {
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2 2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                }
-              }
-            </span>
-            <span class="nav-text">{{ item.name }}</span>
-          </a>
-        }
-      }
-    </nav>
-    
-    <div class="sidebar-footer">
-      <div class="user-pill-dark" (click)="toggleUserDropdown($event)" title="Opciones de usuario" style="cursor: pointer; position: relative; display: flex; align-items: center; width: 100%;">
-        <div class="avatar">{{ auth.currentUser()?.nombre?.substring(0, 2)?.toUpperCase() || 'AD' }}</div>
-        <div class="user-details" style="flex-grow: 1;">
-          <span class="user-name">{{ auth.currentUser()?.nombre || 'Administrador' }}</span>
-          <span class="user-role">{{ auth.currentUser()?.rol || 'Admin' }}</span>
-        </div>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="inline-icon" style="width: 14px; height: 14px; margin-left: auto; color: #64748b;"><polyline points="6 9 12 15 18 9"></polyline></svg>
-      </div>
-
-      <!-- DROPDOWN DE USUARIO -->
-      @if (showUserDropdown()) {
-        <div class="user-dropdown-menu">
-          <div class="dropdown-header">
-            <span class="header-name">{{ auth.currentUser()?.nombre }}</span>
-            <span class="header-username">@{{ auth.currentUser()?.username }}</span>
-          </div>
-          <div class="dropdown-divider"></div>
-          
-          <a routerLink="/configuracion" class="dropdown-item" (click)="showUserDropdown.set(false)">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="item-icon"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2 2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            Configuración
-          </a>
-          
-          <div class="dropdown-divider"></div>
-          
-          <button type="button" class="dropdown-item text-danger" (click)="onLogout()">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="item-icon"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            Cerrar Sesión
-          </button>
-        </div>
-      }
-    </div>
-  </aside>
-
-  <!-- MAIN CONTENT -->
-  <main class="main-content animate-fade-in">
+<div class="page-view animate-fade-in">
     <!-- Header -->
     <header class="header">
       <div>
-        <h1 class="page-title">Reportes y Analíticas</h1>
-        <p class="page-subtitle">Visualización del rendimiento contable, cobros y mora activa</p>
+        <h1 class="page-title">Reportes y Analíticas Financieras</h1>
+        <p class="page-subtitle">Selecciona cualquier indicador para explorar su desglose detallado y descargar su informe en Excel</p>
       </div>
     </header>
 
@@ -115,13 +31,20 @@
       </div>
     </div>
 
-    <!-- KPIs Cartera Global (Tarjetas Superiores) -->
-    <section class="kpis-grid-4">
-      <div class="kpi-card blue-gradient">
+    <!-- KPIs Cartera Global (Grid de 6 Tarjetas con Selección Interactiva) -->
+    <section class="kpis-grid-reports">
+      <!-- 1. Capital Colocado -->
+      <div 
+        class="kpi-card blue-gradient clickable" 
+        [class.active-card]="selectedKpiTab() === 'colocado'"
+        (click)="selectKpiCard('colocado')" 
+        title="Clic para explorar créditos colocados y descargar Excel"
+      >
         <div class="kpi-overlay"></div>
         <div class="kpi-header-content">
+          <div class="kpi-badge-tag">REPORTE 1</div>
           <span class="kpi-label text-white-muted">Capital Colocado</span>
-          <h3 class="kpi-value text-white">L. {{ kpiCartera().capitalColocado | number:'1.2-2' }}</h3>
+          <h3 class="kpi-value text-white">L. {{ kpiCarteraFiltrada().capitalColocado | number:'1.2-2' }}</h3>
           <span class="kpi-trend text-white-muted">Dinero neto prestado en calle</span>
         </div>
         <div class="kpi-icon-wrapper-mini bg-blue-opaque">
@@ -129,11 +52,18 @@
         </div>
       </div>
 
-      <div class="kpi-card orange-gradient">
+      <!-- 2. Interés Proyectado -->
+      <div 
+        class="kpi-card orange-gradient clickable" 
+        [class.active-card]="selectedKpiTab() === 'interes'"
+        (click)="selectKpiCard('interes')" 
+        title="Clic para explorar intereses y descargar Excel"
+      >
         <div class="kpi-overlay"></div>
         <div class="kpi-header-content">
+          <div class="kpi-badge-tag">REPORTE 2</div>
           <span class="kpi-label text-white-muted">Interés Proyectado</span>
-          <h3 class="kpi-value text-white">L. {{ kpiCartera().interesPendiente | number:'1.2-2' }}</h3>
+          <h3 class="kpi-value text-white">L. {{ kpiCarteraFiltrada().interesPendiente | number:'1.2-2' }}</h3>
           <span class="kpi-trend text-white-muted">Rendimiento por recuperar</span>
         </div>
         <div class="kpi-icon-wrapper-mini bg-orange-opaque">
@@ -141,11 +71,18 @@
         </div>
       </div>
 
-      <div class="kpi-card purple-gradient">
+      <!-- 3. Cartera Total -->
+      <div 
+        class="kpi-card purple-gradient clickable" 
+        [class.active-card]="selectedKpiTab() === 'cartera'"
+        (click)="selectKpiCard('cartera')" 
+        title="Clic para explorar cartera total y descargar Excel"
+      >
         <div class="kpi-overlay"></div>
         <div class="kpi-header-content">
+          <div class="kpi-badge-tag">REPORTE 3</div>
           <span class="kpi-label text-white-muted">Cartera Total</span>
-          <h3 class="kpi-value text-white">L. {{ kpiCartera().totalProyectado | number:'1.2-2' }}</h3>
+          <h3 class="kpi-value text-white">L. {{ kpiCarteraFiltrada().totalProyectado | number:'1.2-2' }}</h3>
           <span class="kpi-trend text-white-muted">Retorno esperado total</span>
         </div>
         <div class="kpi-icon-wrapper-mini bg-purple-opaque">
@@ -153,39 +90,718 @@
         </div>
       </div>
 
-      <div class="kpi-card red-gradient animate-pulse-slow">
+      <!-- 4. Clientes en Mora -->
+      <div 
+        class="kpi-card red-gradient clickable animate-pulse-slow" 
+        [class.active-card]="selectedKpiTab() === 'mora'"
+        (click)="selectKpiCard('mora')" 
+        title="Clic para gestionar deudores y descargar Excel"
+      >
         <div class="kpi-overlay"></div>
         <div class="kpi-header-content">
+          <div class="kpi-badge-tag">REPORTE 4</div>
           <span class="kpi-label text-white-muted">Clientes en Mora</span>
-          <h3 class="kpi-value text-white">{{ kpiCartera().clientesMoraActiva }} deudores</h3>
+          <h3 class="kpi-value text-white">{{ kpiCarteraFiltrada().clientesMoraActiva }} deudores</h3>
           <span class="kpi-trend text-white-muted">Requieren cobro urgente</span>
         </div>
         <div class="kpi-icon-wrapper-mini bg-red-opaque">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="kpi-icon"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
         </div>
       </div>
-    </section>
 
-    <!-- Historial de Cartera -->
-    <section class="kpis-grid" style="grid-template-columns: repeat(2, 1fr); margin-top: 16px; margin-bottom: 24px; gap: 16px;">
-      <div class="kpi-card" style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid rgba(255, 255, 255, 0.05); padding: 16px;">
-        <div class="kpi-content">
-          <span class="kpi-label" style="color: #94a3b8; font-weight: 500; font-size: 0.8125rem;">Capital Histórico Prestado</span>
-          <h3 class="kpi-value text-white" style="font-size: 1.625rem; font-family: monospace; font-weight: 700; margin: 4px 0;">L. {{ kpiCartera().capitalHistoricoPrestado | number:'1.2-2' }}</h3>
-          <span class="kpi-trend" style="color: #64748b; font-size: 0.75rem;">Total de capital colocado históricamente</span>
+      <!-- 5. Capital Histórico Prestado -->
+      <div 
+        class="kpi-card emerald-gradient clickable" 
+        [class.active-card]="selectedKpiTab() === 'historico'"
+        (click)="selectKpiCard('historico')" 
+        title="Clic para ver historial completo y descargar Excel"
+      >
+        <div class="kpi-overlay"></div>
+        <div class="kpi-header-content">
+          <div class="kpi-badge-tag">REPORTE 5</div>
+          <span class="kpi-label text-white-muted">Capital Histórico Prestado</span>
+          <h3 class="kpi-value text-white">L. {{ kpiCarteraFiltrada().capitalHistoricoPrestado | number:'1.2-2' }}</h3>
+          <span class="kpi-trend text-white-muted">Total colocado históricamente</span>
+        </div>
+        <div class="kpi-icon-wrapper-mini bg-emerald-opaque">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="kpi-icon"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
         </div>
       </div>
-      <div class="kpi-card" style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid rgba(255, 255, 255, 0.05); padding: 16px;">
-        <div class="kpi-content">
-          <span class="kpi-label" style="color: #94a3b8; font-weight: 500; font-size: 0.8125rem;">Capital Vivo Actual</span>
-          <h3 class="kpi-value text-white" style="font-size: 1.625rem; font-family: monospace; font-weight: 700; margin: 4px 0;">L. {{ kpiCartera().capitalActual | number:'1.2-2' }}</h3>
-          <span class="kpi-trend" style="color: #38bdf8; font-size: 0.75rem;">Capital pendiente neto por recuperar (restando abonos)</span>
+
+      <!-- 6. Capital Vivo Actual -->
+      <div 
+        class="kpi-card cyan-gradient clickable" 
+        [class.active-card]="selectedKpiTab() === 'vivo'"
+        (click)="selectKpiCard('vivo')" 
+        title="Clic para ver capital vivo y descargar Excel"
+      >
+        <div class="kpi-overlay"></div>
+        <div class="kpi-header-content">
+          <div class="kpi-badge-tag">REPORTE 6</div>
+          <span class="kpi-label text-white-muted">Capital Vivo Actual</span>
+          <h3 class="kpi-value text-white">L. {{ kpiCarteraFiltrada().capitalActual | number:'1.2-2' }}</h3>
+          <span class="kpi-trend text-white-muted">Capital pendiente en calle</span>
+        </div>
+        <div class="kpi-icon-wrapper-mini bg-cyan-opaque">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="kpi-icon"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- BARRA SELECTORA DE REPORTES INDIVIDUALES CON BADGES -->
+    <div class="reports-nav-pills-bar" id="reporte-detallado-section">
+      <div class="nav-pills-header">
+        <span class="nav-pills-title">EXPLORADOR DE REPORTES (SELECCIONA CUALQUIERA DE LAS 6 OPCIONES):</span>
+      </div>
+      <div class="nav-pills-container">
+        <button 
+          class="report-pill-btn" 
+          [class.active]="selectedKpiTab() === 'colocado'" 
+          (click)="selectedKpiTab.set('colocado')"
+        >
+          <span class="pill-dot dot-blue"></span>
+          <span class="pill-text">1. Capital Colocado</span>
+          <span class="pill-badge">{{ listCapitalColocado().length }}</span>
+        </button>
+
+        <button 
+          class="report-pill-btn" 
+          [class.active]="selectedKpiTab() === 'interes'" 
+          (click)="selectedKpiTab.set('interes')"
+        >
+          <span class="pill-dot dot-orange"></span>
+          <span class="pill-text">2. Interés Proyectado</span>
+          <span class="pill-badge">{{ listInteresProyectado().length }}</span>
+        </button>
+
+        <button 
+          class="report-pill-btn" 
+          [class.active]="selectedKpiTab() === 'cartera'" 
+          (click)="selectedKpiTab.set('cartera')"
+        >
+          <span class="pill-dot dot-purple"></span>
+          <span class="pill-text">3. Cartera Total</span>
+          <span class="pill-badge">{{ listCarteraTotal().length }}</span>
+        </button>
+
+        <button 
+          class="report-pill-btn" 
+          [class.active]="selectedKpiTab() === 'mora'" 
+          (click)="selectedKpiTab.set('mora')"
+        >
+          <span class="pill-dot dot-red"></span>
+          <span class="pill-text">4. Clientes en Mora</span>
+          <span class="pill-badge badge-mora-red">{{ listClientesMora().length }}</span>
+        </button>
+
+        <button 
+          class="report-pill-btn" 
+          [class.active]="selectedKpiTab() === 'historico'" 
+          (click)="selectedKpiTab.set('historico')"
+        >
+          <span class="pill-dot dot-emerald"></span>
+          <span class="pill-text">5. Histórico Acumulado</span>
+          <span class="pill-badge">{{ listCapitalHistorico().length }}</span>
+        </button>
+
+        <button 
+          class="report-pill-btn" 
+          [class.active]="selectedKpiTab() === 'vivo'" 
+          (click)="selectedKpiTab.set('vivo')"
+        >
+          <span class="pill-dot dot-cyan"></span>
+          <span class="pill-text">6. Capital Vivo en Calle</span>
+          <span class="pill-badge">{{ listCapitalVivo().length }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- SECCIÓN INTERACTIVA: REPORTE DETALLADO Y DESCARGABLE EXCEL -->
+    <section class="card table-card active-report-section">
+      <div class="table-filter-header active-report-header">
+        <div class="header-titles">
+          @switch (selectedKpiTab()) {
+            @case ('colocado') {
+              <div class="report-badge-pill badge-blue">Reporte 1: Capital Colocado</div>
+              <h2 class="section-title">Detalle de Créditos Otorgados (Capital Colocado)</h2>
+              <p class="section-subtitle">Listado de préstamos otorgados en el período con desglose por cliente, plazo y método de desembolso</p>
+            }
+            @case ('interes') {
+              <div class="report-badge-pill badge-orange">Reporte 2: Interés Proyectado</div>
+              <h2 class="section-title">Detalle de Rendimiento e Intereses Proyectados</h2>
+              <p class="section-subtitle">Análisis de intereses generados, cobrados a la fecha y saldo de ganancia pendiente por recuperar</p>
+            }
+            @case ('cartera') {
+              <div class="report-badge-pill badge-purple">Reporte 3: Cartera Total</div>
+              <h2 class="section-title">Balance de Cartera Global y Retorno Esperado</h2>
+              <p class="section-subtitle">Estado de la cartera de crédito, montos totales a recaudar, abonos recibidos y saldo neto pendiente</p>
+            }
+            @case ('mora') {
+              <div class="report-badge-pill badge-red">Reporte 4: Clientes en Mora</div>
+              <h2 class="section-title">Control de Mora y Gestión de Cobranza</h2>
+              <p class="section-subtitle">Expediente de clientes con cuotas atrasadas clasificados por días de retraso y nivel de riesgo crediticio</p>
+            }
+            @case ('historico') {
+              <div class="report-badge-pill badge-emerald">Reporte 5: Histórico Acumulado</div>
+              <h2 class="section-title">Libro Histórico de Créditos Colocados</h2>
+              <p class="section-subtitle">Registro cronológico completo de todos los préstamos colocados desde la apertura del sistema</p>
+            }
+            @case ('vivo') {
+              <div class="report-badge-pill badge-cyan">Reporte 6: Capital Vivo en Calle</div>
+              <h2 class="section-title">Reporte de Capital Vivo y Saldos de Principal</h2>
+              <p class="section-subtitle">Capital líquido pendiente de amortización en préstamos vigentes (descontando abonos a capital)</p>
+            }
+          }
+        </div>
+
+        <div class="header-actions">
+          <div class="search-box">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input 
+              type="text" 
+              class="search-input" 
+              placeholder="Buscar cliente, código o dato..."
+              [ngModel]="kpiTableSearch()" 
+              (ngModelChange)="kpiTableSearch.set($event); currentPage.set(1)"
+            />
+            @if (kpiTableSearch()) {
+              <button class="search-clear-btn" (click)="clearSearch()" title="Limpiar búsqueda">✕</button>
+            }
+          </div>
+
+          <button class="btn btn-export-excel" (click)="exportActiveReportToExcel()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="excel-btn-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <span>Descargar Excel</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Summary Chips Header -->
+      <div class="report-summary-bar">
+        @switch (selectedKpiTab()) {
+          @case ('colocado') {
+            <div class="summary-chip"><span class="chip-label">Total Créditos:</span> <strong class="chip-val">{{ totalsColocado().count }}</strong></div>
+            <div class="summary-chip"><span class="chip-label">Capital Total:</span> <strong class="chip-val color-primary">L. {{ totalsColocado().capital | number:'1.2-2' }}</strong></div>
+            <div class="summary-chip"><span class="chip-label">Suma Cuotas:</span> <strong class="chip-val">L. {{ totalsColocado().cuota | number:'1.2-2' }}</strong></div>
+          }
+          @case ('interes') {
+            <div class="summary-chip"><span class="chip-label">Créditos:</span> <strong class="chip-val">{{ totalsInteres().count }}</strong></div>
+            <div class="summary-chip"><span class="chip-label">Capital Base:</span> <strong class="chip-val">L. {{ totalsInteres().capitalBase | number:'1.2-2' }}</strong></div>
+            <div class="summary-chip"><span class="chip-label">Interés Proyectado:</span> <strong class="chip-val text-orange">L. {{ totalsInteres().interesTotal | number:'1.2-2' }}</strong></div>
+            <div class="summary-chip"><span class="chip-label">Interés Cobrado:</span> <strong class="chip-val text-green">L. {{ totalsInteres().interesCobrado | number:'1.2-2' }}</strong></div>
+            <div class="summary-chip"><span class="chip-label">Interés Pendiente:</span> <strong class="chip-val text-orange">L. {{ totalsInteres().interesPendiente | number:'1.2-2' }}</strong></div>
+          }
+          @case ('cartera') {
+            <div class="summary-chip"><span class="chip-label">Préstamos:</span> <strong class="chip-val">{{ totalsCartera().count }}</strong></div>
+            <div class="summary-chip"><span class="chip-label">Total a Cobrar:</span> <strong class="chip-val text-purple">L. {{ totalsCartera().totalACobrar | number:'1.2-2' }}</strong></div>
+            <div class="summary-chip"><span class="chip-label">Total Abonado:</span> <strong class="chip-val text-green">L. {{ totalsCartera().totalAbonado | number:'1.2-2' }}</strong></div>
+            <div class="summary-chip"><span class="chip-label">Saldo Pendiente:</span> <strong class="chip-val text-blue">L. {{ totalsCartera().saldoRestante | number:'1.2-2' }}</strong></div>
+          }
+          @case ('mora') {
+            <div class="summary-chip chip-danger"><span class="chip-label">Deudores en Mora:</span> <strong class="chip-val">{{ totalsMora().count }}</strong></div>
+            <div class="summary-chip chip-danger"><span class="chip-label">Cuotas Vencidas:</span> <strong class="chip-val">{{ totalsMora().cuotasVencidas }}</strong></div>
+            <div class="summary-chip chip-danger"><span class="chip-label">Monto Atrasado Total:</span> <strong class="chip-val">L. {{ totalsMora().montoAtrasado | number:'1.2-2' }}</strong></div>
+          }
+          @case ('historico') {
+            <div class="summary-chip"><span class="chip-label">Historial Préstamos:</span> <strong class="chip-val">{{ totalsHistorico().count }}</strong></div>
+            <div class="summary-chip"><span class="chip-label">Capital Total Otorgado:</span> <strong class="chip-val text-emerald">L. {{ totalsHistorico().capital | number:'1.2-2' }}</strong></div>
+          }
+          @case ('vivo') {
+            <div class="summary-chip"><span class="chip-label">Préstamos Vivos:</span> <strong class="chip-val">{{ totalsVivo().count }}</strong></div>
+            <div class="summary-chip"><span class="chip-label">Capital Original:</span> <strong class="chip-val">L. {{ totalsVivo().capitalOriginal | number:'1.2-2' }}</strong></div>
+            <div class="summary-chip"><span class="chip-label">Principal Recuperado:</span> <strong class="chip-val text-green">L. {{ totalsVivo().capitalRecuperado | number:'1.2-2' }}</strong></div>
+            <div class="summary-chip"><span class="chip-label">Capital Vivo en Calle:</span> <strong class="chip-val text-cyan">L. {{ totalsVivo().capitalVivoPendiente | number:'1.2-2' }}</strong></div>
+          }
+        }
+      </div>
+
+      <div class="table-body">
+        <!-- Skeleton Loader State -->
+        @if (isLoading()) {
+          <div class="skeleton-table-wrapper">
+            @for (item of [1,2,3,4,5]; track item) {
+              <div class="skeleton-row">
+                <div class="skeleton-cell w-20"></div>
+                <div class="skeleton-cell w-30"></div>
+                <div class="skeleton-cell w-15"></div>
+                <div class="skeleton-cell w-20"></div>
+                <div class="skeleton-cell w-15"></div>
+              </div>
+            }
+          </div>
+        } @else {
+          <!-- 1. TABLA: CAPITAL COLOCADO -->
+          @if (selectedKpiTab() === 'colocado') {
+            <div class="table-responsive">
+              <table class="route-table">
+                <thead>
+                  <tr>
+                    <th class="sortable-th" (click)="toggleSort('codigo')">
+                      Cód. Préstamo <span class="sort-icon">{{ sortColumn() === 'codigo' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="sortable-th" (click)="toggleSort('clienteNombre')">
+                      Cliente <span class="sort-icon">{{ sortColumn() === 'clienteNombre' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th>Teléfono</th>
+                    <th class="text-right sortable-th" (click)="toggleSort('capital')">
+                      Capital Prestado <span class="sort-icon">{{ sortColumn() === 'capital' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-center sortable-th" (click)="toggleSort('interesPorcentaje')">
+                      Interés % <span class="sort-icon">{{ sortColumn() === 'interesPorcentaje' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-right sortable-th" (click)="toggleSort('cuotaMonto')">
+                      Cuota <span class="sort-icon">{{ sortColumn() === 'cuotaMonto' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-center">Plazo</th>
+                    <th class="sortable-th" (click)="toggleSort('fechaOtorgado')">
+                      Fecha Otorgado <span class="sort-icon">{{ sortColumn() === 'fechaOtorgado' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-center sortable-th" (click)="toggleSort('status')">
+                      Estado <span class="sort-icon">{{ sortColumn() === 'status' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (loan of pagedCapitalColocado(); track loan.id) {
+                    <tr class="table-row-hover">
+                      <td class="font-mono font-bold color-primary link-cell" (click)="navigateToLoans()" title="Clic para ver detalles del préstamo">
+                        {{ loan.codigo }} <span class="link-arrow">↗</span>
+                      </td>
+                      <td class="font-semibold link-cell" (click)="navigateToClients()" title="Clic para ver expediente del cliente">
+                        {{ loan.clienteNombre }} <span class="link-arrow">↗</span>
+                      </td>
+                      <td class="font-mono text-muted">{{ loan.clientePhone }}</td>
+                      <td class="text-right font-mono font-bold">L. {{ loan.capital | number:'1.2-2' }}</td>
+                      <td class="text-center font-semibold text-secondary">{{ loan.interesPorcentaje }}%</td>
+                      <td class="text-right font-mono">L. {{ loan.cuotaMonto | number:'1.2-2' }}</td>
+                      <td class="text-center">{{ loan.plazoCuotas }} ({{ loan.frecuencia }})</td>
+                      <td>{{ loan.fechaOtorgado | date:'dd/MM/yyyy' }}</td>
+                      <td class="text-center">
+                        <span class="status-badge" [class.badge-success]="loan.status === 'Pagado'" [class.badge-primary]="loan.status === 'Activo'" [class.badge-danger]="loan.status === 'Mora'">
+                          {{ loan.status }}
+                        </span>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="9" class="no-results-cell">No se encontraron préstamos en el período seleccionado.</td>
+                    </tr>
+                  }
+                </tbody>
+                @if (listCapitalColocado().length > 0) {
+                  <tfoot>
+                    <tr class="table-totals-row">
+                      <td colspan="3" class="font-bold">TOTALES ({{ totalsColocado().count }} préstamos)</td>
+                      <td class="text-right font-mono font-bold color-primary">L. {{ totalsColocado().capital | number:'1.2-2' }}</td>
+                      <td></td>
+                      <td class="text-right font-mono font-bold">L. {{ totalsColocado().cuota | number:'1.2-2' }}</td>
+                      <td colspan="3"></td>
+                    </tr>
+                  </tfoot>
+                }
+              </table>
+            </div>
+          }
+
+          <!-- 2. TABLA: INTERÉS PROYECTADO -->
+          @if (selectedKpiTab() === 'interes') {
+            <div class="table-responsive">
+              <table class="route-table">
+                <thead>
+                  <tr>
+                    <th class="sortable-th" (click)="toggleSort('codigo')">
+                      Cód. Préstamo <span class="sort-icon">{{ sortColumn() === 'codigo' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="sortable-th" (click)="toggleSort('clienteNombre')">
+                      Cliente <span class="sort-icon">{{ sortColumn() === 'clienteNombre' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-right sortable-th" (click)="toggleSort('capital')">
+                      Capital Base <span class="sort-icon">{{ sortColumn() === 'capital' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-center sortable-th" (click)="toggleSort('interesPorcentaje')">
+                      Tasa % <span class="sort-icon">{{ sortColumn() === 'interesPorcentaje' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-right sortable-th" (click)="toggleSort('interesTotal')">
+                      Interés Proyectado <span class="sort-icon">{{ sortColumn() === 'interesTotal' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-right sortable-th" (click)="toggleSort('interesCobrado')">
+                      Interés Cobrado <span class="sort-icon">{{ sortColumn() === 'interesCobrado' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-right sortable-th" (click)="toggleSort('interesPendiente')">
+                      Interés Pendiente <span class="sort-icon">{{ sortColumn() === 'interesPendiente' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-center">Cuotas</th>
+                    <th class="text-center sortable-th" (click)="toggleSort('status')">
+                      Estado <span class="sort-icon">{{ sortColumn() === 'status' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (item of pagedInteresProyectado(); track item.id) {
+                    <tr class="table-row-hover">
+                      <td class="font-mono font-bold color-primary link-cell" (click)="navigateToLoans()" title="Clic para ver detalles del préstamo">
+                        {{ item.codigo }} <span class="link-arrow">↗</span>
+                      </td>
+                      <td class="font-semibold link-cell" (click)="navigateToClients()" title="Clic para ver expediente del cliente">
+                        {{ item.clienteNombre }} <span class="link-arrow">↗</span>
+                      </td>
+                      <td class="text-right font-mono">L. {{ item.capital | number:'1.2-2' }}</td>
+                      <td class="text-center font-bold text-orange">{{ item.interesPorcentaje }}%</td>
+                      <td class="text-right font-mono font-bold">L. {{ item.interesTotal | number:'1.2-2' }}</td>
+                      <td class="text-right font-mono text-green font-bold">L. {{ item.interesCobrado | number:'1.2-2' }}</td>
+                      <td class="text-right font-mono font-bold text-orange">L. {{ item.interesPendiente | number:'1.2-2' }}</td>
+                      <td class="text-center font-mono">{{ item.cuotasPagadas }}/{{ item.plazoCuotas }}</td>
+                      <td class="text-center">
+                        <span class="status-badge" [class.badge-success]="item.status === 'Pagado'" [class.badge-primary]="item.status === 'Activo'" [class.badge-danger]="item.status === 'Mora'">
+                          {{ item.status }}
+                        </span>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="9" class="no-results-cell">No hay registros de rendimiento en el período.</td>
+                    </tr>
+                  }
+                </tbody>
+                @if (listInteresProyectado().length > 0) {
+                  <tfoot>
+                    <tr class="table-totals-row">
+                      <td colspan="2" class="font-bold">TOTALES ({{ totalsInteres().count }} préstamos)</td>
+                      <td class="text-right font-mono font-bold">L. {{ totalsInteres().capitalBase | number:'1.2-2' }}</td>
+                      <td></td>
+                      <td class="text-right font-mono font-bold text-orange">L. {{ totalsInteres().interesTotal | number:'1.2-2' }}</td>
+                      <td class="text-right font-mono font-bold text-green">L. {{ totalsInteres().interesCobrado | number:'1.2-2' }}</td>
+                      <td class="text-right font-mono font-bold text-orange">L. {{ totalsInteres().interesPendiente | number:'1.2-2' }}</td>
+                      <td colspan="2"></td>
+                    </tr>
+                  </tfoot>
+                }
+              </table>
+            </div>
+          }
+
+          <!-- 3. TABLA: CARTERA TOTAL -->
+          @if (selectedKpiTab() === 'cartera') {
+            <div class="table-responsive">
+              <table class="route-table">
+                <thead>
+                  <tr>
+                    <th class="sortable-th" (click)="toggleSort('codigo')">
+                      Cód. Préstamo <span class="sort-icon">{{ sortColumn() === 'codigo' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="sortable-th" (click)="toggleSort('clienteNombre')">
+                      Cliente <span class="sort-icon">{{ sortColumn() === 'clienteNombre' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-right sortable-th" (click)="toggleSort('capital')">
+                      Capital Inicial <span class="sort-icon">{{ sortColumn() === 'capital' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-right sortable-th" (click)="toggleSort('totalACobrar')">
+                      Total a Cobrar <span class="sort-icon">{{ sortColumn() === 'totalACobrar' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-right sortable-th" (click)="toggleSort('totalAbonado')">
+                      Total Abonado <span class="sort-icon">{{ sortColumn() === 'totalAbonado' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-right sortable-th" (click)="toggleSort('saldoRestante')">
+                      Saldo Restante <span class="sort-icon">{{ sortColumn() === 'saldoRestante' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-center sortable-th" (click)="toggleSort('porcentajeAvance')">
+                      % Cobrado <span class="sort-icon">{{ sortColumn() === 'porcentajeAvance' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-center sortable-th" (click)="toggleSort('status')">
+                      Estado <span class="sort-icon">{{ sortColumn() === 'status' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (item of pagedCarteraTotal(); track item.id) {
+                    <tr class="table-row-hover">
+                      <td class="font-mono font-bold color-primary link-cell" (click)="navigateToLoans()" title="Clic para ver detalles del préstamo">
+                        {{ item.codigo }} <span class="link-arrow">↗</span>
+                      </td>
+                      <td class="font-semibold link-cell" (click)="navigateToClients()" title="Clic para ver expediente del cliente">
+                        {{ item.clienteNombre }} <span class="link-arrow">↗</span>
+                      </td>
+                      <td class="text-right font-mono">L. {{ item.capital | number:'1.2-2' }}</td>
+                      <td class="text-right font-mono font-bold text-purple">L. {{ item.totalACobrar | number:'1.2-2' }}</td>
+                      <td class="text-right font-mono text-green font-bold">L. {{ item.totalAbonado | number:'1.2-2' }}</td>
+                      <td class="text-right font-mono font-bold text-blue">L. {{ item.saldoRestante | number:'1.2-2' }}</td>
+                      <td class="text-center font-mono font-bold">
+                        <span [class.text-green]="item.porcentajeAvance >= 100">{{ item.porcentajeAvance | number:'1.1-1' }}%</span>
+                      </td>
+                      <td class="text-center">
+                        <span class="status-badge" [class.badge-success]="item.status === 'Pagado'" [class.badge-primary]="item.status === 'Activo'" [class.badge-danger]="item.status === 'Mora'">
+                          {{ item.status }}
+                        </span>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="8" class="no-results-cell">No se encontraron préstamos en cartera.</td>
+                    </tr>
+                  }
+                </tbody>
+                @if (listCarteraTotal().length > 0) {
+                  <tfoot>
+                    <tr class="table-totals-row">
+                      <td colspan="2" class="font-bold">TOTALES ({{ totalsCartera().count }} préstamos)</td>
+                      <td class="text-right font-mono font-bold">L. {{ totalsCartera().capitalInicial | number:'1.2-2' }}</td>
+                      <td class="text-right font-mono font-bold text-purple">L. {{ totalsCartera().totalACobrar | number:'1.2-2' }}</td>
+                      <td class="text-right font-mono font-bold text-green">L. {{ totalsCartera().totalAbonado | number:'1.2-2' }}</td>
+                      <td class="text-right font-mono font-bold text-blue">L. {{ totalsCartera().saldoRestante | number:'1.2-2' }}</td>
+                      <td colspan="2"></td>
+                    </tr>
+                  </tfoot>
+                }
+              </table>
+            </div>
+          }
+
+          <!-- 4. TABLA: CLIENTES EN MORA -->
+          @if (selectedKpiTab() === 'mora') {
+            <div class="table-responsive">
+              <table class="route-table">
+                <thead>
+                  <tr>
+                    <th class="sortable-th" (click)="toggleSort('clienteNombre')">
+                      Cliente Deudor <span class="sort-icon">{{ sortColumn() === 'clienteNombre' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th>Identidad</th>
+                    <th class="sortable-th" (click)="toggleSort('prestamoCodigo')">
+                      Préstamo Afectado <span class="sort-icon">{{ sortColumn() === 'prestamoCodigo' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-center sortable-th" (click)="toggleSort('cuotasVencidas')">
+                      Cuotas Vencidas <span class="sort-icon">{{ sortColumn() === 'cuotasVencidas' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-center sortable-th" (click)="toggleSort('diasRetraso')">
+                      Días de Atraso <span class="sort-icon">{{ sortColumn() === 'diasRetraso' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-right sortable-th" (click)="toggleSort('montoAtrasado')">
+                      Monto Atrasado <span class="sort-icon">{{ sortColumn() === 'montoAtrasado' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-center sortable-th" (click)="toggleSort('nivelRiesgo')">
+                      Nivel de Riesgo <span class="sort-icon">{{ sortColumn() === 'nivelRiesgo' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (deudor of pagedClientesMora(); track deudor.prestamoCodigo) {
+                    <tr class="table-row-hover">
+                      <td class="font-semibold text-danger link-cell" (click)="navigateToClients()" title="Clic para ver expediente del cliente">
+                        {{ deudor.clienteNombre }} <span class="link-arrow">↗</span>
+                      </td>
+                      <td class="font-mono">{{ deudor.clienteIdentidad }}</td>
+                      <td class="font-mono font-bold color-primary link-cell" (click)="navigateToLoans()" title="Clic para ver detalles del préstamo">
+                        {{ deudor.prestamoCodigo }} <span class="link-arrow">↗</span>
+                      </td>
+                      <td class="text-center font-bold">{{ deudor.cuotasVencidas }}</td>
+                      <td class="text-center font-bold text-red">{{ deudor.diasRetraso }} días</td>
+                      <td class="text-right font-mono font-bold text-red">L. {{ deudor.montoAtrasado | number:'1.2-2' }}</td>
+                      <td class="text-center">
+                        <span class="status-badge" [class.badge-danger]="deudor.nivelRiesgo === 'Alto'" [class.badge-warning]="deudor.nivelRiesgo === 'Medio'" [class.badge-success]="deudor.nivelRiesgo === 'Bajo'">
+                          {{ deudor.nivelRiesgo }}
+                        </span>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="7" class="no-results-cell">¡Excelente! No hay clientes con cuotas en mora activa.</td>
+                    </tr>
+                  }
+                </tbody>
+                @if (listClientesMora().length > 0) {
+                  <tfoot>
+                    <tr class="table-totals-row">
+                      <td colspan="3" class="font-bold">TOTALES ({{ totalsMora().count }} deudores)</td>
+                      <td class="text-center font-mono font-bold">{{ totalsMora().cuotasVencidas }} cuotas</td>
+                      <td></td>
+                      <td class="text-right font-mono font-bold text-red">L. {{ totalsMora().montoAtrasado | number:'1.2-2' }}</td>
+                      <td></td>
+                    </tr>
+                  </tfoot>
+                }
+              </table>
+            </div>
+          }
+
+          <!-- 5. TABLA: CAPITAL HISTÓRICO PRESTADO -->
+          @if (selectedKpiTab() === 'historico') {
+            <div class="table-responsive">
+              <table class="route-table">
+                <thead>
+                  <tr>
+                    <th class="sortable-th" (click)="toggleSort('codigo')">
+                      Cód. Préstamo <span class="sort-icon">{{ sortColumn() === 'codigo' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="sortable-th" (click)="toggleSort('clienteNombre')">
+                      Cliente <span class="sort-icon">{{ sortColumn() === 'clienteNombre' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th>Teléfono</th>
+                    <th class="text-right sortable-th" (click)="toggleSort('capital')">
+                      Capital Colocado <span class="sort-icon">{{ sortColumn() === 'capital' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-center sortable-th" (click)="toggleSort('interesPorcentaje')">
+                      Interés <span class="sort-icon">{{ sortColumn() === 'interesPorcentaje' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th>Método Desembolso</th>
+                    <th>Tipo Interés</th>
+                    <th class="sortable-th" (click)="toggleSort('fechaOtorgado')">
+                      Fecha Registro <span class="sort-icon">{{ sortColumn() === 'fechaOtorgado' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-center sortable-th" (click)="toggleSort('status')">
+                      Estado <span class="sort-icon">{{ sortColumn() === 'status' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (loan of pagedCapitalHistorico(); track loan.id) {
+                    <tr class="table-row-hover">
+                      <td class="font-mono font-bold color-primary link-cell" (click)="navigateToLoans()" title="Clic para ver detalles del préstamo">
+                        {{ loan.codigo }} <span class="link-arrow">↗</span>
+                      </td>
+                      <td class="font-semibold link-cell" (click)="navigateToClients()" title="Clic para ver expediente del cliente">
+                        {{ loan.clienteNombre }} <span class="link-arrow">↗</span>
+                      </td>
+                      <td class="font-mono text-muted">{{ loan.clientePhone }}</td>
+                      <td class="text-right font-mono font-bold">L. {{ loan.capital | number:'1.2-2' }}</td>
+                      <td class="text-center font-mono">{{ loan.interesPorcentaje }}%</td>
+                      <td>{{ loan.metodoDesembolso }}</td>
+                      <td>{{ loan.tipoInteres }}</td>
+                      <td>{{ loan.fechaOtorgado | date:'dd/MM/yyyy' }}</td>
+                      <td class="text-center">
+                        <span class="status-badge" [class.badge-success]="loan.status === 'Pagado'" [class.badge-primary]="loan.status === 'Activo'" [class.badge-danger]="loan.status === 'Mora'">
+                          {{ loan.status }}
+                        </span>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="9" class="no-results-cell">No hay registro histórico de préstamos.</td>
+                    </tr>
+                  }
+                </tbody>
+                @if (listCapitalHistorico().length > 0) {
+                  <tfoot>
+                    <tr class="table-totals-row">
+                      <td colspan="3" class="font-bold">TOTALES ({{ totalsHistorico().count }} préstamos)</td>
+                      <td class="text-right font-mono font-bold text-emerald">L. {{ totalsHistorico().capital | number:'1.2-2' }}</td>
+                      <td colspan="5"></td>
+                    </tr>
+                  </tfoot>
+                }
+              </table>
+            </div>
+          }
+
+          <!-- 6. TABLA: CAPITAL VIVO ACTUAL -->
+          @if (selectedKpiTab() === 'vivo') {
+            <div class="table-responsive">
+              <table class="route-table">
+                <thead>
+                  <tr>
+                    <th class="sortable-th" (click)="toggleSort('codigo')">
+                      Cód. Préstamo <span class="sort-icon">{{ sortColumn() === 'codigo' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="sortable-th" (click)="toggleSort('clienteNombre')">
+                      Cliente <span class="sort-icon">{{ sortColumn() === 'clienteNombre' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th>Teléfono</th>
+                    <th class="text-right sortable-th" (click)="toggleSort('capitalOriginal')">
+                      Capital Original <span class="sort-icon">{{ sortColumn() === 'capitalOriginal' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-right sortable-th" (click)="toggleSort('capitalRecuperado')">
+                      Principal Recuperado <span class="sort-icon">{{ sortColumn() === 'capitalRecuperado' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-right sortable-th" (click)="toggleSort('capitalVivoPendiente')">
+                      Capital Vivo Pendiente <span class="sort-icon">{{ sortColumn() === 'capitalVivoPendiente' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-center sortable-th" (click)="toggleSort('cuotasRestantes')">
+                      Cuotas Restantes <span class="sort-icon">{{ sortColumn() === 'cuotasRestantes' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                    <th class="text-center sortable-th" (click)="toggleSort('status')">
+                      Estado <span class="sort-icon">{{ sortColumn() === 'status' ? (sortDirection() === 'asc' ? '▲' : '▼') : '↕' }}</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (item of pagedCapitalVivo(); track item.id) {
+                    <tr class="table-row-hover">
+                      <td class="font-mono font-bold color-primary link-cell" (click)="navigateToLoans()" title="Clic para ver detalles del préstamo">
+                        {{ item.codigo }} <span class="link-arrow">↗</span>
+                      </td>
+                      <td class="font-semibold link-cell" (click)="navigateToClients()" title="Clic para ver expediente del cliente">
+                        {{ item.clienteNombre }} <span class="link-arrow">↗</span>
+                      </td>
+                      <td class="font-mono text-muted">{{ item.clientePhone }}</td>
+                      <td class="text-right font-mono">L. {{ item.capitalOriginal | number:'1.2-2' }}</td>
+                      <td class="text-right font-mono text-green font-bold">L. {{ item.capitalRecuperado | number:'1.2-2' }}</td>
+                      <td class="text-right font-mono font-bold text-cyan">L. {{ item.capitalVivoPendiente | number:'1.2-2' }}</td>
+                      <td class="text-center font-mono font-bold">{{ item.cuotasRestantes }} cuotas</td>
+                      <td class="text-center">
+                        <span class="status-badge" [class.badge-primary]="item.status === 'Activo'" [class.badge-danger]="item.status === 'Mora'">
+                          {{ item.status }}
+                        </span>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="8" class="no-results-cell">No hay préstamos activos con saldo pendiente.</td>
+                    </tr>
+                  }
+                </tbody>
+                @if (listCapitalVivo().length > 0) {
+                  <tfoot>
+                    <tr class="table-totals-row">
+                      <td colspan="3" class="font-bold">TOTALES ({{ totalsVivo().count }} préstamos)</td>
+                      <td class="text-right font-mono font-bold">L. {{ totalsVivo().capitalOriginal | number:'1.2-2' }}</td>
+                      <td class="text-right font-mono font-bold text-green">L. {{ totalsVivo().capitalRecuperado | number:'1.2-2' }}</td>
+                      <td class="text-right font-mono font-bold text-cyan">L. {{ totalsVivo().capitalVivoPendiente | number:'1.2-2' }}</td>
+                      <td colspan="2"></td>
+                    </tr>
+                  </tfoot>
+                }
+              </table>
+            </div>
+          }
+        }
+      </div>
+
+      <!-- Paginación Inteligente y Selector de Registros -->
+      <div class="table-pagination-footer">
+        <div class="pagination-info">
+          Mostrando 
+          <strong>{{ activeListTotalLength() === 0 ? 0 : (currentPage() - 1) * pageSize() + 1 }}</strong>
+          a 
+          <strong>{{ (currentPage() * pageSize() > activeListTotalLength()) ? activeListTotalLength() : (currentPage() * pageSize()) }}</strong>
+          de 
+          <strong>{{ activeListTotalLength() }}</strong> registros
+        </div>
+
+        <div class="pagination-controls">
+          <div class="page-size-selector">
+            <label>Mostrar:</label>
+            <select [ngModel]="pageSize()" (ngModelChange)="setPageSize(+$event)">
+              <option [value]="10">10</option>
+              <option [value]="25">25</option>
+              <option [value]="50">50</option>
+              <option [value]="99999">Todos</option>
+            </select>
+          </div>
+
+          <div class="pagination-buttons">
+            <button class="page-nav-btn" [disabled]="currentPage() === 1" (click)="prevPage()" title="Página Anterior">
+              ‹
+            </button>
+            <span class="page-indicator">Pág. {{ currentPage() }} de {{ totalPages() }}</span>
+            <button class="page-nav-btn" [disabled]="currentPage() >= totalPages()" (click)="nextPage()" title="Página Siguiente">
+              ›
+            </button>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Gráfico / Barra de Distribución y Métricas Recaudación -->
-    <section class="reports-grid">
+    <section class="reports-grid" id="section-distribucion">
       <div class="card distribution-card">
         <div class="card-header">
           <h2 class="section-title">Distribución Contable de Ingresos</h2>
@@ -225,7 +841,7 @@
     </section>
 
     <!-- Histórico Contable / Balance y Movimientos de Tesorería -->
-    <section class="reports-grid">
+    <section class="reports-grid" id="section-balance">
       <div class="card distribution-card">
         <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; margin-bottom: 24px; border-bottom: 1px solid var(--border-color);">
           <div>
@@ -287,77 +903,4 @@
         </div>
       </div>
     </section>
-
-    <!-- Reporte Trimestral de Saldos Rezagados -->
-    <section class="card table-card">
-      <div class="table-filter-header">
-        <div>
-          <h2 class="section-title">Reporte Trimestral de Saldos Rezagados</h2>
-          <p class="section-subtitle">Análisis de mora y saldos rezagados acumulados a la fecha por rango de riesgo</p>
-        </div>
-        <button class="btn-export" (click)="exportToExcel()">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon-svg"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-          Exportar a Excel
-        </button>
-      </div>
-
-      <div class="table-body">
-        <!-- Resumen del Reporte Trimestral de Saldos Rezagados -->
-        <div class="kpis-grid-3" style="margin: 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
-          <div class="kpi-card" style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.1); padding: 12px 16px; border-radius: 8px;">
-            <span class="kpi-label" style="color: #fca5a5; font-size: 0.75rem; font-weight: 500;">Saldos Rezagados del Trimestre</span>
-            <h4 style="color: #ef4444; font-size: 1.375rem; font-family: monospace; font-weight: 700; margin: 4px 0;">L. {{ saldosRezagadosTrimestre().totalAtrasado | number:'1.2-2' }}</h4>
-            <span style="color: #94a3b8; font-size: 0.6875rem;">Monto vencido total acumulado</span>
-          </div>
-          <div class="kpi-card" style="background: rgba(234, 179, 8, 0.05); border: 1px solid rgba(234, 179, 8, 0.1); padding: 12px 16px; border-radius: 8px;">
-            <span class="kpi-label" style="color: #fef08a; font-size: 0.75rem; font-weight: 500;">Cartera Vencida (> 30 días)</span>
-            <h4 style="color: #eab308; font-size: 1.375rem; font-weight: 700; margin: 4px 0;">{{ saldosRezagadosTrimestre().carteraVencida }} Clientes</h4>
-            <span style="color: #94a3b8; font-size: 0.6875rem;">Clientes con mora mayor a un mes</span>
-          </div>
-          <div class="kpi-card" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 12px 16px; border-radius: 8px;">
-            <span class="kpi-label" style="color: #fca5a5; font-size: 0.75rem; font-weight: 500;">Pérdida Crítica (> 90 días)</span>
-            <h4 style="color: #f87171; font-size: 1.375rem; font-weight: 700; margin: 4px 0;">{{ saldosRezagadosTrimestre().riesgoPerdida }} Clientes</h4>
-            <span style="color: #94a3b8; font-size: 0.6875rem;">Cuentas de alto riesgo sin abonos en 3 meses</span>
-          </div>
-        </div>
-
-        <div class="table-responsive">
-          <table class="route-table">
-            <thead>
-              <tr>
-                <th>Deudor</th>
-                <th>Cédula Identidad</th>
-                <th>Préstamo Afectado</th>
-                <th class="text-center">Cuotas Vencidas</th>
-                <th class="text-center">Días de Atraso</th>
-                <th class="text-right">Monto Atrasado</th>
-                <th class="text-center">Nivel de Riesgo</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (deudor of deudoresMora(); track deudor.prestamoCodigo) {
-                <tr class="table-row-hover">
-                  <td>
-                    <div class="client-info-cell">
-                      <span class="client-name">{{ deudor.clienteNombre }}</span>
-                    </div>
-                  </td>
-                  <td class="font-mono">{{ deudor.clienteIdentidad }}</td>
-                  <td class="font-mono font-bold">{{ deudor.prestamoCodigo }}</td>
-                  <td class="text-center font-bold">{{ deudor.cuotasVencidas }}</td>
-                  <td class="text-center font-bold text-red">{{ deudor.diasRetraso }} días</td>
-                  <td class="text-right font-mono font-bold text-red">L. {{ deudor.montoAtrasado | number:'1.2-2' }}</td>
-                  <td class="text-center">
-                    <span class="status-badge" [class.badge-danger]="deudor.nivelRiesgo === 'Alto'" [class.badge-warning]="deudor.nivelRiesgo === 'Medio'" [class.badge-success]="deudor.nivelRiesgo === 'Bajo'">
-                      {{ deudor.nivelRiesgo }}
-                    </span>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-  </main>
 </div>

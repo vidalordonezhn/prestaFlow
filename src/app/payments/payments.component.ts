@@ -8,7 +8,7 @@ import { SettingsService } from '../services/settings.service';
 @Component({
   selector: 'app-payments',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './payments.component.html',
   styleUrl: './payments.component.scss'
 })

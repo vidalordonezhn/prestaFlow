@@ -86,7 +86,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
 }
 
-/* Custom Scrollbar for modern look */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -103,6 +103,62 @@ h1, h2, h3, h4, h5, h6 {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-secondary);
+}
+
+/* ==========================================================================
+   GLOBAL PAGE VIEWS & WORKSPACE SPACING
+   ========================================================================== */
+.page-view,
+.main-content,
+.dashboard-home-view {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  padding-bottom: 48px; /* Espacio inferior para evitar que toque el borde */
+}
+
+/* Encabezados de páginas universales */
+.header,
+.main-header,
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+
+  .header-left,
+  .page-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .header-title,
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .header-subtitle,
+    .page-subtitle {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+  }
+
+  .header-right,
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
 }
 
 /* Global Animations */
@@ -133,15 +189,8 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-@keyframes pulse-subtle {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 0.95;
-  }
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
 }
 
 /* Toasts Container Global Overlay */
@@ -172,17 +221,9 @@ h1, h2, h3, h4, h5, h6 {
   transition: all var(--transition-fast);
 }
 
-.toast.success {
-  border-left-color: var(--color-green);
-}
-
-.toast.info {
-  border-left-color: var(--color-blue);
-}
-
-.toast.warning {
-  border-left-color: var(--color-orange);
-}
+.toast.success { border-left-color: var(--color-green); }
+.toast.info { border-left-color: var(--color-blue); }
+.toast.warning { border-left-color: var(--color-orange); }
 
 .toast-icon {
   display: flex;
@@ -227,163 +268,43 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   justify-content: center;
   transition: background-color var(--transition-fast);
-}
-
-.toast-close:hover {
-  background-color: var(--bg-hover);
-  color: var(--text-primary);
-}
-
-/* MENÚ DESPLEGABLE DE USUARIO EN EL SIDEBAR */
-.sidebar-footer {
-  position: relative;
-}
-
-.user-dropdown-menu {
-  position: absolute;
-  bottom: 74px;
-  left: 16px;
-  right: 16px;
-  background-color: #1e293b;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  z-index: 200;
-  animation: dropdownFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-
-  @media (max-width: 1024px) {
-    left: 4px;
-    right: 4px;
-    width: 200px;
-    bottom: 60px;
-  }
-}
-
-@keyframes dropdownFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.dropdown-header {
-  padding: 10px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  text-align: left;
-
-  .header-name {
-    font-family: var(--font-title);
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: white;
-  }
-
-  .header-username {
-    font-size: 0.75rem;
-    color: #64748b;
-  }
-}
-
-.dropdown-divider {
-  height: 1px;
-  background-color: rgba(255, 255, 255, 0.06);
-  margin: 4px 0;
-}
-
-.dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: #cbd5e1;
-  text-decoration: none;
-  background: none;
-  border: none;
-  border-radius: var(--radius-md);
-  text-align: left;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  width: 100%;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.06);
-    color: white;
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
   }
-
-  &.text-danger {
-    color: #f87171;
-
-    &:hover {
-      background-color: rgba(239, 68, 68, 0.08);
-      color: #ef4444;
-    }
-  }
-}
-
-.item-icon {
-  width: 16px;
-  height: 16px;
-  color: inherit;
-  flex-shrink: 0;
-}
-
-/* Cabecera Header Dropdown Positioning */
-.user-dropdown-menu.header-dropdown {
-  position: absolute;
-  top: 48px;
-  right: 0;
-  left: auto;
-  bottom: auto;
-  width: 220px;
 }
 
 /* ==========================================================================
-   BUTTON SYSTEM (Premium Visual Styles)
+   BUTTON SYSTEM
    ========================================================================== */
 .btn {
   font-family: var(--font-body);
   font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  padding: 0 24px;
-  height: 44px;
-  border-radius: 12px; /* Más moderno y redondeado */
+  padding: 0 20px;
+  height: 42px;
+  border-radius: var(--radius-lg);
   border: none;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   position: relative;
-  overflow: hidden;
-  z-index: 1;
   outline: none;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  -webkit-font-smoothing: antialiased;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
-  /* Efecto de escalado y elevación en hover */
   &:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
   }
 
   &:active {
-    transform: translateY(1px) scale(0.98);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
   }
 
   &:disabled {
@@ -394,58 +315,29 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* Botón Primario: Gradiente vibrante con brillo de Neón Indigo-Azul */
 .btn-primary {
   background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
   color: white !important;
-  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-
-  /* Efecto de destello metálico continuo */
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.25),
-      transparent
-    );
-    transition: 0.6s ease;
-    z-index: -1;
-  }
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
 
   &:hover {
     background: linear-gradient(135deg, #5a52ff 0%, #4ea5ff 100%);
-    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.45);
-
-    &::before {
-      left: 100%;
-    }
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
   }
 }
 
-/* Botón Secundario: Estilo Glassmorphic translúcido de alta gama */
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.85);
   color: var(--text-secondary) !important;
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid rgba(148, 163, 184, 0.3);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.95);
+    background: #ffffff;
     color: var(--text-primary) !important;
-    border-color: rgba(148, 163, 184, 0.4);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    border-color: rgba(148, 163, 184, 0.5);
   }
 }
 
-/* Botón Peligro/Mora: Gradiente suave carmesí con glow */
 .btn-danger {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white !important;
@@ -453,11 +345,10 @@ h1, h2, h3, h4, h5, h6 {
 
   &:hover {
     background: linear-gradient(135deg, #f87171 0%, #b91c1c 100%);
-    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
   }
 }
 
-/* Botón de Éxito: Gradiente esmeralda */
 .btn-success {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white !important;
@@ -465,22 +356,110 @@ h1, h2, h3, h4, h5, h6 {
 
   &:hover {
     background: linear-gradient(135deg, #34d399 0%, #047857 100%);
-    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
   }
 }
 
 /* ==========================================================================
-   ALIGNMENT UTILITIES FOR TABLES
+   ALIGNMENT & TYPOGRAPHY UTILITIES
    ========================================================================== */
-.text-right {
-  text-align: right !important;
-}
+.text-right { text-align: right !important; }
+.text-left { text-align: left !important; }
+.text-center { text-align: center !important; }
+.font-mono { font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace !important; }
+.font-bold { font-weight: 700 !important; }
+.font-semibold { font-weight: 600 !important; }
 
-.text-left {
-  text-align: left !important;
-}
+/* ==========================================================================
+   GLOBAL PRINT MEDIA RULES (Receipt printing optimization - Strict 1 Page)
+   ========================================================================== */
+@media print {
+  @page {
+    size: portrait;
+    margin: 0;
+  }
 
-.text-center {
-  text-align: center !important;
-}
+  html, body {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
 
+  /* 1. Hide all elements across the entire DOM tree */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* 2. Reveal modal backdrop and receipt card exclusively */
+  .modal-backdrop,
+  .modal-backdrop .receipt-card,
+  .modal-backdrop .receipt-card * {
+    visibility: visible !important;
+  }
+
+  /* 3. Completely eliminate buttons marked for print exclusion */
+  .hide-for-print,
+  .hide-for-print * {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* 4. Position the receipt neatly at the top-center of the single printed page */
+  .modal-backdrop {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    background: transparent !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    padding-top: 15mm !important;
+    margin: 0 !important;
+    z-index: 999999 !important;
+    backdrop-filter: none !important;
+    animation: none !important;
+    overflow: hidden !important;
+  }
+
+  .modal-card.receipt-card {
+    position: relative !important;
+    width: 380px !important;
+    max-width: 380px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .receipt-wrapper {
+    padding: 20px 24px !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  .receipt-header,
+  .receipt-body,
+  .receipt-row-meta,
+  .receipt-details,
+  .receipt-breakdown,
+  .receipt-total-section,
+  .receipt-footer-msg {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}

@@ -6,6 +6,7 @@ import { SettingsService } from '../services/settings.service';
 import { ApiClientsService, ClienteResponse } from '../services/api-clients.service';
 import { ApiPrestamosService } from '../services/api-prestamos.service';
 import { ApiCajaService, CuentaResponse } from '../services/api-caja.service';
+import { PermissionsService } from '../services/permissions.service';
 
 interface Loan {
   id: string;
@@ -49,12 +50,13 @@ interface Toast {
 @Component({
   selector: 'app-loans',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './loans.component.html',
   styleUrl: './loans.component.scss'
 })
 export class LoansComponent implements OnInit {
   protected readonly auth = inject(ApiAuthService);
+  protected readonly permissions = inject(PermissionsService);
   protected readonly settingsService = inject(SettingsService);
   private readonly router = inject(Router);
   private readonly apiClientsService = inject(ApiClientsService);

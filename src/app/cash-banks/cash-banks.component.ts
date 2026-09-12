@@ -14,7 +14,7 @@ interface Toast {
 @Component({
   selector: 'app-cash-banks',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './cash-banks.component.html',
   styleUrl: './cash-banks.component.scss'
 })

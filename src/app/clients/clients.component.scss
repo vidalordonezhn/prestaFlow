@@ -824,7 +824,8 @@
   }
 }
 
-.modal-card.modal-lg .modal-body {
+.modal-card.modal-lg .modal-body.modal-grid-layout,
+.modal-card.modal-lg .modal-body.create-client-grid {
   padding: 0;
 }
 

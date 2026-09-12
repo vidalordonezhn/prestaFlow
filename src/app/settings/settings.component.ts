@@ -10,6 +10,7 @@ import { ApiClientsService } from '../services/api-clients.service';
 import { ApiPrestamosService } from '../services/api-prestamos.service';
 import { ApiPagosService } from '../services/api-pagos.service';
 import { ApiUsuariosService } from '../services/api-usuarios.service';
+import { PermissionsService, UserPermissions, RoleDefinition, ADMIN_PRESET, COBRADOR_PRESET, SUPERVISOR_PRESET } from '../services/permissions.service';
 
 @Component({
   selector: 'app-settings',
@@ -22,6 +23,7 @@ export class SettingsComponent implements OnInit {
   protected readonly auth = inject(ApiAuthService);
   private readonly router = inject(Router);
   protected readonly settingsService = inject(SettingsService);
+  protected readonly permissionsService = inject(PermissionsService);
   private readonly apiCajaService = inject(ApiCajaService);
   private readonly apiClientsService = inject(ApiClientsService);
   private readonly apiPrestamosService = inject(ApiPrestamosService);
@@ -265,6 +267,154 @@ export class SettingsComponent implements OnInit {
         console.error(err);
       }
     });
+  }
+
+  // Modal de Detalle y Configuración de Permisos Dinámicos
+  protected readonly showPermissionsModal = signal<boolean>(false);
+  protected readonly selectedUserForPerms = signal<any | null>(null);
+  protected readonly editingUserPermissions = signal<UserPermissions>({ ...COBRADOR_PRESET });
+  
+  protected readonly activePermsCount = computed(() => {
+    const p = this.editingUserPermissions();
+    return Object.values(p).filter(Boolean).length;
+  });
+
+  protected openPermissionsModal(user: any): void {
+    this.selectedUserForPerms.set(user);
+    const perms = this.permissionsService.getPermissionsForUser(user.username, user.rol);
+    this.editingUserPermissions.set(perms);
+    this.showPermissionsModal.set(true);
+  }
+
+  protected closePermissionsModal(): void {
+    this.showPermissionsModal.set(false);
+    this.selectedUserForPerms.set(null);
+  }
+
+  protected togglePermission(key: keyof UserPermissions): void {
+    this.editingUserPermissions.update(p => ({
+      ...p,
+      [key]: !p[key]
+    }));
+  }
+
+  protected applyPreset(presetType: 'admin' | 'cobrador' | 'supervisor'): void {
+    const preset = this.permissionsService.getPreset(presetType);
+    this.editingUserPermissions.set(preset);
+  }
+
+  protected guardarPermisosUsuario(): void {
+    const user = this.selectedUserForPerms();
+    if (!user) return;
+
+    this.permissionsService.savePermissionsForUser(user.username, this.editingUserPermissions());
+    this.showSuccess(`Permisos del usuario "${user.nombre}" actualizados correctamente.`);
+    this.closePermissionsModal();
+  }
+
+  // Catálogo y Gestión de Roles Personalizados
+  protected readonly showManageRolesModal = signal<boolean>(false);
+  protected readonly showRoleModal = signal<boolean>(false);
+  protected readonly editingRoleId = signal<string | null>(null);
+  protected readonly roleFormNombre = signal<string>('');
+  protected readonly roleFormIcono = signal<string>('💼');
+  protected readonly roleFormDescripcion = signal<string>('');
+  protected readonly roleFormPermisos = signal<UserPermissions>({ ...COBRADOR_PRESET });
+  protected readonly availableRoleIcons = ['💼', '🛵', '👑', '👤', '📊', '🛡️', '💰', '📑', '🏪', '🔍', '⚙️', '📈'];
+
+  protected readonly roleFormActivePermsCount = computed(() => {
+    const p = this.roleFormPermisos();
+    return Object.values(p).filter(Boolean).length;
+  });
+
+  protected getRoleDef(roleIdOrName: string): RoleDefinition | undefined {
+    return this.permissionsService.roles().find(r => r.id === roleIdOrName || r.nombre === roleIdOrName);
+  }
+
+  protected countRolePerms(perms: UserPermissions): number {
+    return Object.values(perms).filter(Boolean).length;
+  }
+
+  protected openManageRolesModal(): void {
+    this.showManageRolesModal.set(true);
+  }
+
+  protected closeManageRolesModal(): void {
+    this.showManageRolesModal.set(false);
+  }
+
+  protected openCreateRoleModal(): void {
+    this.editingRoleId.set(null);
+    this.roleFormNombre.set('');
+    this.roleFormIcono.set('💼');
+    this.roleFormDescripcion.set('');
+    this.roleFormPermisos.set({ ...COBRADOR_PRESET });
+    this.showRoleModal.set(true);
+  }
+
+  protected openEditRoleModal(role: RoleDefinition): void {
+    this.editingRoleId.set(role.id);
+    this.roleFormNombre.set(role.nombre);
+    this.roleFormIcono.set(role.icono);
+    this.roleFormDescripcion.set(role.descripcion);
+    this.roleFormPermisos.set({ ...role.permisos });
+    this.showRoleModal.set(true);
+  }
+
+  protected closeRoleModal(): void {
+    this.showRoleModal.set(false);
+    this.editingRoleId.set(null);
+  }
+
+  protected toggleRoleFormPermission(key: keyof UserPermissions): void {
+    this.roleFormPermisos.update(p => ({
+      ...p,
+      [key]: !p[key]
+    }));
+  }
+
+  protected applyPresetToRoleForm(presetType: 'admin' | 'cobrador' | 'supervisor'): void {
+    const preset = this.permissionsService.getPreset(presetType);
+    this.roleFormPermisos.set(preset);
+  }
+
+  protected guardarRol(): void {
+    const nombre = this.roleFormNombre().trim();
+    if (!nombre) {
+      this.showError('Debes ingresar un nombre para el rol.');
+      return;
+    }
+
+    const icono = this.roleFormIcono() || '💼';
+    const desc = this.roleFormDescripcion().trim() || `Rol configurado para ${nombre}`;
+    const perms = this.roleFormPermisos();
+
+    const editId = this.editingRoleId();
+    if (editId) {
+      this.permissionsService.editarRol(editId, nombre, icono, desc, perms);
+      this.showSuccess(`Rol "${nombre}" actualizado con éxito.`);
+    } else {
+      this.permissionsService.crearRol(nombre, icono, desc, perms);
+      this.showSuccess(`Rol "${nombre}" creado con éxito.`);
+    }
+
+    this.closeRoleModal();
+  }
+
+  protected eliminarRol(role: RoleDefinition): void {
+    if (role.esSistema) {
+      this.showError('No se pueden eliminar los roles predeterminados del sistema.');
+      return;
+    }
+
+    if (confirm(`¿Estás seguro de eliminar el rol "${role.nombre}"?`)) {
+      const deleted = this.permissionsService.eliminarRol(role.id);
+      if (deleted) {
+        this.showSuccess(`Rol "${role.nombre}" eliminado correctamente.`);
+      } else {
+        this.showError('No se pudo eliminar el rol.');
+      }
+    }
   }
 
   protected toggleUserDropdown(event: Event): void {

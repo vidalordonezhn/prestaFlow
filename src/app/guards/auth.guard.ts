@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { ApiAuthService } from '../services/api-auth.service';
+import { PermissionsService, UserPermissions } from '../services/permissions.service';
 
 /**
  * Guarda para proteger rutas operativas del sistema (Dashboard, Clientes, Préstamos).
@@ -31,4 +32,27 @@ export const loginGuard: CanActivateFn = (route, state) => {
   }
 
   return true;
+};
+
+/**
+ * Guarda dinámica que verifica si el usuario tiene permiso para acceder a una ruta o función.
+ */
+export const adminGuard: CanActivateFn = (route, state) => {
+  const authService = inject(ApiAuthService);
+  const permissionsService = inject(PermissionsService);
+  const router = inject(Router);
+  const user = authService.currentUser();
+
+  if (!user) {
+    router.navigate(['/login']);
+    return false;
+  }
+
+  if (user.rol === 'Admin' || permissionsService.canAccessRoute(state.url)) {
+    return true;
+  }
+
+  // Si no tiene permiso, redirigir a Cobros de Hoy
+  router.navigate(['/cobros']);
+  return false;
 };

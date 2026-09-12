@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { ApiClientsService, ClienteResponse, ClienteCreate } from '../services/api-clients.service';
 import { ApiAuthService } from '../services/api-auth.service';
+import { PermissionsService } from '../services/permissions.service';
 
 interface Client {
   dbId: number;
@@ -47,13 +48,14 @@ const mapToClient = (res: ClienteResponse): Client => ({
 @Component({
   selector: 'app-clients',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './clients.component.html',
   styleUrl: './clients.component.scss'
 })
 export class ClientsComponent implements OnInit {
   private readonly apiClientsService = inject(ApiClientsService);
   protected readonly auth = inject(ApiAuthService);
+  protected readonly permissions = inject(PermissionsService);
   private readonly router = inject(Router);
 
   // Current Date

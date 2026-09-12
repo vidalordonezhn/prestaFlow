@@ -1,89 +1,4 @@
-<div class="dashboard-layout">
-  <!-- SIDEBAR (Navegación Izquierda) -->
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-logo">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
-          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-      </div>
-      <span class="brand-name">PrestaFlow</span>
-    </div>
-    
-    <nav class="sidebar-nav">
-      @for (item of menuItems; track item.name) {
-        <!-- Solo mostrar Caja, Reportes y Configuración a Administradores -->
-        @if (auth.currentUser()?.rol === 'Admin' || (item.name !== 'Caja y Bancos' && item.name !== 'Reportes' && item.name !== 'Configuración')) {
-          <a [routerLink]="item.route" class="nav-item" [class.active]="item.active">
-            <span class="nav-icon">
-              @switch (item.icon) {
-                @case ('dashboard') {
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
-                }
-                @case ('currency_exchange') {
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                }
-                @case ('people') {
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                }
-                @case ('receipt_long') {
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"></path><path d="M16 8H8"></path><path d="M16 12H8"></path><path d="M13 16H8"></path></svg>
-                }
-                @case ('account_balance') {
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="22" x2="22" y2="22"></line><line x1="5" y1="11" x2="5" y2="18"></line><line x1="12" y1="11" x2="12" y2="18"></line><line x1="19" y1="11" x2="19" y2="18"></line><path d="M12 2 2 7h20L12 2z"></path></svg>
-                }
-                @case ('analytics') {
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                }
-                @case ('settings') {
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2 2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                }
-              }
-            </span>
-            <span class="nav-text">{{ item.name }}</span>
-          </a>
-        }
-      }
-    </nav>
-    
-    <div class="sidebar-footer">
-      <div class="user-pill-dark" (click)="toggleUserDropdown($event)" title="Opciones de usuario" style="cursor: pointer; position: relative; display: flex; align-items: center; width: 100%;">
-        <div class="avatar">{{ auth.currentUser()?.nombre?.substring(0, 2)?.toUpperCase() || 'AD' }}</div>
-        <div class="user-details" style="flex-grow: 1;">
-          <span class="user-name">{{ auth.currentUser()?.nombre || 'Administrador' }}</span>
-          <span class="user-role">{{ auth.currentUser()?.rol || 'Admin' }}</span>
-        </div>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="inline-icon" style="width: 14px; height: 14px; margin-left: auto; color: #64748b;"><polyline points="6 9 12 15 18 9"></polyline></svg>
-      </div>
-
-      <!-- DROPDOWN DE USUARIO -->
-      @if (showUserDropdown()) {
-        <div class="user-dropdown-menu">
-          <div class="dropdown-header">
-            <span class="header-name">{{ auth.currentUser()?.nombre }}</span>
-            <span class="header-username">@{{ auth.currentUser()?.username }}</span>
-          </div>
-          <div class="dropdown-divider"></div>
-          
-          <a routerLink="/configuracion" class="dropdown-item" (click)="showUserDropdown.set(false)">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="item-icon"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2 2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            Configuración
-          </a>
-          
-          <div class="dropdown-divider"></div>
-          
-          <button type="button" class="dropdown-item text-danger" (click)="onLogout()">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="item-icon"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            Cerrar Sesión
-          </button>
-        </div>
-      }
-    </div>
-  </aside>
-
-  <!-- MAIN CONTENT -->
-  <main class="main-content animate-fade-in">
+<div class="page-view animate-fade-in">
     <!-- Header -->
     <header class="main-header">
       <div class="header-left">
@@ -259,8 +174,22 @@
       <!-- PESTAÑA: USUARIOS Y SEGURIDAD -->
       @if (activeTab() === 'usuarios') {
         <div class="tab-pane">
-          <h3 class="pane-title">Usuarios y Permisos de Seguridad</h3>
-          <p class="pane-subtitle">Crea accesos individuales para tus cobradores o personal administrativo</p>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <h3 class="pane-title" style="margin: 0;">Usuarios y Seguridad</h3>
+              <p class="pane-subtitle" style="margin: 4px 0 0 0;">Crea usuarios, asigna roles y personaliza las facultades de acceso del equipo</p>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <button type="button" class="btn-action-outline" style="padding: 8px 14px; font-size: 0.8125rem; display: inline-flex; align-items: center; gap: 6px;" (click)="openManageRolesModal()" title="Ver y editar el catálogo de roles">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Gestionar Roles ({{ permissionsService.roles().length }})
+              </button>
+              <button type="button" class="btn-action" style="padding: 8px 16px; font-size: 0.8125rem; display: inline-flex; align-items: center; gap: 6px;" (click)="openCreateRoleModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                + Crear Rol
+              </button>
+            </div>
+          </div>
 
           <!-- Formulario Agregar Usuario -->
           <form (submit)="$event.preventDefault(); registrarUsuario()" class="settings-form-box" style="background-color: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 20px; border-radius: var(--radius-lg); margin-bottom: 32px;">
@@ -285,17 +214,29 @@
               <div class="form-group">
                 <label class="form-label" for="usrRol">Rol asignado</label>
                 <select class="form-input" id="usrRol" [(ngModel)]="newRol" name="newRol" required>
-                  <option value="Cobrador">Cobrador (Acceso Limitado)</option>
-                  <option value="Admin">Administrador (Acceso Total)</option>
+                  @for (r of permissionsService.roles(); track r.id) {
+                    <option [value]="r.id">{{ r.icono }} {{ r.nombre }}</option>
+                  }
                 </select>
               </div>
             </div>
+
+            <!-- Banner interactivo de preview de permisos según rol seleccionado -->
+            @if (getRoleDef(newRol()); as rolSel) {
+              <div style="margin-top: 16px; padding: 12px 16px; border-radius: var(--radius-md); font-size: 0.8125rem; display: flex; align-items: center; gap: 12px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); color: var(--color-blue);">
+                <span style="font-size: 1.5rem;">{{ rolSel.icono }}</span>
+                <div>
+                  <strong>Rol Seleccionado: {{ rolSel.nombre }}</strong> ({{ countRolePerms(rolSel.permisos) }}/13 facultades activas)
+                  <p style="margin: 2px 0 0 0; font-size: 0.75rem; color: var(--text-secondary);">{{ rolSel.descripcion }}</p>
+                </div>
+              </div>
+            }
 
             <button type="submit" class="btn-action-outline" style="margin-top: 16px;">Crear Usuario</button>
           </form>
 
           <!-- Listado de Usuarios -->
-          <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--text-primary);">Usuarios con Acceso Activo</h4>
+          <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--text-primary);">Usuarios y Accesos Registrados</h4>
           <div class="table-responsive" style="border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden;">
             <table class="route-table">
               <thead>
@@ -303,6 +244,7 @@
                   <th>Nombre Completo</th>
                   <th>Usuario</th>
                   <th>Rol</th>
+                  <th>Nivel de Acceso</th>
                   <th>Estado</th>
                   <th>Fecha Registro</th>
                   <th class="text-center">Acciones</th>
@@ -310,12 +252,19 @@
               </thead>
               <tbody>
                 @for (u of usuarios(); track u.username) {
+                  @let uRolDef = getRoleDef(u.rol);
                   <tr>
                     <td class="font-medium">{{ u.nombre }}</td>
                     <td class="font-mono" style="font-size: 0.8125rem;">{{ u.username }}</td>
                     <td>
-                      <span class="status-badge" [class.badge-success]="u.rol === 'Admin'" [class.badge-info]="u.rol === 'Cobrador'">
-                        {{ u.rol }}
+                      <span class="status-badge" [class.badge-success]="u.rol === 'Admin'" [class.badge-info]="u.rol !== 'Admin'">
+                        {{ uRolDef ? uRolDef.icono + ' ' + uRolDef.nombre : u.rol }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="status-badge" 
+                            style="background: rgba(99, 102, 241, 0.12); color: var(--color-blue); border: 1px solid rgba(99, 102, 241, 0.25);">
+                        {{ countRolePerms(permissionsService.getPermissionsForUser(u.username, u.rol)) }} / 13 Facultades
                       </span>
                     </td>
                     <td>
@@ -325,10 +274,16 @@
                     </td>
                     <td>{{ u.fechaCreacion }}</td>
                     <td class="text-center">
-                      <button type="button" class="btn-action-outline" style="padding: 4px 10px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 4px;" (click)="openChangePasswordModal(u.username)">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-icon" style="width: 12px; height: 12px;"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
-                        Cambiar Contraseña
-                      </button>
+                      <div style="display: inline-flex; gap: 8px;">
+                        <button type="button" class="btn-action-outline" style="padding: 4px 10px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 4px;" (click)="openPermissionsModal(u)" title="Ver matriz de permisos del usuario">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-icon" style="width: 12px; height: 12px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                          Ver Permisos
+                        </button>
+                        <button type="button" class="btn-action-outline" style="padding: 4px 10px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 4px;" (click)="openChangePasswordModal(u.username)" title="Cambiar clave de acceso">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-icon" style="width: 12px; height: 12px;"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+                          Clave
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 }
@@ -367,7 +322,6 @@
       }
 
     </div>
-  </main>
 
   <!-- MODAL: CAMBIAR CONTRASEÑA -->
   @if (showPasswordModal()) {
@@ -388,6 +342,522 @@
             </button>
             <button type="submit" class="btn-action">
               Guardar Contraseña
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: GESTIÓN DINÁMICA DE PERMISOS Y DELIMITACIONES -->
+  @if (showPermissionsModal() && selectedUserForPerms()) {
+    <div class="modal-backdrop">
+      <div class="modal-card modal-permissions-card" style="padding: 24px; max-width: 620px; max-height: 90vh; overflow-y: auto;">
+        <!-- Header del Modal -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color);">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 2rem;">{{ selectedUserForPerms().rol === 'Admin' ? '👑' : '🛵' }}</span>
+            <div>
+              <h3 class="pane-title" style="margin: 0; font-size: 1.15rem;">Delimitaciones de Acceso</h3>
+              <p class="pane-subtitle" style="margin: 2px 0 0 0;">Usuario: <strong>{{ selectedUserForPerms().nombre }}</strong> (&#64;{{ selectedUserForPerms().username }})</p>
+            </div>
+          </div>
+          <span class="status-badge" style="background: rgba(99, 102, 241, 0.15); color: var(--color-blue); border: 1px solid rgba(99, 102, 241, 0.3); font-size: 0.75rem;">
+            {{ activePermsCount() }} / 13 Habilitados
+          </span>
+        </div>
+
+        <!-- Barra de Plantillas Rápidas (Presets) -->
+        <div style="background-color: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 12px 16px; margin-bottom: 20px;">
+          <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px;">
+            Aplicar Plantilla Rápida:
+          </span>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn-preset-pill" (click)="applyPreset('admin')" title="Activar todos los permisos">
+              👑 Administrador Total
+            </button>
+            <button type="button" class="btn-preset-pill" (click)="applyPreset('cobrador')" title="Solo Cobros, Clientes y Recibos">
+              🛵 Cobrador Estándar
+            </button>
+            <button type="button" class="btn-preset-pill" (click)="applyPreset('supervisor')" title="Cobros, Clientes, Reportes y Préstamos">
+              👤 Supervisor
+            </button>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 1: ACCESO A PANTALLAS Y MÓDULOS -->
+        <h4 style="font-size: 0.8125rem; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">
+          1. Acceso a Módulos y Pantallas:
+        </h4>
+        <div class="permissions-switches-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+          
+          <div class="perm-switch-item" (click)="togglePermission('verDashboard')">
+            <div class="perm-info">
+              <span class="perm-name">Dashboard Principal</span>
+              <span class="perm-desc">Resumen general y gráficos</span>
+            </div>
+            <label class="switch-ui" (click)="$event.stopPropagation()">
+              <input type="checkbox" [checked]="editingUserPermissions().verDashboard" (change)="togglePermission('verDashboard')">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <div class="perm-switch-item" (click)="togglePermission('verCobros')">
+            <div class="perm-info">
+              <span class="perm-name">Cobros de Hoy y Ruta</span>
+              <span class="perm-desc">Cobranza del día en calle</span>
+            </div>
+            <label class="switch-ui" (click)="$event.stopPropagation()">
+              <input type="checkbox" [checked]="editingUserPermissions().verCobros" (change)="togglePermission('verCobros')">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <div class="perm-switch-item" (click)="togglePermission('verPrestamos')">
+            <div class="perm-info">
+              <span class="perm-name">Gestión de Préstamos</span>
+              <span class="perm-desc">Listado y saldos de créditos</span>
+            </div>
+            <label class="switch-ui" (click)="$event.stopPropagation()">
+              <input type="checkbox" [checked]="editingUserPermissions().verPrestamos" (change)="togglePermission('verPrestamos')">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <div class="perm-switch-item" (click)="togglePermission('verClientes')">
+            <div class="perm-info">
+              <span class="perm-name">Directorio de Clientes</span>
+              <span class="perm-desc">Padrón de prestatarios</span>
+            </div>
+            <label class="switch-ui" (click)="$event.stopPropagation()">
+              <input type="checkbox" [checked]="editingUserPermissions().verClientes" (change)="togglePermission('verClientes')">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <div class="perm-switch-item" (click)="togglePermission('verPagos')">
+            <div class="perm-info">
+              <span class="perm-name">Historial de Pagos</span>
+              <span class="perm-desc">Recibos y cobros emitidos</span>
+            </div>
+            <label class="switch-ui" (click)="$event.stopPropagation()">
+              <input type="checkbox" [checked]="editingUserPermissions().verPagos" (change)="togglePermission('verPagos')">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <div class="perm-switch-item" (click)="togglePermission('verCajaBancos')">
+            <div class="perm-info">
+              <span class="perm-name">Caja y Bancos</span>
+              <span class="perm-desc">Tesorería y cuentas bancarias</span>
+            </div>
+            <label class="switch-ui" (click)="$event.stopPropagation()">
+              <input type="checkbox" [checked]="editingUserPermissions().verCajaBancos" (change)="togglePermission('verCajaBancos')">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <div class="perm-switch-item" (click)="togglePermission('verReportes')">
+            <div class="perm-info">
+              <span class="perm-name">Reportes y Analíticas</span>
+              <span class="perm-desc">Libros contables y finanzas</span>
+            </div>
+            <label class="switch-ui" (click)="$event.stopPropagation()">
+              <input type="checkbox" [checked]="editingUserPermissions().verReportes" (change)="togglePermission('verReportes')">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <div class="perm-switch-item" (click)="togglePermission('verConfiguracion')">
+            <div class="perm-info">
+              <span class="perm-name">Configuración</span>
+              <span class="perm-desc">Ajustes, bancos y usuarios</span>
+            </div>
+            <label class="switch-ui" (click)="$event.stopPropagation()">
+              <input type="checkbox" [checked]="editingUserPermissions().verConfiguracion" (change)="togglePermission('verConfiguracion')">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+        </div>
+
+        <!-- SECCIÓN 2: ACCIONES Y FACULTADES OPERATIVAS -->
+        <h4 style="font-size: 0.8125rem; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">
+          2. Acciones y Facultades Operativas:
+        </h4>
+        <div class="permissions-switches-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
+          
+          <div class="perm-switch-item" (click)="togglePermission('crearPrestamos')">
+            <div class="perm-info">
+              <span class="perm-name">Desembolsar Préstamos</span>
+              <span class="perm-desc">Botón "Nuevo Préstamo"</span>
+            </div>
+            <label class="switch-ui" (click)="$event.stopPropagation()">
+              <input type="checkbox" [checked]="editingUserPermissions().crearPrestamos" (change)="togglePermission('crearPrestamos')">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <div class="perm-switch-item" (click)="togglePermission('crearClientes')">
+            <div class="perm-info">
+              <span class="perm-name">Crear / Editar Clientes</span>
+              <span class="perm-desc">Alta de nuevos deudores</span>
+            </div>
+            <label class="switch-ui" (click)="$event.stopPropagation()">
+              <input type="checkbox" [checked]="editingUserPermissions().crearClientes" (change)="togglePermission('crearClientes')">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <div class="perm-switch-item" (click)="togglePermission('registrarAbonos')">
+            <div class="perm-info">
+              <span class="perm-name">Registrar Abonos</span>
+              <span class="perm-desc">Cobrar cuotas en ruta</span>
+            </div>
+            <label class="switch-ui" (click)="$event.stopPropagation()">
+              <input type="checkbox" [checked]="editingUserPermissions().registrarAbonos" (change)="togglePermission('registrarAbonos')">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <div class="perm-switch-item" (click)="togglePermission('anularPagos')">
+            <div class="perm-info">
+              <span class="perm-name">Anular Recibos de Pago</span>
+              <span class="perm-desc">Reversar pagos registrados</span>
+            </div>
+            <label class="switch-ui" (click)="$event.stopPropagation()">
+              <input type="checkbox" [checked]="editingUserPermissions().anularPagos" (change)="togglePermission('anularPagos')">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <div class="perm-switch-item" (click)="togglePermission('exportarExcel')">
+            <div class="perm-info">
+              <span class="perm-name">Exportar a Excel</span>
+              <span class="perm-desc">Descargar tablas y reportes</span>
+            </div>
+            <label class="switch-ui" (click)="$event.stopPropagation()">
+              <input type="checkbox" [checked]="editingUserPermissions().exportarExcel" (change)="togglePermission('exportarExcel')">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+        </div>
+
+        <!-- Botones de Acción -->
+        <div style="display: flex; gap: 12px; justify-content: flex-end; padding-top: 16px; border-top: 1px solid var(--border-color);">
+          <button type="button" class="btn-action-outline" (click)="closePermissionsModal()">
+            Cancelar
+          </button>
+          <button type="button" class="btn-action" (click)="guardarPermisosUsuario()" style="padding: 8px 24px;">
+            Guardar Permisos
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: GESTIONAR CATÁLOGO DE ROLES -->
+  @if (showManageRolesModal()) {
+    <div class="modal-backdrop">
+      <div class="modal-card" style="padding: 24px; max-width: 680px; max-height: 90vh; overflow-y: auto;">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color);">
+          <div>
+            <h3 class="pane-title" style="margin: 0; font-size: 1.15rem;">Catálogo de Roles del Sistema</h3>
+            <p class="pane-subtitle" style="margin: 2px 0 0 0;">Configura y administra los perfiles y delimitaciones de acceso</p>
+          </div>
+          <button type="button" class="btn-action" style="padding: 6px 14px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 4px;" (click)="openCreateRoleModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Nuevo Rol
+          </button>
+        </div>
+
+        <!-- Lista de Roles -->
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+          @for (r of permissionsService.roles(); track r.id) {
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background-color: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-lg); gap: 16px;">
+              <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                <span style="font-size: 1.75rem;">{{ r.icono }}</span>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin: 0;">{{ r.nombre }}</h4>
+                    <span class="status-badge" 
+                          [style.background]="r.esSistema ? 'rgba(99, 102, 241, 0.12)' : 'rgba(16, 185, 129, 0.12)'"
+                          [style.color]="r.esSistema ? 'var(--color-blue)' : '#10b981'"
+                          [style.border]="r.esSistema ? '1px solid rgba(99, 102, 241, 0.25)' : '1px solid rgba(16, 185, 129, 0.25)'"
+                          style="font-size: 0.65rem;">
+                      {{ r.esSistema ? 'SISTEMA' : 'PERSONALIZADO' }}
+                    </span>
+                  </div>
+                  <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 2px 0 0 0;">{{ r.descripcion }}</p>
+                </div>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span class="status-badge" style="background: rgba(255, 255, 255, 0.04); color: var(--text-primary); border: 1px solid var(--border-color); font-size: 0.75rem;">
+                  {{ countRolePerms(r.permisos) }} / 13 Facultades
+                </span>
+                <button type="button" class="btn-action-outline" style="padding: 6px 12px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 4px;" (click)="openEditRoleModal(r)" title="Editar permisos del rol">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  Editar
+                </button>
+                @if (!r.esSistema) {
+                  <button type="button" class="btn-action-outline" style="padding: 6px 10px; font-size: 0.75rem; color: #ef4444; border-color: rgba(239, 68, 68, 0.4);" (click)="eliminarRol(r)" title="Eliminar este rol">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Footer -->
+        <div style="display: flex; justify-content: flex-end; padding-top: 16px; border-top: 1px solid var(--border-color);">
+          <button type="button" class="btn-action-outline" (click)="closeManageRolesModal()">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: CREAR / EDITAR ROL PERSONALIZADO -->
+  @if (showRoleModal()) {
+    <div class="modal-backdrop">
+      <div class="modal-card modal-permissions-card" style="padding: 24px; max-width: 640px; max-height: 90vh; overflow-y: auto;">
+        <!-- Header del Modal -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color);">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 2rem;">{{ roleFormIcono() }}</span>
+            <div>
+              <h3 class="pane-title" style="margin: 0; font-size: 1.15rem;">
+                {{ editingRoleId() ? 'Editar Rol' : 'Crear Nuevo Rol' }}
+              </h3>
+              <p class="pane-subtitle" style="margin: 2px 0 0 0;">
+                Define el nombre, icono y facultades asignadas a este perfil
+              </p>
+            </div>
+          </div>
+          <span class="status-badge" style="background: rgba(99, 102, 241, 0.15); color: var(--color-blue); border: 1px solid rgba(99, 102, 241, 0.3); font-size: 0.75rem;">
+            {{ roleFormActivePermsCount() }} / 13 Habilitados
+          </span>
+        </div>
+
+        <form (submit)="$event.preventDefault(); guardarRol()" style="display: flex; flex-direction: column; gap: 16px;">
+          <!-- Datos básicos del rol -->
+          <div class="form-grid" style="gap: 16px;">
+            <div class="form-group">
+              <label class="form-label" for="roleNameInput">Nombre del Rol *</label>
+              <input class="form-input" type="text" id="roleNameInput" [(ngModel)]="roleFormNombre" name="roleFormNombre" placeholder="ej. Auditor de Campo, Gerente" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Icono / Emoji Representativo</label>
+              <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                @for (ico of availableRoleIcons; track ico) {
+                  <button type="button" 
+                          class="btn-preset-pill" 
+                          [style.background]="roleFormIcono() === ico ? 'var(--color-blue)' : 'var(--bg-card)'"
+                          [style.color]="roleFormIcono() === ico ? '#ffffff' : 'var(--text-primary)'"
+                          style="padding: 4px 8px; font-size: 1rem; border-radius: var(--radius-md);" 
+                          (click)="roleFormIcono.set(ico)">
+                    {{ ico }}
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="roleDescInput">Descripción de Responsabilidades</label>
+            <input class="form-input" type="text" id="roleDescInput" [(ngModel)]="roleFormDescripcion" name="roleFormDescripcion" placeholder="ej. Acceso a cobros y auditoría de clientes sin permisos de caja...">
+          </div>
+
+          <!-- Barra de Plantillas Rápidas (Presets) -->
+          <div style="background-color: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 12px 16px;">
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px;">
+              Cargar Base desde Plantilla:
+            </span>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" class="btn-preset-pill" (click)="applyPresetToRoleForm('admin')">
+                👑 Todos los Permisos (Admin)
+              </button>
+              <button type="button" class="btn-preset-pill" (click)="applyPresetToRoleForm('cobrador')">
+                🛵 Cobrador Estándar
+              </button>
+              <button type="button" class="btn-preset-pill" (click)="applyPresetToRoleForm('supervisor')">
+                👤 Supervisor
+              </button>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 1: ACCESO A PANTALLAS Y MÓDULOS -->
+          <h4 style="font-size: 0.8125rem; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin: 8px 0 4px 0;">
+            1. Acceso a Módulos y Pantallas:
+          </h4>
+          <div class="permissions-switches-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            
+            <div class="perm-switch-item" (click)="toggleRoleFormPermission('verDashboard')">
+              <div class="perm-info">
+                <span class="perm-name">Dashboard Principal</span>
+                <span class="perm-desc">Resumen general y gráficos</span>
+              </div>
+              <label class="switch-ui" (click)="$event.stopPropagation()">
+                <input type="checkbox" [checked]="roleFormPermisos().verDashboard" (change)="toggleRoleFormPermission('verDashboard')">
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <div class="perm-switch-item" (click)="toggleRoleFormPermission('verCobros')">
+              <div class="perm-info">
+                <span class="perm-name">Cobros de Hoy y Ruta</span>
+                <span class="perm-desc">Cobranza del día en calle</span>
+              </div>
+              <label class="switch-ui" (click)="$event.stopPropagation()">
+                <input type="checkbox" [checked]="roleFormPermisos().verCobros" (change)="toggleRoleFormPermission('verCobros')">
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <div class="perm-switch-item" (click)="toggleRoleFormPermission('verPrestamos')">
+              <div class="perm-info">
+                <span class="perm-name">Gestión de Préstamos</span>
+                <span class="perm-desc">Listado y saldos de créditos</span>
+              </div>
+              <label class="switch-ui" (click)="$event.stopPropagation()">
+                <input type="checkbox" [checked]="roleFormPermisos().verPrestamos" (change)="toggleRoleFormPermission('verPrestamos')">
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <div class="perm-switch-item" (click)="toggleRoleFormPermission('verClientes')">
+              <div class="perm-info">
+                <span class="perm-name">Directorio de Clientes</span>
+                <span class="perm-desc">Padrón de prestatarios</span>
+              </div>
+              <label class="switch-ui" (click)="$event.stopPropagation()">
+                <input type="checkbox" [checked]="roleFormPermisos().verClientes" (change)="toggleRoleFormPermission('verClientes')">
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <div class="perm-switch-item" (click)="toggleRoleFormPermission('verPagos')">
+              <div class="perm-info">
+                <span class="perm-name">Historial de Pagos</span>
+                <span class="perm-desc">Recibos y cobros emitidos</span>
+              </div>
+              <label class="switch-ui" (click)="$event.stopPropagation()">
+                <input type="checkbox" [checked]="roleFormPermisos().verPagos" (change)="toggleRoleFormPermission('verPagos')">
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <div class="perm-switch-item" (click)="toggleRoleFormPermission('verCajaBancos')">
+              <div class="perm-info">
+                <span class="perm-name">Caja y Bancos</span>
+                <span class="perm-desc">Tesorería y cuentas bancarias</span>
+              </div>
+              <label class="switch-ui" (click)="$event.stopPropagation()">
+                <input type="checkbox" [checked]="roleFormPermisos().verCajaBancos" (change)="toggleRoleFormPermission('verCajaBancos')">
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <div class="perm-switch-item" (click)="toggleRoleFormPermission('verReportes')">
+              <div class="perm-info">
+                <span class="perm-name">Reportes y Analíticas</span>
+                <span class="perm-desc">Libros contables y finanzas</span>
+              </div>
+              <label class="switch-ui" (click)="$event.stopPropagation()">
+                <input type="checkbox" [checked]="roleFormPermisos().verReportes" (change)="toggleRoleFormPermission('verReportes')">
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <div class="perm-switch-item" (click)="toggleRoleFormPermission('verConfiguracion')">
+              <div class="perm-info">
+                <span class="perm-name">Configuración</span>
+                <span class="perm-desc">Ajustes, bancos y usuarios</span>
+              </div>
+              <label class="switch-ui" (click)="$event.stopPropagation()">
+                <input type="checkbox" [checked]="roleFormPermisos().verConfiguracion" (change)="toggleRoleFormPermission('verConfiguracion')">
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+          </div>
+
+          <!-- SECCIÓN 2: ACCIONES Y FACULTADES OPERATIVAS -->
+          <h4 style="font-size: 0.8125rem; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin: 8px 0 4px 0;">
+            2. Acciones y Facultades Operativas:
+          </h4>
+          <div class="permissions-switches-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            
+            <div class="perm-switch-item" (click)="toggleRoleFormPermission('crearPrestamos')">
+              <div class="perm-info">
+                <span class="perm-name">Desembolsar Préstamos</span>
+                <span class="perm-desc">Botón "Nuevo Préstamo"</span>
+              </div>
+              <label class="switch-ui" (click)="$event.stopPropagation()">
+                <input type="checkbox" [checked]="roleFormPermisos().crearPrestamos" (change)="toggleRoleFormPermission('crearPrestamos')">
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <div class="perm-switch-item" (click)="toggleRoleFormPermission('crearClientes')">
+              <div class="perm-info">
+                <span class="perm-name">Crear / Editar Clientes</span>
+                <span class="perm-desc">Alta de nuevos deudores</span>
+              </div>
+              <label class="switch-ui" (click)="$event.stopPropagation()">
+                <input type="checkbox" [checked]="roleFormPermisos().crearClientes" (change)="toggleRoleFormPermission('crearClientes')">
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <div class="perm-switch-item" (click)="toggleRoleFormPermission('registrarAbonos')">
+              <div class="perm-info">
+                <span class="perm-name">Registrar Abonos</span>
+                <span class="perm-desc">Cobrar cuotas en ruta</span>
+              </div>
+              <label class="switch-ui" (click)="$event.stopPropagation()">
+                <input type="checkbox" [checked]="roleFormPermisos().registrarAbonos" (change)="toggleRoleFormPermission('registrarAbonos')">
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <div class="perm-switch-item" (click)="toggleRoleFormPermission('anularPagos')">
+              <div class="perm-info">
+                <span class="perm-name">Anular Recibos de Pago</span>
+                <span class="perm-desc">Reversar pagos registrados</span>
+              </div>
+              <label class="switch-ui" (click)="$event.stopPropagation()">
+                <input type="checkbox" [checked]="roleFormPermisos().anularPagos" (change)="toggleRoleFormPermission('anularPagos')">
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <div class="perm-switch-item" (click)="toggleRoleFormPermission('exportarExcel')">
+              <div class="perm-info">
+                <span class="perm-name">Exportar a Excel</span>
+                <span class="perm-desc">Descargar tablas y reportes</span>
+              </div>
+              <label class="switch-ui" (click)="$event.stopPropagation()">
+                <input type="checkbox" [checked]="roleFormPermisos().exportarExcel" (change)="toggleRoleFormPermission('exportarExcel')">
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+          </div>
+
+          <!-- Botones de Acción -->
+          <div style="display: flex; gap: 12px; justify-content: flex-end; padding-top: 16px; border-top: 1px solid var(--border-color);">
+            <button type="button" class="btn-action-outline" (click)="closeRoleModal()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-action" style="padding: 8px 24px;">
+              {{ editingRoleId() ? 'Guardar Cambios' : 'Crear Rol' }}
             </button>
           </div>
         </form>
