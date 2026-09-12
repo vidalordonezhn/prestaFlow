@@ -2,9 +2,11 @@ import { Component, OnInit, signal, computed, inject, HostListener } from '@angu
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { ApiClientsService, ClienteResponse, ClienteCreate } from '../services/api-clients.service';
+import { ApiPrestamosService, PrestamoResponse } from '../services/api-prestamos.service';
 import { ApiAuthService } from '../services/api-auth.service';
 import { PermissionsService } from '../services/permissions.service';
 import { SettingsService } from '../services/settings.service';
+
 interface Client {
   dbId: number;
   id: string; // Identidad / Cédula
@@ -28,7 +30,6 @@ interface Toast {
   message: string;
 }
 
-// Función auxiliadora de mapeo de API DTO a Interface de Interfaz
 const mapToClient = (res: ClienteResponse): Client => ({
   dbId: res.id,
   id: res.identidad,
@@ -38,11 +39,11 @@ const mapToClient = (res: ClienteResponse): Client => ({
   zone: res.zone,
   refName: res.refName,
   refPhone: res.refPhone,
-  loansCount: res.loansCount,
-  balance: res.balance,
-  status: res.status,
-  score: res.score,
-  prestamosHistory: res.prestamosHistory
+  loansCount: res.loansCount || 0,
+  balance: res.balance || 0,
+  status: res.status || 'Sin Crédito',
+  score: res.score || 'Nuevo',
+  prestamosHistory: res.prestamosHistory || []
 });
 
 @Component({
@@ -54,6 +55,7 @@ const mapToClient = (res: ClienteResponse): Client => ({
 })
 export class ClientsComponent implements OnInit {
   private readonly apiClientsService = inject(ApiClientsService);
+  private readonly apiPrestamosService = inject(ApiPrestamosService);
   protected readonly auth = inject(ApiAuthService);
   protected readonly permissions = inject(PermissionsService);
   protected readonly settingsService = inject(SettingsService);
@@ -108,13 +110,163 @@ export class ClientsComponent implements OnInit {
     this.cargarClientes();
   }
 
+  private normalizeLoan(p: PrestamoResponse): PrestamoResponse {
+    let totalPagar = 0;
+    let totalPagado = 0;
+    let cuotasAtrasadasCount = 0;
+
+    if (p.cuotas && p.cuotas.length > 0) {
+      totalPagar = p.cuotas.reduce((sum: number, c: any) => sum + (c.montoPrincipal + c.montoInteres + (c.montoMoratorio || 0)), 0);
+      totalPagado = p.cuotas.reduce((sum: number, c: any) => sum + ((c.montoPagadoPrincipal || 0) + (c.montoPagadoInteres || 0) + (c.montoPagadoMora || 0)), 0);
+
+      const hoyDate = new Date();
+      hoyDate.setHours(0, 0, 0, 0);
+
+      const cuotasVencidas = p.cuotas.filter((c: any) => {
+        const fechaVenc = new Date(c.fechaVencimiento);
+        fechaVenc.setHours(0, 0, 0, 0);
+        const totalCuota = c.montoPrincipal + c.montoInteres + (c.montoMoratorio || 0);
+        const pagadoCuota = (c.montoPagadoPrincipal || 0) + (c.montoPagadoInteres || 0) + (c.montoPagadoMora || 0);
+        const saldoCuota = totalCuota - pagadoCuota;
+        return (c.estado === 'Vencido' || fechaVenc <= hoyDate) && c.estado !== 'Pagado' && saldoCuota > 0.05;
+      });
+
+      cuotasAtrasadasCount = cuotasVencidas.length;
+    } else {
+      totalPagar = p.cuotaMonto * p.plazoCuotas;
+      totalPagado = p.cuotaMonto * (p.cuotasPagadas || 0);
+    }
+
+    const saldoRestante = Math.max(0, totalPagar - totalPagado);
+    const estaTotalmentePagado = saldoRestante <= 0.05 || (p.cuotas && p.cuotas.length > 0 && p.cuotas.every(c => c.estado === 'Pagado'));
+
+    let calculatedStatus: 'Activo' | 'Pagado' | 'Mora' = 'Activo';
+    if (estaTotalmentePagado) {
+      calculatedStatus = 'Pagado';
+    } else if (cuotasAtrasadasCount > 0 || p.status === 'Mora') {
+      calculatedStatus = 'Mora';
+    }
+
+    return {
+      ...p,
+      status: calculatedStatus
+    };
+  }
+
   /**
-   * Consulta la lista completa de deudores desde la API.
+   * Consulta la lista completa de deudores desde la API y sincroniza con préstamos.
    */
   private cargarClientes(): void {
     this.apiClientsService.getClientes().subscribe({
-      next: (res) => {
-        this.clients.set(res.map(mapToClient));
+      next: (clientesRes) => {
+        this.apiPrestamosService.getPrestamos().subscribe({
+          next: (prestamosRes) => {
+            const normalizedLoans = prestamosRes.map(p => this.normalizeLoan(p));
+
+            const mapped = clientesRes.map(c => {
+              const clientLoans = normalizedLoans.filter(p => 
+                p.clienteId === c.id || 
+                p.clienteNombre.toLowerCase() === c.nombre.toLowerCase() ||
+                (c.prestamosHistory && c.prestamosHistory.some(h => h.loanId === p.codigo))
+              );
+
+              if (clientLoans.length > 0) {
+                const history = clientLoans.map(p => ({
+                  loanId: p.codigo,
+                  amount: p.capital,
+                  interest: p.interesPorcentaje,
+                  date: p.fechaOtorgado,
+                  status: p.status,
+                  cuotas: `${p.cuotasPagadas || 0}/${p.plazoCuotas} (${p.frecuencia})`
+                }));
+
+                const activeLoans = clientLoans.filter(p => p.status !== 'Pagado');
+                const loansCount = activeLoans.length;
+
+                const balance = activeLoans.reduce((sum, p) => {
+                  let tot = 0;
+                  let pag = 0;
+                  if (p.cuotas && p.cuotas.length > 0) {
+                    tot = p.cuotas.reduce((s: number, cuota: any) => s + cuota.montoPrincipal + cuota.montoInteres + (cuota.montoMoratorio || 0), 0);
+                    pag = p.cuotas.reduce((s: number, cuota: any) => s + (cuota.montoPagadoPrincipal || 0) + (cuota.montoPagadoInteres || 0) + (cuota.montoPagadoMora || 0), 0);
+                  } else {
+                    tot = p.cuotaMonto * p.plazoCuotas;
+                    pag = p.cuotaMonto * (p.cuotasPagadas || 0);
+                  }
+                  return sum + Math.max(0, tot - pag);
+                }, 0);
+
+                let status: 'Al Día' | 'En Mora' | 'Sin Crédito' = 'Al Día';
+                if (loansCount === 0 || balance <= 0.05) {
+                  status = 'Sin Crédito';
+                } else if (activeLoans.some(p => p.status === 'Mora')) {
+                  status = 'En Mora';
+                } else {
+                  status = 'Al Día';
+                }
+
+                let score: 'Excelente' | 'Regular' | 'Mora' | 'Nuevo' = c.score;
+                if (activeLoans.some(p => p.status === 'Mora')) {
+                  score = 'Mora';
+                } else if (clientLoans.length > 0) {
+                  score = 'Excelente';
+                }
+
+                return {
+                  dbId: c.id,
+                  id: c.identidad,
+                  name: c.nombre,
+                  phone: c.phone,
+                  address: c.address,
+                  zone: c.zone,
+                  refName: c.refName,
+                  refPhone: c.refPhone,
+                  loansCount,
+                  balance: Math.round(balance * 100) / 100,
+                  status,
+                  score,
+                  prestamosHistory: history
+                };
+              }
+
+              return {
+                dbId: c.id,
+                id: c.identidad,
+                name: c.nombre,
+                phone: c.phone,
+                address: c.address,
+                zone: c.zone,
+                refName: c.refName,
+                refPhone: c.refPhone,
+                loansCount: c.loansCount,
+                balance: c.balance,
+                status: c.status,
+                score: c.score,
+                prestamosHistory: c.prestamosHistory
+              };
+            });
+
+            this.clients.set(mapped);
+          },
+          error: (err) => {
+            console.error('Error al cargar préstamos para sincronizar clientes', err);
+            this.clients.set(clientesRes.map(c => ({
+              dbId: c.id,
+              id: c.identidad,
+              name: c.nombre,
+              phone: c.phone,
+              address: c.address,
+              zone: c.zone,
+              refName: c.refName,
+              refPhone: c.refPhone,
+              loansCount: c.loansCount,
+              balance: c.balance,
+              status: c.status,
+              score: c.score,
+              prestamosHistory: c.prestamosHistory
+            })));
+          }
+        });
       },
       error: (err) => {
         this.triggerToast(

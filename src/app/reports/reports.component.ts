@@ -541,10 +541,53 @@ export class ReportsComponent implements OnInit {
     this.scrollToSection('reporte-detallado-section');
   }
 
+  private normalizeLoan(p: PrestamoResponse): PrestamoResponse {
+    let totalPagar = 0;
+    let totalPagado = 0;
+    let cuotasAtrasadasCount = 0;
+
+    if (p.cuotas && p.cuotas.length > 0) {
+      totalPagar = p.cuotas.reduce((sum: number, c: any) => sum + (c.montoPrincipal + c.montoInteres + (c.montoMoratorio || 0)), 0);
+      totalPagado = p.cuotas.reduce((sum: number, c: any) => sum + ((c.montoPagadoPrincipal || 0) + (c.montoPagadoInteres || 0) + (c.montoPagadoMora || 0)), 0);
+
+      const hoyDate = new Date();
+      hoyDate.setHours(0, 0, 0, 0);
+
+      const cuotasVencidas = p.cuotas.filter((c: any) => {
+        const fechaVenc = new Date(c.fechaVencimiento);
+        fechaVenc.setHours(0, 0, 0, 0);
+        const totalCuota = c.montoPrincipal + c.montoInteres + (c.montoMoratorio || 0);
+        const pagadoCuota = (c.montoPagadoPrincipal || 0) + (c.montoPagadoInteres || 0) + (c.montoPagadoMora || 0);
+        const saldoCuota = totalCuota - pagadoCuota;
+        return (c.estado === 'Vencido' || fechaVenc <= hoyDate) && c.estado !== 'Pagado' && saldoCuota > 0.05;
+      });
+
+      cuotasAtrasadasCount = cuotasVencidas.length;
+    } else {
+      totalPagar = p.cuotaMonto * p.plazoCuotas;
+      totalPagado = p.cuotaMonto * (p.cuotasPagadas || 0);
+    }
+
+    const saldoRestante = Math.max(0, totalPagar - totalPagado);
+    const estaTotalmentePagado = saldoRestante <= 0.05 || (p.cuotas && p.cuotas.length > 0 && p.cuotas.every(c => c.estado === 'Pagado'));
+
+    let calculatedStatus: 'Activo' | 'Pagado' | 'Mora' = 'Activo';
+    if (estaTotalmentePagado) {
+      calculatedStatus = 'Pagado';
+    } else if (cuotasAtrasadasCount > 0 || p.status === 'Mora') {
+      calculatedStatus = 'Mora';
+    }
+
+    return {
+      ...p,
+      status: calculatedStatus
+    };
+  }
+
   protected cargarPrestamos(): void {
     this.apiPrestamosService.getPrestamos().subscribe({
       next: (res) => {
-        this.prestamos.set(res);
+        this.prestamos.set(res.map(p => this.normalizeLoan(p)));
         this.isLoading.set(false);
       },
       error: (err) => {

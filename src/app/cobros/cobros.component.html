@@ -1,129 +1,402 @@
 <div class="page-view animate-fade-in">
+    <!-- Header -->
     <header class="header">
       <div>
-        <h1 class="page-title">Cobros de Hoy</h1>
-        <p class="page-subtitle">Ruta diaria de cobranza asignada para hoy</p>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <h1 class="page-title">Cobros de Hoy</h1>
+          <span class="status-badge badge-primary" style="font-size: 0.75rem; padding: 4px 10px;">
+            📅 {{ currentDate() | date:'EEEE, dd MMMM yyyy' }}
+          </span>
+        </div>
+        <p class="page-subtitle">Panel de control y ruta de cobranza en calle para la jornada de hoy</p>
       </div>
+      <button class="btn btn-secondary" (click)="cargarDatos()" style="height: 38px; padding: 0 16px; font-size: 0.8125rem; display: inline-flex; align-items: center; gap: 6px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+        Actualizar Ruta
+      </button>
     </header>
 
-    <!-- Ruta de Cobro de Hoy -->
-    <section class="card table-card" style="margin-top: 24px;">
-      <div class="card-header table-filter-header">
-        <div class="header-search search-loans">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <input 
-            type="text" 
-            placeholder="Buscar por cliente, identidad o zona..." 
-            class="search-input"
-            [value]="searchQuery()"
-            (input)="onSearchInput($event)"
-          />
-          @if (searchQuery()) {
-            <button class="clear-search" (click)="searchQuery.set('')">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-          }
+    <!-- METRIC CARDS / KPIS DEL DÍA -->
+    <section class="kpi-grid">
+      <!-- KPI 1: Meta Programada -->
+      <div class="kpi-card capital-card">
+        <div class="kpi-overlay"></div>
+        <div class="kpi-header">
+          <span class="kpi-label">Meta Programada de Hoy</span>
+          <div class="kpi-icon-container bg-blue-light text-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+          </div>
         </div>
-        <div class="table-actions">
-          <span class="table-summary-text">
-            Mostrando <strong>{{ filteredClients().length }}</strong> de {{ clients().length }} clientes
+        <div class="kpi-content">
+          <h3 class="kpi-value text-blue">L. {{ kpiMetaDelDia() | number:'1.2-2' }}</h3>
+          <div class="kpi-footer">
+            <span class="kpi-trend text-blue">{{ clients().length }} clientes en ruta</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI 2: Total Cobrado Hoy -->
+      <div class="kpi-card cobrado-card">
+        <div class="kpi-overlay"></div>
+        <div class="kpi-header">
+          <span class="kpi-label">Total Cobrado Hoy</span>
+          <div class="kpi-icon-container bg-green-light text-green">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          </div>
+        </div>
+        <div class="kpi-content">
+          <h3 class="kpi-value text-green">L. {{ kpiTotalCobradoHoy() | number:'1.2-2' }}</h3>
+          <div class="kpi-footer">
+            <span class="kpi-trend text-green">{{ kpiCobradosCount() }} pagos recibidos</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI 3: Saldo Pendiente de Hoy -->
+      <div class="kpi-card meta-card">
+        <div class="kpi-overlay"></div>
+        <div class="kpi-header">
+          <span class="kpi-label">Por Cobrar en Calle</span>
+          <div class="kpi-icon-container bg-orange-light text-orange">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+        </div>
+        <div class="kpi-content">
+          <h3 class="kpi-value text-orange">L. {{ kpiSaldoPendienteHoy() | number:'1.2-2' }}</h3>
+          <div class="kpi-footer">
+            <span class="kpi-trend text-orange">{{ kpiPendientesCount() }} clientes pendientes</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI 4: Efectividad de Cobro -->
+      <div class="kpi-card mora-card">
+        <div class="kpi-overlay"></div>
+        <div class="kpi-header">
+          <span class="kpi-label">Avance de la Ruta</span>
+          <div class="kpi-icon-container" [class.bg-green-light]="kpiAvancePorcentaje() >= 50" [class.text-green]="kpiAvancePorcentaje() >= 50" [class.bg-blue-light]="kpiAvancePorcentaje() < 50" [class.text-blue]="kpiAvancePorcentaje() < 50">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+        </div>
+        <div class="kpi-content">
+          <h3 class="kpi-value" [class.text-green]="kpiAvancePorcentaje() >= 50" [class.text-blue]="kpiAvancePorcentaje() < 50">
+            {{ kpiAvancePorcentaje() }}%
+          </h3>
+          <div class="kpi-footer">
+            <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; margin-top: 4px;">
+              <div [style.width.%]="kpiAvancePorcentaje()" style="height: 100%; background: #10b981; border-radius: 4px; transition: width 0.3s ease;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LISTADO Y FILTRADO DE COBROS DE HOY -->
+    <section class="card table-card" style="margin-top: 8px;">
+      <div class="card-header table-filter-header" style="display: flex; flex-direction: column; gap: 14px; align-items: stretch;">
+        
+        <!-- Fila 1: Buscador y Conmutador de Vistas -->
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
+          <div class="header-search search-loans" style="flex: 1; max-width: 420px;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input 
+              type="text" 
+              placeholder="Buscar por cliente, identidad o zona..." 
+              class="search-input"
+              [value]="searchQuery()"
+              (input)="onSearchInput($event)"
+            />
+            @if (searchQuery()) {
+              <button class="clear-search" (click)="searchQuery.set('')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            }
+          </div>
+
+          <!-- Selector de Ruta y Alternador de Vistas -->
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <select class="form-input form-select font-semibold" 
+                    style="height: 38px; padding: 0 12px; font-size: 0.8125rem; min-width: 140px;"
+                    [value]="routeFilter()"
+                    (change)="routeFilter.set($any($event.target).value)">
+              <option value="all">🌐 Todas las Rutas</option>
+              <option value="Diario">🛵 Ruta Diaria</option>
+              <option value="Semanal">📅 Ruta Semanal</option>
+              <option value="Mensual">📆 Ruta Mensual</option>
+            </select>
+
+            <div style="display: inline-flex; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2px;">
+              <button type="button" 
+                      class="filter-pill" 
+                      [class.active]="viewMode() === 'table'" 
+                      (click)="viewMode.set('table')"
+                      style="border-radius: var(--radius-md); padding: 6px 12px; font-size: 0.75rem;"
+                      title="Vista de Tabla">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                Tabla
+              </button>
+              <button type="button" 
+                      class="filter-pill" 
+                      [class.active]="viewMode() === 'cards'" 
+                      (click)="viewMode.set('cards')"
+                      style="border-radius: var(--radius-md); padding: 6px 12px; font-size: 0.75rem;"
+                      title="Vista de Tarjetas de Cobro">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Tarjetas
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fila 2: Píldoras de Filtro de Estado -->
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <div class="filter-pills" style="margin: 0;">
+            <button class="filter-pill" [class.active]="statusFilter() === 'all'" (click)="statusFilter.set('all')">
+              Todos ({{ clients().length }})
+            </button>
+            <button class="filter-pill" [class.active]="statusFilter() === 'pendientes'" (click)="statusFilter.set('pendientes')">
+              ⏳ Pendientes ({{ kpiPendientesCount() }})
+            </button>
+            <button class="filter-pill" [class.active]="statusFilter() === 'cobrados'" (click)="statusFilter.set('cobrados')">
+              ✅ Cobrados Hoy ({{ kpiCobradosCount() }})
+            </button>
+            <button class="filter-pill" [class.active]="statusFilter() === 'mora'" (click)="statusFilter.set('mora')">
+              🚨 En Mora ({{ kpiMoraCount() }})
+            </button>
+          </div>
+
+          <span class="table-summary-text" style="font-size: 0.8125rem; color: var(--text-secondary);">
+            Mostrando <strong>{{ filteredClients().length }}</strong> clientes
           </span>
         </div>
       </div>
 
-      <div class="card-body table-body">
-        <div class="table-responsive">
-          <table class="route-table">
-            <thead>
-              <tr>
-                <th>Cliente / Identidad</th>
-                <th>Teléfono</th>
-                <th>Zona / Dirección</th>
-                <th class="text-right">Cuota a Pagar</th>
-                <th class="text-center">Estado</th>
-                <th class="text-center">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (client of filteredClients(); track client.id) {
-                <tr [class.row-paid]="client.pagado">
-                  <td>
-                    <div class="client-cell">
-                      <span class="client-name">{{ client.name }}</span>
-                      <span class="client-id font-mono">{{ client.id }}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <a [href]="'tel:' + client.phone" class="phone-link">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-icon"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                      {{ client.phone }}
-                    </a>
-                  </td>
-                  <td>
-                    <div class="address-cell">
-                      <span class="zone-badge">{{ client.zone }}</span>
-                      <span class="address-text">{{ client.address }}</span>
-                    </div>
-                  </td>
-                  <td class="text-right font-mono font-semibold">
-                    @if (client.pagado && (client.totalAbonadoHoy || 0) > 0) {
-                      <div>
-                        <span style="color: #10b981; font-weight: 700;">L. {{ client.totalAbonadoHoy | number:'1.2-2' }}</span>
-                        <span style="display: block; font-size: 0.6875rem; color: var(--text-secondary); font-weight: normal;">(Cuota: L. {{ client.cuota | number:'1.2-2' }})</span>
-                      </div>
-                    } @else {
-                      L. {{ client.cuota | number:'1.2-2' }}
-                    }
-                  </td>
-                  <td class="text-center">
-                    @if (client.pagado) {
-                      <span class="status-badge badge-success">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="inline-icon"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        Cobrado Hoy
-                      </span>
-                    } @else if (client.mora) {
-                      <span class="status-badge badge-danger">En Mora</span>
-                    } @else {
-                      <span class="status-badge badge-warning">Pendiente</span>
-                    }
-                  </td>
-                  <td class="text-center">
-                    @if (client.pagado) {
-                      <button class="btn btn-secondary btn-icon-gap" (click)="openRegisterPayment(client)" style="height: 32px; padding: 0 10px; font-size: 0.75rem; border-radius: 8px;" title="Registrar otro abono a este préstamo">
-                        + Abonar Más
-                      </button>
-                    } @else {
-                      <button class="btn btn-primary btn-icon-gap" (click)="openRegisterPayment(client)" style="height: 34px; padding: 0 12px; font-size: 0.75rem; border-radius: 8px;">
-                        Registrar Pago
-                      </button>
-                    }
-                  </td>
-                </tr>
-              } @empty {
+      <!-- VISTA 1: TABLA DE COBROS -->
+      @if (viewMode() === 'table') {
+        <div class="card-body table-body">
+          <div class="table-responsive">
+            <table class="route-table">
+              <thead>
                 <tr>
-                  <td colspan="6" class="no-results" style="padding: 48px; text-align: center; color: var(--text-muted);">
-                    No hay cobros pendientes de ruta programados para hoy.
-                  </td>
+                  <th>Cliente / Préstamo</th>
+                  <th>Teléfono & Contacto</th>
+                  <th>Ruta / Zona</th>
+                  <th class="text-right">Cuota Programada</th>
+                  <th class="text-center">Estado de Cobro</th>
+                  <th class="text-center">Acciones de Ruta</th>
                 </tr>
-              }
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                @for (client of filteredClients(); track client.id) {
+                  <tr [class.row-paid]="client.pagado">
+                    <td>
+                      <div class="client-cell" style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--color-blue-gradient); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8125rem; flex-shrink: 0;">
+                          {{ client.name.substring(0,2).toUpperCase() }}
+                        </div>
+                        <div>
+                          <span class="client-name" style="font-weight: 600; color: var(--text-primary); display: block;">{{ client.name }}</span>
+                          <span class="client-id font-mono" style="font-size: 0.75rem; color: var(--text-secondary);">{{ client.id }}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <a [href]="'tel:' + client.phone" class="phone-link" style="color: var(--color-blue); font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-icon" style="width: 13px; height: 13px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                          {{ client.phone }}
+                        </a>
+                        <button type="button" 
+                                class="btn-action-outline" 
+                                (click)="sendReminderWhatsApp(client)" 
+                                style="padding: 2px 6px; font-size: 0.7rem; border-color: #10b981; color: #10b981;" 
+                                title="Enviar recordatorio de cobro por WhatsApp">
+                          💬
+                        </button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="address-cell">
+                        <span class="zone-badge">{{ client.zone }}</span>
+                        <span class="address-text" style="font-size: 0.75rem; color: var(--text-secondary); display: block; margin-top: 2px;">{{ client.address }}</span>
+                      </div>
+                    </td>
+                    <td class="text-right font-mono font-semibold">
+                      @if (client.pagado && (client.totalAbonadoHoy || 0) > 0) {
+                        <div>
+                          <span style="color: #10b981; font-weight: 700; font-size: 0.95rem;">L. {{ client.totalAbonadoHoy | number:'1.2-2' }}</span>
+                          <span style="display: block; font-size: 0.6875rem; color: var(--text-secondary); font-weight: normal;">(Cuota: L. {{ client.cuota | number:'1.2-2' }})</span>
+                        </div>
+                      } @else {
+                        <span style="font-size: 0.95rem; color: var(--text-primary);">L. {{ client.cuota | number:'1.2-2' }}</span>
+                        <span style="display: block; font-size: 0.6875rem; color: var(--text-secondary); font-weight: normal;">Saldo: L. {{ client.saldoTotal | number:'1.0-0' }}</span>
+                      }
+                    </td>
+                    <td class="text-center">
+                      @if (client.pagado) {
+                        <span class="status-badge badge-success" style="font-size: 0.75rem; padding: 4px 10px;">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="inline-icon" style="width: 12px; height: 12px; margin-right: 4px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                          Cobrado Hoy
+                        </span>
+                      } @else if (client.mora) {
+                        <span class="status-badge badge-danger" style="font-size: 0.75rem; padding: 4px 10px;">En Mora</span>
+                        @if ((client.cuotasAtrasadasCount || 0) > 0) {
+                          <span style="display: block; font-size: 0.6875rem; color: #f87171; margin-top: 3px; font-weight: 600;">
+                            {{ client.cuotasAtrasadasCount }} cuota(s) vencida(s)
+                          </span>
+                          <span style="display: block; font-size: 0.6875rem; color: #fbbf24; font-weight: 600;">
+                            L. {{ client.montoParaEstarAlDia | number:'1.2-2' }} al día
+                          </span>
+                        }
+                      } @else {
+                        <span class="status-badge badge-warning" style="font-size: 0.75rem; padding: 4px 10px;">Pendiente</span>
+                      }
+                    </td>
+                    <td class="text-center">
+                      <div style="display: inline-flex; gap: 8px; align-items: center;">
+                        @if (client.pagado) {
+                          <button class="btn btn-secondary" (click)="openRegisterPayment(client)" style="height: 32px; padding: 0 10px; font-size: 0.75rem; border-radius: 8px;" title="Registrar otro abono al préstamo">
+                            + Abonar Más
+                          </button>
+                          <button class="btn-action-outline" (click)="verReciboHoy(client)" style="padding: 4px 8px; font-size: 0.75rem;" title="Ver recibo oficial del día">
+                            🧾 Recibo
+                          </button>
+                        } @else {
+                          <button class="btn btn-primary" (click)="openRegisterPayment(client)" style="height: 34px; padding: 0 14px; font-size: 0.8125rem; border-radius: 8px;">
+                            Registrar Cobro
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="6" class="no-results" style="padding: 48px; text-align: center; color: var(--text-muted);">
+                      No se encontraron clientes para los filtros seleccionados.
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      }
+
+      <!-- VISTA 2: TARJETAS VISUALES DE RUTA (OPTIMIZADA PARA MÓVIL/CALLE) -->
+      @if (viewMode() === 'cards') {
+        <div class="card-body" style="padding: 20px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;">
+            @for (client of filteredClients(); track client.id) {
+              <div class="route-client-card" 
+                   style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 18px; display: flex; flex-direction: column; gap: 14px; transition: all var(--transition-fast);"
+                   [style.border-left]="client.pagado ? '4px solid #10b981' : client.mora ? '4px solid #ef4444' : '4px solid var(--color-blue)'">
+                
+                <!-- Encabezado de Tarjeta -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--color-blue-gradient); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem;">
+                      {{ client.name.substring(0,2).toUpperCase() }}
+                    </div>
+                    <div>
+                      <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">{{ client.name }}</h4>
+                      <span class="font-mono" style="font-size: 0.75rem; color: var(--text-secondary);">{{ client.id }}</span>
+                    </div>
+                  </div>
+
+                  @if (client.pagado) {
+                    <span class="status-badge badge-success">✓ Cobrado</span>
+                  } @else if (client.mora) {
+                    <span class="status-badge badge-danger">En Mora</span>
+                  } @else {
+                    <span class="status-badge badge-warning">Pendiente</span>
+                  }
+                </div>
+
+                <!-- Datos de Ubicación y Contacto -->
+                <div style="font-size: 0.8125rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 6px;">
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span>📍</span>
+                    <span>{{ client.address }} ({{ client.zone }})</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span>📞</span>
+                    <a [href]="'tel:' + client.phone" style="color: var(--color-blue); text-decoration: none; font-weight: 600;">{{ client.phone }}</a>
+                    <button type="button" 
+                            (click)="sendReminderWhatsApp(client)"
+                            style="margin-left: auto; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #10b981; border-radius: 6px; padding: 3px 8px; font-size: 0.75rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                      💬 WhatsApp
+                    </button>
+                  </div>
+                </div>
+
+                @if (client.mora && (client.cuotasAtrasadasCount || 0) > 0) {
+                  <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                      <span style="font-size: 0.75rem; font-weight: 700; color: #f87171; display: block;">
+                        ⚠️ {{ client.cuotasAtrasadasCount }} cuota(s) atrasada(s)
+                      </span>
+                      <span style="font-size: 0.75rem; color: var(--text-secondary);">
+                        Poner al día: <strong style="color: #fbbf24;">L. {{ client.montoParaEstarAlDia | number:'1.2-2' }}</strong>
+                      </span>
+                    </div>
+                  </div>
+                }
+
+                <!-- Monto a Cobrar Destacado -->
+                <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <span style="font-size: 0.75rem; color: var(--text-secondary); display: block;">Cuota Programada:</span>
+                    <span style="font-size: 1.15rem; font-weight: 800; font-family: monospace; color: var(--text-primary);">
+                      L. {{ client.cuota | number:'1.2-2' }}
+                    </span>
+                  </div>
+                  <div style="text-align: right;">
+                    <span style="font-size: 0.75rem; color: var(--text-secondary); display: block;">Saldo Restante:</span>
+                    <span style="font-size: 0.875rem; font-weight: 700; font-family: monospace; color: var(--color-blue);">
+                      L. {{ client.saldoTotal | number:'1.0-0' }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div style="display: flex; gap: 8px; margin-top: auto;">
+                  @if (client.pagado) {
+                    <button class="btn btn-secondary" (click)="openRegisterPayment(client)" style="flex: 1; height: 38px; font-size: 0.8125rem;">
+                      + Abonar Más
+                    </button>
+                    <button class="btn-action-outline" (click)="verReciboHoy(client)" style="padding: 0 14px; height: 38px; font-size: 0.8125rem;">
+                      🧾 Recibo
+                    </button>
+                  } @else {
+                    <button class="btn btn-primary" (click)="openRegisterPayment(client)" style="width: 100%; height: 38px; font-size: 0.875rem; font-weight: 700;">
+                      💵 Cobrar L. {{ client.cuota | number:'1.0-0' }}
+                    </button>
+                  }
+                </div>
+
+              </div>
+            } @empty {
+              <div style="grid-column: 1 / -1; padding: 48px; text-align: center; color: var(--text-muted);">
+                No se encontraron clientes para los filtros seleccionados.
+              </div>
+            }
+          </div>
+        </div>
+      }
     </section>
 </div>
 
-<!-- MODAL FLOTANTE: Registrar Pago -->
+<!-- MODAL FLOTANTE: Registrar Cobro Inteligente -->
 @if (showPaymentModal()) {
   <div class="modal-backdrop" (click)="closeRegisterPayment()">
-    <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-card" (click)="$event.stopPropagation()" style="max-width: 520px;">
       <div class="modal-header">
         <div>
           <h3 class="modal-title">Registrar Cobro</h3>
-          <p class="modal-subtitle">Ingrese los datos para efectuar el abono del cliente</p>
+          <p class="modal-subtitle">Efectuar abono en ruta para {{ selectedClient()?.name }}</p>
         </div>
         <button class="modal-close" (click)="closeRegisterPayment()">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -131,32 +404,104 @@
       </div>
 
       <div class="modal-body">
-        <div class="modal-client-info" style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px; padding: 12px; background: rgba(255, 255, 255, 0.02); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.05);">
-          <div class="modal-client-avatar" style="width: 48px; height: 48px; border-radius: 50%; background: var(--color-blue-gradient); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.125rem;">
-            {{ selectedClient()?.name?.substring(0,2)?.toUpperCase() }}
+        <!-- Tarjeta de Información del Cliente -->
+        <div class="modal-client-info" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 12px 16px; background: rgba(255, 255, 255, 0.02); border-radius: 10px; border: 1px solid var(--border-color);">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--color-blue-gradient); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.125rem;">
+              {{ selectedClient()?.name?.substring(0,2)?.toUpperCase() }}
+            </div>
+            <div>
+              <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">{{ selectedClient()?.name }}</h4>
+              <span class="font-mono" style="font-size: 0.75rem; color: var(--text-muted);">Préstamo: {{ selectedClient()?.id }}</span>
+            </div>
           </div>
-          <div class="modal-client-details" style="display: flex; flex-direction: column; gap: 2px;">
-            <h4 class="modal-client-name" style="margin: 0; font-size: 0.9375rem; font-weight: 700; color: var(--text-primary);">{{ selectedClient()?.name }}</h4>
-            <span class="modal-client-id font-mono" style="font-size: 0.75rem; color: var(--text-muted);">ID: {{ selectedClient()?.id }}</span>
+          <div style="text-align: right;">
+            <span style="font-size: 0.6875rem; color: var(--text-secondary); text-transform: uppercase; display: block;">Saldo Deuda</span>
+            <span class="font-mono font-bold" style="color: var(--color-blue); font-size: 0.95rem;">L. {{ selectedClient()?.saldoTotal | number:'1.2-2' }}</span>
           </div>
         </div>
 
-        <!-- Lista de Cuotas Pendientes -->
-        @if (selectedLoanPendingCuotas().length > 0) {
-          <div class="pending-installments-section" style="margin-bottom: 20px;">
-            <label class="form-label" style="margin-bottom: 8px; display: block; font-weight: 600; color: #94a3b8;">Cuotas Pendientes / Vencidas</label>
-            <div class="pending-installments-list" style="max-height: 150px; overflow-y: auto; background: rgba(0, 0, 0, 0.2); border-radius: 8px; padding: 10px; border: 1px solid rgba(255, 255, 255, 0.05);">
-              @for (cuota of selectedLoanPendingCuotas(); track cuota.numeroCuota) {
-                <div class="pending-installment-item" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.03); font-size: 0.8125rem;">
-                  <div>
-                    <span style="font-weight: 600; color: #cbd5e1;">Cuota #{{ cuota.numeroCuota }}</span>
-                    <span style="font-size: 0.75rem; color: #64748b; margin-left: 8px;">Vence: {{ cuota.fechaVencimiento | date:'dd/MM/yyyy' }}</span>
+        <!-- Botones de Montos Rápidos / Atajos -->
+        <div style="margin-bottom: 16px;">
+          <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px;">
+            Atajos de Pago Rápido:
+          </span>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn-preset-pill" (click)="setPresetAmount(1)" [class.active]="paymentAmount() === selectedClient()?.cuota">
+              1 Cuota (L. {{ selectedClient()?.cuota | number:'1.0-0' }})
+            </button>
+            <button type="button" class="btn-preset-pill" (click)="setPresetAmount(2)" [class.active]="paymentAmount() === (selectedClient()?.cuota || 0) * 2">
+              2 Cuotas (L. {{ ((selectedClient()?.cuota || 0) * 2) | number:'1.0-0' }})
+            </button>
+            <button type="button" class="btn-preset-pill" (click)="setPresetAmount(3)" [class.active]="paymentAmount() === (selectedClient()?.cuota || 0) * 3">
+              3 Cuotas (L. {{ ((selectedClient()?.cuota || 0) * 3) | number:'1.0-0' }})
+            </button>
+            @if ((selectedClient()?.cuotasAtrasadasCount || 0) > 0) {
+              <button type="button" class="btn-preset-pill" (click)="setPonerAlDiaAmount()" style="border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.1); font-weight: 700;" [class.active]="paymentAmount() === selectedClient()?.montoParaEstarAlDia">
+                ⚡ Poner al Día (L. {{ selectedClient()?.montoParaEstarAlDia | number:'1.0-0' }})
+              </button>
+            }
+            <button type="button" class="btn-preset-pill" (click)="setFullBalanceAmount()" style="border-color: #10b981; color: #10b981;" [class.active]="paymentAmount() === selectedClient()?.saldoTotal">
+              Saldar Total
+            </button>
+          </div>
+        </div>
+
+        <!-- Listado de Cuentas / Cuotas Pendientes -->
+        @if (pendingCuotas().length > 0) {
+          <div class="pending-cuotas-container" style="margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">
+                Cuentas / Cuotas Pendientes a Cancelar:
+              </span>
+              <span style="font-size: 0.75rem; color: var(--color-blue); font-weight: 700;">
+                {{ selectedCuotasCount() }} de {{ pendingCuotas().length }} seleccionada(s)
+              </span>
+            </div>
+
+            <div class="pending-cuotas-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 190px; overflow-y: auto; padding-right: 4px;">
+              @for (cuota of pendingCuotas(); track cuota.id; let idx = $index) {
+                <div 
+                  class="pending-cuota-row"
+                  [class.selected]="cuota.selected"
+                  [class.vencida]="cuota.isVencida"
+                  (click)="selectCuotaUpTo(idx)"
+                >
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <input 
+                      type="checkbox" 
+                      [checked]="cuota.selected" 
+                      (click)="$event.stopPropagation(); selectCuotaUpTo(idx)"
+                      style="width: 17px; height: 17px; accent-color: var(--color-blue); cursor: pointer;"
+                    />
+                    <div>
+                      <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="font-weight: 700; font-size: 0.875rem; color: var(--text-primary);">
+                          Cuota #{{ cuota.numeroCuota }}
+                        </span>
+                        @if (cuota.isVencida) {
+                          <span class="status-badge badge-danger" style="font-size: 0.65rem; padding: 1px 6px;">Vencida</span>
+                        } @else if (cuota.montoPagado > 0) {
+                          <span class="status-badge badge-info" style="font-size: 0.65rem; padding: 1px 6px; background: rgba(56, 189, 248, 0.15); color: #38bdf8;">Abono Parcial</span>
+                        } @else {
+                          <span class="status-badge badge-warning" style="font-size: 0.65rem; padding: 1px 6px;">Pendiente</span>
+                        }
+                      </div>
+                      <span style="font-size: 0.725rem; color: var(--text-secondary); display: block;">
+                        Vence: {{ cuota.fechaVencimiento | date:'dd/MM/yyyy' }}
+                      </span>
+                    </div>
                   </div>
-                  <div style="text-align: right; display: flex; align-items: center; gap: 8px;">
-                    @if (cuota.estado === 'Vencido') {
-                      <span style="font-weight: 700; color: #f87171; background: rgba(239, 68, 68, 0.1); padding: 2px 6px; border-radius: 4px; font-size: 0.6875rem;">MORA</span>
+
+                  <div style="text-align: right;">
+                    <span class="font-mono" style="font-weight: 700; font-size: 0.95rem;" [style.color]="cuota.selected ? 'var(--color-blue)' : 'var(--text-primary)'">
+                      L. {{ cuota.saldoRestante | number:'1.2-2' }}
+                    </span>
+                    @if (cuota.montoPagado > 0) {
+                      <span style="display: block; font-size: 0.6875rem; color: #10b981;">
+                        (Abonado: L. {{ cuota.montoPagado | number:'1.2-2' }})
+                      </span>
                     }
-                    <span style="font-family: monospace; font-weight: 700; color: #38bdf8;">L. {{ (cuota.montoPrincipal - cuota.montoPagadoPrincipal + cuota.montoInteres - cuota.montoPagadoInteres + cuota.montoMoratorio - cuota.montoPagadoMora) | number:'1.2-2' }}</span>
                   </div>
                 </div>
               }
@@ -166,7 +511,7 @@
 
         <form class="modal-form" (submit)="$event.preventDefault(); submitPayment()">
           <div class="form-group" style="display: flex; flex-direction: column; gap: 8px;">
-            <label class="form-label" for="amount">Monto Recibido (L.)</label>
+            <label class="form-label" for="amount">Monto Recibido en Mano (L.)</label>
             <div class="input-currency-wrapper" style="position: relative; display: flex; align-items: center;">
               <span class="currency-symbol" style="position: absolute; left: 14px; font-weight: 600; color: var(--text-primary);">L.</span>
               <input 
@@ -174,17 +519,17 @@
                 id="amount" 
                 step="0.01"
                 class="form-input font-mono font-bold"
+                style="font-size: 1.25rem; height: 48px; padding-left: 36px;"
                 [value]="paymentAmount()"
                 (input)="paymentAmount.set(+$any($event.target).value)"
-                style="padding-left: 32px;"
                 required
               />
             </div>
-            <p class="input-hint" style="font-size: 0.75rem; color: var(--text-muted);">Cuota pactada hoy: L. {{ selectedClient()?.cuota | number:'1.2-2' }}</p>
+            <p class="input-hint" style="font-size: 0.75rem; color: var(--text-muted);">Cuota semanal/diaria pactada: L. {{ selectedClient()?.cuota | number:'1.2-2' }}</p>
           </div>
 
           <div class="form-group" style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px;">
-            <label class="form-label">Tipo de Pago</label>
+            <label class="form-label">Método de Cobro</label>
             <div class="radio-group" style="display: flex; gap: 12px;">
               <label class="radio-label" [class.selected]="paymentMethod() === 'Efectivo'" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; transition: all var(--transition-fast);">
                 <input 
@@ -196,7 +541,7 @@
                   (change)="paymentMethod.set('Efectivo')"
                   style="display: none;"
                 />
-                <span class="radio-text">Efectivo</span>
+                <span class="radio-text">💵 Efectivo</span>
               </label>
 
               <label class="radio-label" [class.selected]="paymentMethod() === 'Transferencia'" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; transition: all var(--transition-fast);">
@@ -209,7 +554,7 @@
                   (change)="paymentMethod.set('Transferencia')"
                   style="display: none;"
                 />
-                <span class="radio-text">Transferencia</span>
+                <span class="radio-text">📱 Transferencia</span>
               </label>
             </div>
           </div>
@@ -218,8 +563,8 @@
             <button type="button" class="btn btn-secondary" (click)="closeRegisterPayment()">
               Cancelar
             </button>
-            <button type="submit" class="btn btn-primary">
-              Registrar Abono
+            <button type="submit" class="btn btn-primary" style="height: 44px; font-weight: 700; font-size: 0.95rem;">
+              Confirmar Cobro
             </button>
           </div>
         </form>

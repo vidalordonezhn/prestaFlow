@@ -505,6 +505,59 @@
   }
 }
 
+.btn-table-details {
+  height: 34px;
+  padding: 0 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+
+  &:hover {
+    background-color: var(--border-color);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+  }
+}
+
+.btn-table-pay {
+  height: 34px;
+  padding: 0 14px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  background: var(--color-blue);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.25);
+
+  &:hover {
+    background-color: var(--color-blue-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.35);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
 .no-results {
   text-align: center;
   padding: 48px !important;
@@ -647,7 +700,18 @@
 .progress-bar-fill {
   height: 100%;
   border-radius: var(--radius-sm);
+  background-color: var(--color-blue);
   transition: width var(--transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.bg-green {
+    background-color: #10b981 !important;
+  }
+  &.bg-blue {
+    background-color: #3b82f6 !important;
+  }
+  &.bg-red {
+    background-color: #ef4444 !important;
+  }
 }
 
 .progress-label {
@@ -1093,3 +1157,92 @@
 .autocomplete-option:hover {
   background-color: var(--bg-primary) !important;
 }
+
+.btn-preset-pill {
+  padding: 6px 12px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+
+  &:hover {
+    background-color: var(--bg-hover);
+    border-color: var(--color-blue);
+  }
+
+  &.active {
+    background-color: var(--color-blue-light);
+    border-color: var(--color-blue);
+    color: var(--color-blue);
+    font-weight: 700;
+  }
+}
+
+.radio-group {
+  .radio-label {
+    &.selected {
+      background-color: var(--color-blue-light) !important;
+      border-color: var(--color-blue) !important;
+      color: var(--color-blue) !important;
+      font-weight: 600;
+    }
+  }
+}
+
+/* SELECCIÓN DE CUOTAS PENDIENTES */
+.pending-cuotas-container {
+  margin-bottom: 16px;
+}
+
+.pending-cuotas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+  }
+}
+
+.pending-cuota-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-hover);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  &.selected {
+    border-color: var(--color-blue);
+    background: rgba(59, 130, 246, 0.08);
+  }
+
+  &.vencida.selected {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.08);
+  }
+}
+
