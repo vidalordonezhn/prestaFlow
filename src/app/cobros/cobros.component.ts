@@ -164,7 +164,6 @@ export class CobrosComponent implements OnInit {
 
   // Open Payment Modal
   protected openRegisterPayment(client: Client): void {
-    if (client.pagado) return;
     this.selectedClient.set(client);
     this.paymentAmount.set(client.cuota);
     this.paymentMethod.set('Efectivo');

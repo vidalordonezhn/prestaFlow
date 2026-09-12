@@ -290,17 +290,17 @@
           <div class="modal-details-summary grid-3-cols">
             <div class="summary-box font-mono">
               <span class="box-label">Total Prestado</span>
-              <span class="box-value">${{ clientTotalPrestado() | number:'1.0-0' }}</span>
+              <span class="box-value">{{ settingsService.monedaSimbolo() }} {{ clientTotalPrestado() | number:'1.0-0' }}</span>
               <span class="box-hint">+intereses pactados</span>
             </div>
             <div class="summary-box font-mono">
               <span class="box-label">Monto Abonado</span>
-              <span class="box-value text-green">${{ clientTotalPagado() | number:'1.0-0' }}</span>
+              <span class="box-value text-green">{{ settingsService.monedaSimbolo() }} {{ clientTotalPagado() | number:'1.0-0' }}</span>
               <span class="box-hint">Efectivo cobrado</span>
             </div>
             <div class="summary-box font-mono">
               <span class="box-label">Saldo Pendiente</span>
-              <span class="box-value text-orange">${{ clientTotalAdeudado() | number:'1.0-0' }}</span>
+              <span class="box-value text-orange">{{ settingsService.monedaSimbolo() }} {{ clientTotalAdeudado() | number:'1.0-0' }}</span>
               <span class="box-hint">Restante por cobrar</span>
             </div>
           </div>
@@ -324,7 +324,7 @@
                     <tr>
                       <td class="font-mono font-semibold">{{ hist.loanId }}</td>
                       <td>{{ hist.date | date:'dd/MM/yyyy' }}</td>
-                      <td class="text-right font-mono font-semibold">${{ hist.amount | number:'1.0-0' }}</td>
+                      <td class="text-right font-mono font-semibold">{{ settingsService.monedaSimbolo() }} {{ hist.amount | number:'1.0-0' }}</td>
                       <td class="text-center font-mono">{{ hist.cuotas }}</td>
                       <td class="text-center">
                         @if (hist.status === 'Pagado') {
