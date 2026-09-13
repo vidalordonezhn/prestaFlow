@@ -77,9 +77,11 @@
   transition: all var(--transition-fast, 0.15s ease);
   border: 1px solid transparent;
 
-  .btn-icon {
+  svg, .btn-icon {
     width: 18px;
     height: 18px;
+    flex-shrink: 0;
+    display: inline-block;
   }
 }
 
