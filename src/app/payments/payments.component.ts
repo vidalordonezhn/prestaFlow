@@ -108,9 +108,13 @@ export class PaymentsComponent implements OnInit {
 
   // Share Receipt on WhatsApp
   protected shareOnWhatsApp(payment: PagoResponse): void {
-    const cleanPhone = payment.clientePhone.replace(/[^0-9]/g, '');
+    const cleanPhone = (payment.clientePhone || '').replace(/[^0-9]/g, '');
     const formattedPhone = cleanPhone.startsWith('504') ? cleanPhone : `504${cleanPhone}`;
     
+    if (!confirm(`¿Deseas enviar el comprobante de pago por WhatsApp a ${payment.clienteNombre} (+${formattedPhone})?`)) {
+      return;
+    }
+
     const dateFormatted = new Date(payment.fechaPago).toLocaleDateString('es-HN', {
       day: '2-digit',
       month: '2-digit',
@@ -122,7 +126,20 @@ export class PaymentsComponent implements OnInit {
       hour12: true
     });
     
-    const message = `Hola *${payment.clienteNombre}*, hemos registrado tu abono de *L. ${payment.monto.toLocaleString('es-HN', { minimumFractionDigits: 2 })}* para tu préstamo *${payment.prestamoCodigo}* con fecha del ${dateFormatted} a las ${timeFormatted}. ¡Muchas gracias por tu puntualidad! *PrestaFlow*`;
+    const message = `🧾 *COMPROBANTE DE PAGO - PRESTAFLOW*\n` +
+      `------------------------------------------\n` +
+      `👤 *Cliente:* ${payment.clienteNombre}\n` +
+      `🔢 *Préstamo:* ${payment.prestamoCodigo}\n` +
+      `📅 *Fecha:* ${dateFormatted} ${timeFormatted}\n` +
+      `💳 *Método:* ${payment.metodoPago}\n` +
+      `------------------------------------------\n` +
+      `💰 *TOTAL RECIBIDO:* L. ${Number(payment.monto).toLocaleString('es-HN', { minimumFractionDigits: 2 })}\n` +
+      ` • *Abono a Capital:* L. ${Number(payment.montoPrincipal || 0).toLocaleString('es-HN', { minimumFractionDigits: 2 })}\n` +
+      ` • *Pago de Interés:* L. ${Number(payment.montoInteres || 0).toLocaleString('es-HN', { minimumFractionDigits: 2 })}\n` +
+      ` • *Mora Recaudada:* L. ${Number(payment.montoMora || 0).toLocaleString('es-HN', { minimumFractionDigits: 2 })}\n` +
+      `------------------------------------------\n` +
+      `¡Muchas gracias por su pago puntual! ✨\n` +
+      `_PrestaFlow - Sistema de Gestión Financiera_`;
     
     const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');

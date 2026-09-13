@@ -18,6 +18,9 @@ export interface PagoResponse {
   metodoPago: 'Efectivo' | 'Transferencia';
   referencia?: string;
   creadoPor: string;
+  esAnulado?: boolean;
+  motivoAnulacion?: string;
+  fechaAnulacion?: string;
 }
 
 export interface PagoCreate {
@@ -25,6 +28,11 @@ export interface PagoCreate {
   monto: number;
   metodoPago: 'Efectivo' | 'Transferencia';
   referencia?: string;
+  esAbonoCapital?: boolean;
+}
+
+export interface AnularPagoDto {
+  motivo: string;
 }
 
 @Injectable({
@@ -45,5 +53,12 @@ export class ApiPagosService {
    */
   createPago(pago: PagoCreate): Observable<PagoResponse> {
     return this.http.post<PagoResponse>(`${environment.apiUrl}/api/pagos`, pago);
+  }
+
+  /**
+   * Anula un pago registrado previamente, revirtiendo cuotas y caja.
+   */
+  anularPago(pagoId: number, dto: AnularPagoDto): Observable<PagoResponse> {
+    return this.http.post<PagoResponse>(`${environment.apiUrl}/api/pagos/${pagoId}/anular`, dto);
   }
 }

@@ -35,6 +35,28 @@ export interface TransferenciaCreate {
   concepto: string;
 }
 
+export interface MovimientoArqueo {
+  id: number;
+  fecha: string;
+  cuentaNombre: string;
+  tipo: string;
+  monto: number;
+  concepto: string;
+}
+
+export interface ArqueoDiarioResponse {
+  fechaConsulta: string;
+  totalEfectivoIngresos: number;
+  totalTransferenciasIngresos: number;
+  totalDesembolsosEgresos: number;
+  totalOtrosEgresos: number;
+  balanceNetoDia: number;
+  saldoTotalCajas: number;
+  saldoTotalBancos: number;
+  totalOperaciones: number;
+  movimientos: MovimientoArqueo[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -74,5 +96,13 @@ export class ApiCajaService {
    */
   crearTransferencia(transferencia: TransferenciaCreate): Observable<TransaccionResponse[]> {
     return this.http.post<TransaccionResponse[]>(`${environment.apiUrl}/api/cajabancos/transferencia`, transferencia);
+  }
+
+  /**
+   * Obtiene el arqueo y balance diario de caja y bancos.
+   */
+  getArqueoDiario(fecha?: string): Observable<ArqueoDiarioResponse> {
+    const params = fecha ? `?fecha=${encodeURIComponent(fecha)}` : '';
+    return this.http.get<ArqueoDiarioResponse>(`${environment.apiUrl}/api/cajabancos/arqueo-diario${params}`);
   }
 }

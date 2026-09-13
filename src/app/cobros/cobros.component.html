@@ -10,10 +10,16 @@
         </div>
         <p class="page-subtitle">Panel de control y ruta de cobranza en calle para la jornada de hoy</p>
       </div>
-      <button class="btn btn-secondary" (click)="cargarDatos()" style="height: 38px; padding: 0 16px; font-size: 0.8125rem; display: inline-flex; align-items: center; gap: 6px;">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-        Actualizar Ruta
-      </button>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button class="btn btn-secondary" (click)="exportCobrosCsv()" style="height: 38px; padding: 0 14px; font-size: 0.8125rem; display: inline-flex; align-items: center; gap: 6px;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Exportar CSV
+        </button>
+        <button class="btn btn-secondary" (click)="cargarDatos()" style="height: 38px; padding: 0 16px; font-size: 0.8125rem; display: inline-flex; align-items: center; gap: 6px;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          Actualizar Ruta
+        </button>
+      </div>
     </header>
 
     <!-- METRIC CARDS / KPIS DEL DÍA -->
@@ -525,7 +531,28 @@
                 required
               />
             </div>
-            <p class="input-hint" style="font-size: 0.75rem; color: var(--text-muted);">Cuota semanal/diaria pactada: L. {{ selectedClient()?.cuota | number:'1.2-2' }}</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+              <p class="input-hint" style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">Cuota pactada: L. {{ selectedClient()?.cuota | number:'1.2-2' }}</p>
+              @if (selectedClient()?.saldoTotal) {
+                <span style="font-size: 0.75rem; color: var(--text-secondary);">Saldo total: L. {{ selectedClient()?.saldoTotal | number:'1.2-2' }}</span>
+              }
+            </div>
+
+            @if (paymentAmount() > (selectedClient()?.cuota || 0) && (paymentAmount() < (selectedClient()?.saldoTotal || 0))) {
+              <div style="margin-top: 6px; padding: 8px 12px; border-radius: 8px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1rem;">🚀</span>
+                <span style="font-size: 0.75rem; color: #10b981; font-weight: 600;">
+                  Abono extraordinario: Cubre cuota y adelanta <strong>L. {{ (paymentAmount() - (selectedClient()?.cuota || 0)) | number:'1.2-2' }}</strong> a amortización de cuotas futuras (acortando el plazo del crédito).
+                </span>
+              </div>
+            } @else if (paymentAmount() >= (selectedClient()?.saldoTotal || 0) && (selectedClient()?.saldoTotal || 0) > 0) {
+              <div style="margin-top: 6px; padding: 8px 12px; border-radius: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1rem;">🎉</span>
+                <span style="font-size: 0.75rem; color: #10b981; font-weight: 700;">
+                  ¡Liquidación total! Este abono salda el 100% de la deuda restante del cliente.
+                </span>
+              </div>
+            }
           </div>
 
           <div class="form-group" style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px;">

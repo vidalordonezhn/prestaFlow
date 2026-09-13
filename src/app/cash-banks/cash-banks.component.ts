@@ -1,8 +1,9 @@
 import { Component, OnInit, signal, computed, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
-import { ApiCajaService, CuentaResponse, TransaccionResponse } from '../services/api-caja.service';
+import { ApiCajaService, CuentaResponse, TransaccionResponse, ArqueoDiarioResponse } from '../services/api-caja.service';
 import { ApiAuthService } from '../services/api-auth.service';
+import { exportToCsv } from '../core/utils/export.utils';
 
 interface Toast {
   id: number;
@@ -44,6 +45,12 @@ export class CashBanksComponent implements OnInit {
   // Modals Visibility
   protected readonly showMovementModal = signal(false);
   protected readonly showTransferModal = signal(false);
+  protected readonly showArqueoModal = signal(false);
+
+  // Arqueo Diario Data
+  protected readonly arqueoData = signal<ArqueoDiarioResponse | null>(null);
+  protected readonly arqueoFecha = signal<string>(new Date().toISOString().slice(0, 10));
+  protected readonly isArqueoLoading = signal<boolean>(false);
 
   // Form Fields: Registrar Movimiento
   protected readonly selectedAccountId = signal<number>(0);
@@ -270,6 +277,59 @@ export class CashBanksComponent implements OnInit {
   protected onLogout(): void {
     this.auth.logout();
     this.router.navigate(['/login']);
+  }
+
+  // Arqueo y Cierre Diario
+  protected openArqueoDiario(): void {
+    this.showArqueoModal.set(true);
+    this.cargarArqueo();
+  }
+
+  protected onArqueoFechaChange(event: Event): void {
+    const val = (event.target as HTMLInputElement).value;
+    this.arqueoFecha.set(val);
+    this.cargarArqueo();
+  }
+
+  protected cargarArqueo(): void {
+    this.isArqueoLoading.set(true);
+    this.apiCajaService.getArqueoDiario(this.arqueoFecha()).subscribe({
+      next: (res) => {
+        this.arqueoData.set(res);
+        this.isArqueoLoading.set(false);
+      },
+      error: () => {
+        this.triggerToast('warning', 'Error de Consulta', 'No se pudo generar el arqueo diario.');
+        this.isArqueoLoading.set(false);
+      }
+    });
+  }
+
+  protected exportArqueoCsv(): void {
+    const data = this.arqueoData();
+    if (!data || !data.movimientos) return;
+
+    exportToCsv<any>(`Arqueo_Caja_${this.arqueoFecha()}`, data.movimientos, [
+      { header: 'ID', field: 'id' },
+      { header: 'Fecha y Hora', format: m => new Date(m.fecha).toLocaleString('es-HN') },
+      { header: 'Cuenta', field: 'cuentaNombre' },
+      { header: 'Tipo', field: 'tipo' },
+      { header: 'Monto (L.)', field: 'monto' },
+      { header: 'Concepto', field: 'concepto' }
+    ]);
+  }
+
+  protected exportTransactionsCsv(): void {
+    const list = this.filteredTransacciones();
+    exportToCsv<TransaccionResponse>('Diario_Transacciones_PrestaFlow', list, [
+      { header: 'ID', field: 'id' },
+      { header: 'Fecha', format: t => new Date(t.fecha).toLocaleString('es-HN') },
+      { header: 'Cuenta', field: 'cuentaNombre' },
+      { header: 'Tipo', field: 'tipo' },
+      { header: 'Monto (L.)', field: 'monto' },
+      { header: 'Concepto', field: 'concepto' },
+      { header: 'Usuario', field: 'creadoPor' }
+    ]);
   }
 
   // Toasts Helper

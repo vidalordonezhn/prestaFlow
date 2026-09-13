@@ -5,6 +5,7 @@ import { ApiAuthService } from '../services/api-auth.service';
 import { ApiPrestamosService } from '../services/api-prestamos.service';
 import { ApiPagosService } from '../services/api-pagos.service';
 import { SettingsService } from '../services/settings.service';
+import { exportToCsv } from '../core/utils/export.utils';
 
 interface Client {
   id: string;
@@ -243,8 +244,12 @@ export class CobrosComponent implements OnInit {
                 totalPagado = p.cuotaMonto * (p.cuotasPagadas || 0);
               }
               const saldoTotal = Math.max(0, totalPagar - totalPagado);
-              const estaTotalmentePagado = saldoTotal <= 0.05;
-              const estaEnMora = !estaTotalmentePagado && p.status === 'Mora';
+              const estaTotalmentePagado = saldoTotal <= 0.05 || totalPagado >= (totalPagar - 0.05);
+              if (estaTotalmentePagado) {
+                cuotasAtrasadasCount = 0;
+                montoParaEstarAlDia = 0;
+              }
+              const estaEnMora = !estaTotalmentePagado && (cuotasAtrasadasCount > 0 || p.status === 'Mora');
 
               return {
                 id: p.codigo,
@@ -402,10 +407,14 @@ export class CobrosComponent implements OnInit {
   }
 
   protected sendReminderWhatsApp(client: Client): void {
-    const cleanPhone = client.phone.replace(/[^0-9]/g, '');
+    const cleanPhone = (client.phone || '').replace(/[^0-9]/g, '');
     const formattedPhone = cleanPhone.startsWith('504') ? cleanPhone : `504${cleanPhone}`;
     const user = this.auth.currentUser();
     const cobradorName = user ? user.nombre : 'Tu Asesor';
+
+    if (!confirm(`¿Deseas enviar el recordatorio de cobro por WhatsApp a ${client.name} (+${formattedPhone})?`)) {
+      return;
+    }
 
     const message = `Hola *${client.name}*, te saluda *${cobradorName}* de *PrestaFlow*. Te recordamos que hoy está programada la visita para la cuota de tu préstamo *${client.id}* por un valor de *L. ${client.cuota.toLocaleString('es-HN', { minimumFractionDigits: 2 })}*. ¡Quedamos atentos a tu atención!`;
     const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
@@ -442,10 +451,13 @@ export class CobrosComponent implements OnInit {
       return;
     }
 
+    const esAbonoExtra = amountPaid > client.cuota;
+
     this.apiPagosService.createPago({
       prestamoId: client.loanId,
       monto: amountPaid,
-      metodoPago: methodPaid
+      metodoPago: methodPaid,
+      esAbonoCapital: esAbonoExtra
     }).subscribe({
       next: (res) => {
         this.triggerToast(
@@ -476,9 +488,13 @@ export class CobrosComponent implements OnInit {
   // Share Receipt on WhatsApp
   protected shareOnWhatsApp(payment: any): void {
     if (!payment) return;
-    const cleanPhone = payment.clientePhone.replace(/[^0-9]/g, '');
+    const cleanPhone = (payment.clientePhone || '').replace(/[^0-9]/g, '');
     const formattedPhone = cleanPhone.startsWith('504') ? cleanPhone : `504${cleanPhone}`;
     
+    if (!confirm(`¿Deseas enviar el comprobante de pago por WhatsApp a ${payment.clienteNombre} (+${formattedPhone})?`)) {
+      return;
+    }
+
     const dateFormatted = new Date(payment.fechaPago).toLocaleDateString('es-HN', {
       day: '2-digit',
       month: '2-digit',
@@ -489,16 +505,50 @@ export class CobrosComponent implements OnInit {
       minute: '2-digit',
       hour12: true
     });
-    
-    const message = `Hola *${payment.clienteNombre}*, hemos registrado tu abono de *L. ${payment.monto.toLocaleString('es-HN', { minimumFractionDigits: 2 })}* para tu préstamo *${payment.prestamoCodigo}* con fecha del ${dateFormatted} a las ${timeFormatted}. ¡Muchas gracias por tu puntualidad! *PrestaFlow*`;
+
+    const principal = Number(payment.montoPrincipal || 0).toLocaleString('es-HN', { minimumFractionDigits: 2 });
+    const interes = Number(payment.montoInteres || 0).toLocaleString('es-HN', { minimumFractionDigits: 2 });
+    const mora = Number(payment.montoMora || 0).toLocaleString('es-HN', { minimumFractionDigits: 2 });
+    const total = Number(payment.monto || 0).toLocaleString('es-HN', { minimumFractionDigits: 2 });
+
+    const message = `🧾 *COMPROBANTE DE PAGO - PRESTAFLOW*\n` +
+      `------------------------------------------\n` +
+      `👤 *Cliente:* ${payment.clienteNombre}\n` +
+      `🔢 *Préstamo:* ${payment.prestamoCodigo}\n` +
+      `📅 *Fecha:* ${dateFormatted} ${timeFormatted}\n` +
+      `💳 *Método:* ${payment.metodoPago}\n` +
+      `------------------------------------------\n` +
+      `💰 *TOTAL RECIBIDO:* L. ${total}\n` +
+      ` • *Abono a Capital:* L. ${principal}\n` +
+      ` • *Pago de Interés:* L. ${interes}\n` +
+      ` • *Mora Recaudada:* L. ${mora}\n` +
+      `------------------------------------------\n` +
+      `¡Muchas gracias por su pago puntual! ✨\n` +
+      `_PrestaFlow - Sistema de Gestión Financiera_`;
     
     const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
   }
 
-  // Print Receipt
+  // Print Receipt (Thermal POS & Standard)
   protected printReceipt(): void {
     window.print();
+  }
+
+  // Export Today Route to CSV
+  protected exportCobrosCsv(): void {
+    const list = this.filteredClients();
+    exportToCsv<Client>('Ruta_Cobros_PrestaFlow', list, [
+      { header: 'Código Préstamo', field: 'id' },
+      { header: 'Cliente', field: 'name' },
+      { header: 'Teléfono', field: 'phone' },
+      { header: 'Zona / Dirección', format: c => `${c.zone} - ${c.address}` },
+      { header: 'Frecuencia', field: 'frecuencia' },
+      { header: 'Cuota del Día (L.)', field: 'cuota' },
+      { header: 'Saldo Total (L.)', field: 'saldoTotal' },
+      { header: 'Estado', format: c => c.pagado ? 'Cobrado' : (c.mora ? 'En Mora' : 'Pendiente') },
+      { header: 'Abonado Hoy (L.)', format: c => c.totalAbonadoHoy || 0 }
+    ]);
   }
 
   // Toasts

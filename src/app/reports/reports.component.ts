@@ -569,7 +569,7 @@ export class ReportsComponent implements OnInit {
     }
 
     const saldoRestante = Math.max(0, totalPagar - totalPagado);
-    const estaTotalmentePagado = saldoRestante <= 0.05 || (p.cuotas && p.cuotas.length > 0 && p.cuotas.every(c => c.estado === 'Pagado'));
+    const estaTotalmentePagado = saldoRestante <= 0.05 || totalPagado >= (totalPagar - 0.05) || (p.cuotas && p.cuotas.length > 0 && p.cuotas.every(c => c.estado === 'Pagado'));
 
     let calculatedStatus: 'Activo' | 'Pagado' | 'Mora' = 'Activo';
     if (estaTotalmentePagado) {

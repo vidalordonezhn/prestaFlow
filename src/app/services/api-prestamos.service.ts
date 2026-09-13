@@ -65,6 +65,13 @@ export class ApiPrestamosService {
   }
 
   /**
+   * Obtiene el detalle de un préstamo por su ID.
+   */
+  getPrestamoById(id: number): Observable<PrestamoResponse> {
+    return this.http.get<PrestamoResponse>(`${environment.apiUrl}/api/prestamos/${id}`);
+  }
+
+  /**
    * Registra un nuevo préstamo y realiza el descuento contable.
    */
   createPrestamo(prestamo: PrestamoCreate): Observable<PrestamoResponse> {

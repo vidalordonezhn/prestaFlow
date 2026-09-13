@@ -8,6 +8,7 @@ import { ApiPrestamosService, PrestamoResponse } from '../services/api-prestamos
 import { ApiPagosService } from '../services/api-pagos.service';
 import { ApiCajaService, CuentaResponse } from '../services/api-caja.service';
 import { PermissionsService } from '../services/permissions.service';
+import { exportToCsv } from '../core/utils/export.utils';
 
 interface Loan {
   id: string;
@@ -405,10 +406,14 @@ export class LoansComponent implements OnInit {
 
   // WhatsApp Reminder
   protected sendReminderWhatsApp(loan: Loan): void {
-    const cleanPhone = loan.clientPhone.replace(/[^0-9]/g, '');
+    const cleanPhone = (loan.clientPhone || '').replace(/[^0-9]/g, '');
     const formattedPhone = cleanPhone.startsWith('504') ? cleanPhone : `504${cleanPhone}`;
     const user = this.auth.currentUser();
     const cobradorName = user ? user.nombre : 'Tu Asesor';
+
+    if (!confirm(`¿Deseas enviar el recordatorio de cobro por WhatsApp a ${loan.clientName} (+${formattedPhone})?`)) {
+      return;
+    }
 
     const message = `Hola *${loan.clientName}*, te saluda *${cobradorName}* de *PrestaFlow*. Te recordamos el estado de tu préstamo *${loan.id}* con cuota de *L. ${loan.cuotaMonto.toLocaleString('es-HN', { minimumFractionDigits: 2 })}* (Saldo restante: L. ${loan.saldoRestante.toLocaleString('es-HN', { minimumFractionDigits: 2 })}). ¡Quedamos atentos a tu atención!`;
     const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
@@ -420,6 +425,7 @@ export class LoansComponent implements OnInit {
     const loan = this.selectedLoan();
     if (!loan || !loan.cuotas) return [];
 
+    const isLoanFullyPaid = loan.status === 'Pagado' || loan.saldoRestante <= 0.05 || (loan.totalPagado >= (loan.totalPagar - 0.05));
     const sortedCuotas = [...loan.cuotas].sort((a: any, b: any) => a.numeroCuota - b.numeroCuota);
     let currentCapital = loan.capital;
 
@@ -428,7 +434,7 @@ export class LoansComponent implements OnInit {
       const totalPagadoCuota = (c.montoPagadoPrincipal || 0) + (c.montoPagadoInteres || 0) + (c.montoPagadoMora || 0);
       
       let status: 'Pagada' | 'Pendiente' | 'Vencida' | 'Parcial' = 'Pendiente';
-      if (c.estado === 'Pagado' || totalPagadoCuota >= totalMonto) {
+      if (isLoanFullyPaid || c.estado === 'Pagado' || totalPagadoCuota >= totalMonto - 0.05) {
         status = 'Pagada';
       } else if (totalPagadoCuota > 0) {
         status = 'Parcial';
@@ -551,15 +557,17 @@ export class LoansComponent implements OnInit {
     }
 
     const saldoRestante = Math.max(0, totalPagar - totalPagado);
-    const estaTotalmentePagado = saldoRestante <= 0.05 || (p.cuotas && p.cuotas.length > 0 && cuotasPagadasCount === p.cuotas.length);
+    const estaTotalmentePagado = saldoRestante <= 0.05 || totalPagado >= (totalPagar - 0.05) || (p.cuotas && p.cuotas.length > 0 && cuotasPagadasCount === p.cuotas.length);
 
     let computedStatus: 'Activo' | 'Pagado' | 'Mora' = p.status || 'Activo';
     let statusDetail: 'Al día' | 'Completado' | 'Atrasado' = 'Al día';
 
     if (estaTotalmentePagado) {
+      cuotasAtrasadasCount = 0;
+      montoParaEstarAlDia = 0;
       computedStatus = 'Pagado';
       statusDetail = 'Completado';
-    } else if (p.status === 'Mora') {
+    } else if (cuotasAtrasadasCount > 0 || p.status === 'Mora') {
       computedStatus = 'Mora';
       statusDetail = 'Atrasado';
     } else {
@@ -754,6 +762,57 @@ export class LoansComponent implements OnInit {
   @HostListener('document:click')
   protected closeUserDropdown(): void {
     this.showUserDropdown.set(false);
+  }
+
+  // Export Loans to CSV
+  protected exportLoansCsv(): void {
+    const list = this.filteredLoans();
+    exportToCsv<Loan>('Cartera_Prestamos_PrestaFlow', list, [
+      { header: 'Código', field: 'id' },
+      { header: 'Cliente', field: 'clientName' },
+      { header: 'Teléfono', field: 'clientPhone' },
+      { header: 'Fecha Otorgado', format: l => new Date(l.startDate).toLocaleDateString('es-HN') },
+      { header: 'Capital (L.)', field: 'capital' },
+      { header: 'Tasa Interés (%)', field: 'interesPorcentaje' },
+      { header: 'Frecuencia', field: 'frecuencia' },
+      { header: 'Plazo Cuotas', field: 'plazoCuotas' },
+      { header: 'Cuotas Pagadas', field: 'cuotasPagadas' },
+      { header: 'Cuota Monto (L.)', field: 'cuotaMonto' },
+      { header: 'Total a Pagar (L.)', field: 'totalPagar' },
+      { header: 'Total Pagado (L.)', field: 'totalPagado' },
+      { header: 'Saldo Restante (L.)', field: 'saldoRestante' },
+      { header: 'Estado', field: 'status' }
+    ]);
+  }
+
+  // Anular Pago de un Préstamo (Auditoría)
+  protected anularPago(pagoId: number): void {
+    if (!this.permissions.canManageUsers()) {
+      this.triggerToast('warning', 'Acceso Restringido', 'Solo administradores pueden anular registros de pago.');
+      return;
+    }
+
+    const motivo = prompt('Ingrese el motivo de la anulación del pago (mínimo 5 caracteres):');
+    if (!motivo || motivo.trim().length < 5) {
+      if (motivo !== null) {
+        this.triggerToast('warning', 'Motivo Requerido', 'Debe especificar un motivo válido de al menos 5 caracteres.');
+      }
+      return;
+    }
+
+    this.apiPagosService.anularPago(pagoId, { motivo: motivo.trim() }).subscribe({
+      next: () => {
+        this.triggerToast('success', 'Pago Anulado', `El pago #${pagoId} ha sido anulado y los saldos han sido revertidos.`);
+        this.cargarPrestamos();
+        if (this.selectedLoan()) {
+          this.closeDetails();
+        }
+      },
+      error: (err) => {
+        const msg = err.error?.mensaje || 'No se pudo anular el pago en el sistema.';
+        this.triggerToast('warning', 'Error al Anular', msg);
+      }
+    });
   }
 
   protected onLogout(): void {

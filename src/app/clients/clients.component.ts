@@ -138,17 +138,20 @@ export class ClientsComponent implements OnInit {
     }
 
     const saldoRestante = Math.max(0, totalPagar - totalPagado);
-    const estaTotalmentePagado = saldoRestante <= 0.05 || (p.cuotas && p.cuotas.length > 0 && p.cuotas.every(c => c.estado === 'Pagado'));
+    const estaTotalmentePagado = saldoRestante <= 0.05 || totalPagado >= (totalPagar - 0.05) || (p.cuotas && p.cuotas.length > 0 && p.cuotas.every(c => c.estado === 'Pagado'));
 
     let calculatedStatus: 'Activo' | 'Pagado' | 'Mora' = 'Activo';
+    let cuotasPagadas = p.cuotasPagadas || 0;
     if (estaTotalmentePagado) {
       calculatedStatus = 'Pagado';
+      cuotasPagadas = p.plazoCuotas;
     } else if (cuotasAtrasadasCount > 0 || p.status === 'Mora') {
       calculatedStatus = 'Mora';
     }
 
     return {
       ...p,
+      cuotasPagadas,
       status: calculatedStatus
     };
   }
@@ -177,7 +180,7 @@ export class ClientsComponent implements OnInit {
                   interest: p.interesPorcentaje,
                   date: p.fechaOtorgado,
                   status: p.status,
-                  cuotas: `${p.cuotasPagadas || 0}/${p.plazoCuotas} (${p.frecuencia})`
+                  cuotas: `${p.status === 'Pagado' ? p.plazoCuotas : (p.cuotasPagadas || 0)}/${p.plazoCuotas} (${p.frecuencia})`
                 }));
 
                 const activeLoans = clientLoans.filter(p => p.status !== 'Pagado');
@@ -355,23 +358,36 @@ export class ClientsComponent implements OnInit {
 
   // Open details profile sheet (queries full details from API)
   protected openDetails(client: Client): void {
-    this.apiClientsService.getCliente(client.dbId).subscribe({
-      next: (res) => {
+    this.apiPrestamosService.getPrestamos().subscribe({
+      next: (prestamosRes) => {
+        const normalizedLoans = prestamosRes.map(p => this.normalizeLoan(p));
+        const clientLoans = normalizedLoans.filter(p => 
+          p.clienteId === client.dbId || 
+          p.clienteNombre.toLowerCase() === client.name.toLowerCase() ||
+          (client.prestamosHistory && client.prestamosHistory.some(h => h.loanId === p.codigo))
+        );
+
+        let history = client.prestamosHistory || [];
+        if (clientLoans.length > 0) {
+          history = clientLoans.map(p => ({
+            loanId: p.codigo,
+            amount: p.capital,
+            interest: p.interesPorcentaje,
+            date: new Date(p.fechaOtorgado),
+            status: p.status,
+            cuotas: `${p.status === 'Pagado' ? p.plazoCuotas : (p.cuotasPagadas || 0)}/${p.plazoCuotas} (${p.frecuencia})`
+          }));
+        }
+
         this.selectedClient.set({
           ...client,
-          prestamosHistory: res.prestamosHistory.map(p => ({
-            loanId: p.loanId,
-            amount: p.amount,
-            interest: p.interest,
-            date: new Date(p.date), // Parse ISO String to Date
-            status: p.status,
-            cuotas: p.cuotas
-          }))
+          prestamosHistory: history
         });
         this.showDetailsModal.set(true);
       },
-      error: (err) => {
-        this.triggerToast('warning', 'Error de Carga', 'No se pudo obtener el historial detallado.');
+      error: () => {
+        this.selectedClient.set(client);
+        this.showDetailsModal.set(true);
       }
     });
   }
