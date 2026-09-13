@@ -78,10 +78,10 @@
         <h3 class="kpi-value text-green">L. {{ totalCollectedToday() | number:'1.0-0' }}</h3>
         <div class="kpi-footer">
           <div class="progress-bar-container">
-            <div class="progress-bar-fill bg-green" [style.width.%]="(totalCollectedToday() / metaDelDia()) * 100"></div>
+            <div class="progress-bar-fill bg-green" [style.width.%]="metaDelDia() > 0 ? Math.min(100, (totalCollectedToday() / metaDelDia()) * 100) : 0"></div>
           </div>
           <span class="kpi-percentage text-green">
-            {{ (totalCollectedToday() / metaDelDia()) | percent:'1.1-1' }} del objetivo
+            {{ (metaDelDia() > 0 ? (totalCollectedToday() / metaDelDia()) : 0) | percent:'1.1-1' }} del objetivo
           </span>
         </div>
       </div>
