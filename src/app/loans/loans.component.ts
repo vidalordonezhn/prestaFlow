@@ -787,8 +787,8 @@ export class LoansComponent implements OnInit {
 
   // Anular Pago de un Préstamo (Auditoría)
   protected anularPago(pagoId: number): void {
-    if (!this.permissions.canManageUsers()) {
-      this.triggerToast('warning', 'Acceso Restringido', 'Solo administradores pueden anular registros de pago.');
+    if (!this.permissions.hasPermission('anularPagos') && !this.auth.isAdmin()) {
+      this.triggerToast('warning', 'Acceso Restringido', 'Solo administradores o usuarios con permiso pueden anular registros de pago.');
       return;
     }
 
@@ -804,9 +804,8 @@ export class LoansComponent implements OnInit {
       next: () => {
         this.triggerToast('success', 'Pago Anulado', `El pago #${pagoId} ha sido anulado y los saldos han sido revertidos.`);
         this.cargarPrestamos();
-        if (this.selectedLoan()) {
-          this.closeDetails();
-        }
+        this.showDetailsModal.set(false);
+        this.selectedLoan.set(null);
       },
       error: (err) => {
         const msg = err.error?.mensaje || 'No se pudo anular el pago en el sistema.';
