@@ -4,6 +4,7 @@ import { DashboardHomeComponent } from './dashboard/dashboard-home/dashboard-hom
 import { CobrosComponent } from './cobros/cobros.component';
 import { LoansComponent } from './loans/loans.component';
 import { ClientsComponent } from './clients/clients.component';
+import { GarantiasComponent } from './garantias/garantias.component';
 import { LoginComponent } from './login/login.component';
 import { CashBanksComponent } from './cash-banks/cash-banks.component';
 import { PaymentsComponent } from './payments/payments.component';
@@ -14,7 +15,7 @@ import { authGuard, loginGuard, adminGuard } from './guards/auth.guard';
 export const routes: Routes = [
   { 
     path: 'login', 
-    component: LoginComponent,
+    component: LoginComponent, 
     canActivate: [loginGuard] 
   },
   { 
@@ -37,6 +38,10 @@ export const routes: Routes = [
       { 
         path: 'clientes', 
         component: ClientsComponent 
+      },
+      { 
+        path: 'garantias', 
+        component: GarantiasComponent 
       },
       { 
         path: 'pagos', 

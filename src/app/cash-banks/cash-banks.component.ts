@@ -70,6 +70,7 @@ export class CashBanksComponent implements OnInit {
     { name: 'Cobros de Hoy', icon: 'route', active: false, route: '/cobros' },
     { name: 'Préstamos', icon: 'currency_exchange', active: false, route: '/prestamos' },
     { name: 'Clientes', icon: 'people', active: false, route: '/clientes' },
+    { name: 'Garantías', icon: 'shield', active: false, route: '/garantias' },
     { name: 'Historial de Pagos', icon: 'receipt_long', active: false, route: '/pagos' },
     { name: 'Caja y Bancos', icon: 'account_balance', active: true, route: '/caja-bancos' },
     { name: 'Reportes', icon: 'analytics', active: false, route: '/reportes' },

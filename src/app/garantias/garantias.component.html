@@ -1,0 +1,1074 @@
+<div class="page-container">
+
+  <!-- ENCABEZADO DE PÁGINA -->
+  <header class="page-header">
+    <div class="header-titles">
+      <div class="title-with-badge">
+        <h1 class="page-title">Inventario de Garantías y Empeños</h1>
+        <span class="badge-count">{{ filteredGarantias().length }} bienes</span>
+      </div>
+      <p class="page-subtitle">Control físico, tasación y custodia de prendas respaldando créditos y préstamos.</p>
+    </div>
+
+    <div class="header-actions">
+      <button type="button" class="btn btn-secondary" (click)="exportCsv()" [disabled]="filteredGarantias().length === 0">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <span>Exportar CSV</span>
+      </button>
+
+      @if (permissions.hasPermission('gestionarGarantias') || auth.currentUser()?.rol === 'Admin') {
+        <button type="button" class="btn btn-primary" (click)="openCreateModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="btn-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span>Registrar Garantía</span>
+        </button>
+      }
+    </div>
+  </header>
+
+  <!-- KPIS / TARJETAS RESUMEN -->
+  <section class="kpis-grid">
+    <!-- KPI 1: Total Garantías -->
+    <div class="kpi-card">
+      <div class="kpi-icon-wrapper bg-blue-light text-blue">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">Total en Inventario</span>
+        <strong class="kpi-value">{{ totalGarantias() }}</strong>
+        <span class="kpi-trend text-muted">Bienes registrados</span>
+      </div>
+    </div>
+
+    <!-- KPI 2: Valor Total Tasado -->
+    <div class="kpi-card">
+      <div class="kpi-icon-wrapper bg-emerald-light text-emerald">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">Valor Activo en Custodia</span>
+        <strong class="kpi-value font-mono font-bold">L. {{ valorTotalTasado() | number:'1.2-2' }}</strong>
+        <span class="kpi-trend text-emerald">Tasación de respaldo</span>
+      </div>
+    </div>
+
+    <!-- KPI 3: En Custodia -->
+    <div class="kpi-card">
+      <div class="kpi-icon-wrapper bg-indigo-light text-indigo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">En Bodega / Custodia</span>
+        <strong class="kpi-value text-indigo">{{ enCustodiaCount() }}</strong>
+        <span class="kpi-trend text-muted">Resguardadas activas</span>
+      </div>
+    </div>
+
+    <!-- KPI 4: En Remate / Ejecución -->
+    <div class="kpi-card">
+      <div class="kpi-icon-wrapper bg-amber-light text-amber">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">En Remate / Ejecución</span>
+        <strong class="kpi-value" [class.text-rose]="enRemateCount() > 0">{{ enRemateCount() }}</strong>
+        <span class="kpi-trend" [class.text-rose]="enRemateCount() > 0">Bienes por liquidar</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- BARRA DE BÚSQUEDA Y FILTROS -->
+  <section class="toolbar-card">
+    <div class="search-box">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Buscar por código, cliente, serie/placa, descripción, bodega..."
+        [value]="searchQuery()"
+        (input)="searchQuery.set($any($event.target).value)"
+      />
+      @if (searchQuery()) {
+        <button class="clear-btn" (click)="searchQuery.set('')">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      }
+    </div>
+
+    <div class="filters-group">
+      <!-- Filtro por Estado -->
+      <div class="filter-select-wrapper">
+        <select 
+          class="filter-select"
+          [value]="selectedEstado()"
+          (change)="selectedEstado.set($any($event.target).value)"
+        >
+          <option value="Todos">Todos los Estados</option>
+          <option value="En Custodia">🟢 En Custodia</option>
+          <option value="Devuelta">⚪ Devuelta</option>
+          <option value="En Remate">🔴 En Remate</option>
+          <option value="Liquidada">🟣 Liquidada</option>
+        </select>
+      </div>
+
+      <!-- Filtro por Tipo de Bien -->
+      <div class="filter-select-wrapper">
+        <select 
+          class="filter-select"
+          [value]="selectedTipo()"
+          (change)="selectedTipo.set($any($event.target).value)"
+        >
+          <option value="Todos">Todos los Tipos</option>
+          @for (t of tiposGarantia; track t.value) {
+            <option [value]="t.value">{{ t.icon }} {{ t.label }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Toggle Vista (Grid vs Tabla) -->
+      <div class="view-toggle-group">
+        <button 
+          type="button" 
+          class="toggle-btn" 
+          [class.active]="currentView() === 'grid'"
+          (click)="currentView.set('grid')"
+          title="Vista Cuadrícula de Tarjetas"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        </button>
+        <button 
+          type="button" 
+          class="toggle-btn" 
+          [class.active]="currentView() === 'table'"
+          (click)="currentView.set('table')"
+          title="Vista Tabla Detallada"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTENIDO: VISTA GRID DE TARJETAS -->
+  @if (currentView() === 'grid') {
+    <div class="garantias-grid">
+      @for (garantia of filteredGarantias(); track garantia.id) {
+        <div class="garantia-card" (click)="openDetails(garantia)">
+          
+          <!-- Imagen / Foto de la Garantía -->
+          <div class="card-image-wrapper">
+            @if (garantia.fotoUrl) {
+              <img [src]="garantia.fotoUrl" [alt]="garantia.descripcion" class="card-image" />
+              <button 
+                type="button" 
+                class="btn-zoom-image" 
+                (click)="viewImage(garantia.fotoUrl, $event)"
+                title="Ampliar foto"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+              </button>
+            } @else {
+              <div class="card-image-placeholder">
+                <span class="placeholder-icon">{{ getIconByTipo(garantia.tipo) }}</span>
+                <span class="placeholder-text">{{ garantia.tipo }}</span>
+              </div>
+            }
+
+            <!-- Badges sobre imagen -->
+            <div class="card-badges-overlay">
+              <span class="badge-code font-mono">{{ garantia.codigo }}</span>
+              <span 
+                class="badge-status"
+                [class.status-custodia]="garantia.estadoCustodia === 'En Custodia'"
+                [class.status-devuelta]="garantia.estadoCustodia === 'Devuelta'"
+                [class.status-remate]="garantia.estadoCustodia === 'En Remate'"
+                [class.status-liquidada]="garantia.estadoCustodia === 'Liquidada'"
+              >
+                {{ garantia.estadoCustodia }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Cuerpo de la Tarjeta -->
+          <div class="card-body">
+            <div class="card-header-row">
+              <span class="card-tipo-badge">
+                {{ getIconByTipo(garantia.tipo) }} {{ garantia.tipo }}
+              </span>
+              <span class="card-location font-semibold">
+                📍 {{ garantia.ubicacionFisica }}
+              </span>
+            </div>
+
+            <h3 class="card-title">{{ garantia.descripcion }}</h3>
+
+            @if (garantia.numeroSerie) {
+              <div class="card-meta-serie">
+                <span class="meta-label">Serie / Placa:</span>
+                <span class="meta-value font-mono font-bold">{{ garantia.numeroSerie }}</span>
+              </div>
+            }
+
+            <div class="card-divider"></div>
+
+            <!-- Propietario / Préstamo -->
+            <div class="card-owner-info">
+              <div class="owner-avatar">{{ garantia.clienteNombre.substring(0, 2).toUpperCase() }}</div>
+              <div class="owner-details">
+                <strong class="owner-name">{{ garantia.clienteNombre }}</strong>
+                <span class="owner-loan font-mono">
+                  @if (garantia.prestamoCodigo) {
+                    Crédito: <span class="text-primary font-bold">{{ garantia.prestamoCodigo }}</span>
+                  } @else {
+                    <span class="text-muted">Sin préstamo activo</span>
+                  }
+                </span>
+              </div>
+            </div>
+
+            <!-- Valor Tasado y Acciones -->
+            <div class="card-footer-row">
+              <div class="valor-box">
+                <span class="valor-label">VALOR TASADO</span>
+                <span class="valor-amount font-mono">L. {{ garantia.valorEstimado | number:'1.2-2' }}</span>
+              </div>
+
+              <div class="card-actions" (click)="$event.stopPropagation()">
+                <button 
+                  type="button" 
+                  class="btn-card-action" 
+                  (click)="openActaCustodia(garantia, $event)"
+                  title="Imprimir Acta de Custodia"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                </button>
+                <button 
+                  type="button" 
+                  class="btn-card-action" 
+                  (click)="openStatusModal(garantia, $event)"
+                  title="Cambiar Estado de Custodia"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                </button>
+                <button 
+                  type="button" 
+                  class="btn-card-action" 
+                  (click)="openEditModal(garantia, $event)"
+                  title="Editar Garantía"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      } @empty {
+        <div class="empty-state-card col-span-all">
+          <div class="empty-icon-box">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <h3 class="empty-title">No se encontraron garantías</h3>
+          <p class="empty-desc">No hay registros que coincidan con los filtros aplicados o aún no has ingresado bienes en custodia.</p>
+          <button type="button" class="btn btn-primary" (click)="openCreateModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Registrar Primera Garantía</span>
+          </button>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- CONTENIDO: VISTA TABLA -->
+  @if (currentView() === 'table') {
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Bien / Descripción</th>
+            <th>Tipo</th>
+            <th>Cliente Propietario</th>
+            <th>Préstamo</th>
+            <th>Ubicación Bodega</th>
+            <th class="text-right">Valor Tasado</th>
+            <th class="text-center">Estado</th>
+            <th class="text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (garantia of filteredGarantias(); track garantia.id) {
+            <tr (click)="openDetails(garantia)" class="clickable-row">
+              <td>
+                <span class="badge-code font-mono">{{ garantia.codigo }}</span>
+              </td>
+              <td>
+                <div class="table-bien-cell">
+                  @if (garantia.fotoUrl) {
+                    <img [src]="garantia.fotoUrl" class="table-thumbnail" (click)="viewImage(garantia.fotoUrl, $event)" />
+                  } @else {
+                    <div class="table-thumbnail-placeholder">{{ getIconByTipo(garantia.tipo) }}</div>
+                  }
+                  <div>
+                    <strong class="bien-desc">{{ garantia.descripcion }}</strong>
+                    @if (garantia.numeroSerie) {
+                      <span class="bien-serie font-mono">SN: {{ garantia.numeroSerie }}</span>
+                    }
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="chip-tipo">{{ garantia.tipo }}</span>
+              </td>
+              <td>
+                <div class="client-cell">
+                  <span class="client-name">{{ garantia.clienteNombre }}</span>
+                  <span class="client-id font-mono">{{ garantia.clienteIdentidad }}</span>
+                </div>
+              </td>
+              <td>
+                @if (garantia.prestamoCodigo) {
+                  <span class="badge-loan font-mono">{{ garantia.prestamoCodigo }}</span>
+                } @else {
+                  <span class="text-muted font-mono" style="font-size: 0.8rem;">Sin Vincular</span>
+                }
+              </td>
+              <td>
+                <span class="location-text">📍 {{ garantia.ubicacionFisica }}</span>
+              </td>
+              <td class="text-right">
+                <span class="font-mono font-bold font-amount">L. {{ garantia.valorEstimado | number:'1.2-2' }}</span>
+              </td>
+              <td class="text-center">
+                <span 
+                  class="badge-status"
+                  [class.status-custodia]="garantia.estadoCustodia === 'En Custodia'"
+                  [class.status-devuelta]="garantia.estadoCustodia === 'Devuelta'"
+                  [class.status-remate]="garantia.estadoCustodia === 'En Remate'"
+                  [class.status-liquidada]="garantia.estadoCustodia === 'Liquidada'"
+                >
+                  {{ garantia.estadoCustodia }}
+                </span>
+              </td>
+              <td class="text-right" (click)="$event.stopPropagation()">
+                <div class="table-actions">
+                  <button type="button" class="btn-icon-table" (click)="openActaCustodia(garantia, $event)" title="Imprimir Acta">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                  </button>
+                  <button type="button" class="btn-icon-table" (click)="openStatusModal(garantia, $event)" title="Cambiar Estado">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                  </button>
+                  <button type="button" class="btn-icon-table" (click)="openEditModal(garantia, $event)" title="Editar">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9" class="text-center py-12 text-muted">
+                No hay garantías registradas que coincidan con la búsqueda.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+</div>
+
+<!-- MODAL: REGISTRAR NUEVA GARANTÍA -->
+@if (showCreateModal()) {
+  <div class="modal-backdrop" (click)="showCreateModal.set(false)">
+    <div class="modal-card modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Registrar Nueva Garantía en Custodia</h3>
+          <span class="modal-subtitle">Ingreso físico y tasación de prenda o bien en respaldo de crédito.</span>
+        </div>
+        <button class="modal-close" (click)="showCreateModal.set(false)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <form (submit)="submitCreate(); $event.preventDefault()" class="modal-body">
+        <div class="form-grid">
+          
+          <!-- Cliente -->
+          <div class="form-group col-span-2">
+            <label class="form-label">Cliente Propietario *</label>
+            <select 
+              class="form-input form-select"
+              [value]="formClienteId() || ''"
+              (change)="formClienteId.set(+$any($event.target).value || null); formPrestamoId.set(null)"
+              required
+            >
+              <option value="" disabled selected>-- Selecciona el cliente --</option>
+              @for (c of clients(); track c.id) {
+                <option [value]="c.id">{{ c.nombre }} • {{ c.identidad }} ({{ c.phone }})</option>
+              }
+            </select>
+          </div>
+
+          <!-- Préstamo Vinculado (Opcional) -->
+          <div class="form-group col-span-2">
+            <label class="form-label">Préstamo Vinculado (Opcional)</label>
+            <select 
+              class="form-input form-select"
+              [value]="formPrestamoId() || ''"
+              (change)="formPrestamoId.set(+$any($event.target).value || null)"
+              [disabled]="!formClienteId()"
+            >
+              <option value="">-- Sin préstamo vinculado (Custodia General) --</option>
+              @for (p of clientLoans(); track p.id) {
+                <option [value]="p.id">PF-{{ p.id }} • Capital: L. {{ p.capital | number:'1.2-2' }} ({{ p.status }})</option>
+              }
+            </select>
+            @if (!formClienteId()) {
+              <span class="form-help">Selecciona un cliente primero para ver sus préstamos activos.</span>
+            }
+          </div>
+
+          <!-- Tipo de Garantía -->
+          <div class="form-group">
+            <label class="form-label">Tipo de Bien *</label>
+            <select 
+              class="form-input form-select"
+              [value]="formTipo()"
+              (change)="formTipo.set($any($event.target).value)"
+              required
+            >
+              @for (t of tiposGarantia; track t.value) {
+                <option [value]="t.value">{{ t.icon }} {{ t.label }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Valor de Tasación -->
+          <div class="form-group">
+            <label class="form-label">Valor de Tasación / Avalúo (L.) *</label>
+            <div class="input-currency-wrapper">
+              <span class="currency-symbol">L.</span>
+              <input 
+                type="number" 
+                step="0.01"
+                class="form-input font-mono font-bold" 
+                placeholder="0.00"
+                [value]="formValorEstimado() || ''"
+                (input)="formValorEstimado.set(+$any($event.target).value || null)"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Descripción del Bien -->
+          <div class="form-group col-span-2">
+            <label class="form-label">Descripción Detallada del Bien *</label>
+            <input 
+              type="text" 
+              class="form-input" 
+              placeholder="Ej. Motocicleta Yamaha FZ 2.0 150cc Año 2022 Negra"
+              [value]="formDescripcion()"
+              (input)="formDescripcion.set($any($event.target).value)"
+              required
+            />
+          </div>
+
+          <!-- Número de Serie / VIN / Matrícula -->
+          <div class="form-group">
+            <label class="form-label">N° de Serie / VIN / IMEI / Matrícula</label>
+            <input 
+              type="text" 
+              class="form-input font-mono" 
+              placeholder="Ej. HND-9842 / 3HGBG224..."
+              [value]="formNumeroSerie()"
+              (input)="formNumeroSerie.set($any($event.target).value)"
+            />
+          </div>
+
+          <!-- Ubicación Física en Bodega -->
+          <div class="form-group">
+            <label class="form-label">Ubicación Física en Custodia *</label>
+            <input 
+              type="text" 
+              class="form-input" 
+              placeholder="Ej. Bodega Central - Estante B-4"
+              [value]="formUbicacionFisica()"
+              (input)="formUbicacionFisica.set($any($event.target).value)"
+              required
+            />
+          </div>
+
+          <!-- Fotografía del Bien (Upload) -->
+          <div class="form-group col-span-2">
+            <label class="form-label">Fotografía del Bien (Opcional)</label>
+            <div class="photo-upload-container">
+              @if (formFotoUrl()) {
+                <div class="photo-preview-box">
+                  <img [src]="formFotoUrl()" alt="Preview" class="photo-preview-img" />
+                  <button type="button" class="btn-remove-photo" (click)="formFotoUrl.set('')">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <span>Quitar foto</span>
+                  </button>
+                </div>
+              } @else {
+                <label class="upload-dropzone">
+                  <input type="file" accept="image/*" (change)="onPhotoSelected($event)" style="display: none;" />
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="dropzone-icon"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                  <span class="dropzone-text">Haz clic para subir foto del bien (JPG, PNG - Máx 3MB)</span>
+                </label>
+              }
+            </div>
+          </div>
+
+          <!-- Observaciones / Estado físico -->
+          <div class="form-group col-span-2">
+            <label class="form-label">Observaciones y Condiciones Físicas</label>
+            <textarea 
+              rows="2" 
+              class="form-input" 
+              placeholder="Ej. Presenta leves rayones en lateral derecho. Incluye llaves y tarjeta de circulación original."
+              [value]="formObservaciones()"
+              (input)="formObservaciones.set($any($event.target).value)"
+            ></textarea>
+          </div>
+
+        </div>
+
+        <div class="modal-actions" style="margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" (click)="showCreateModal.set(false)">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary" style="height: 44px; padding: 0 24px;">
+            Guardar en Custodia
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- MODAL: EDITAR GARANTÍA -->
+@if (showEditModal()) {
+  <div class="modal-backdrop" (click)="showEditModal.set(false)">
+    <div class="modal-card modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Editar Garantía {{ selectedGarantia()?.codigo }}</h3>
+          <span class="modal-subtitle">Actualizar avalúo, ubicación física o datos de la prenda.</span>
+        </div>
+        <button class="modal-close" (click)="showEditModal.set(false)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <form (submit)="submitEdit(); $event.preventDefault()" class="modal-body">
+        <div class="form-grid">
+          
+          <div class="form-group col-span-2">
+            <label class="form-label">Cliente Propietario</label>
+            <input type="text" class="form-input" [value]="selectedGarantia()?.clienteNombre" disabled style="opacity: 0.7;" />
+          </div>
+
+          <!-- Préstamo Vinculado -->
+          <div class="form-group col-span-2">
+            <label class="form-label">Préstamo Vinculado</label>
+            <select 
+              class="form-input form-select"
+              [value]="formPrestamoId() || ''"
+              (change)="formPrestamoId.set(+$any($event.target).value || null)"
+            >
+              <option value="">-- Sin préstamo vinculado (Custodia General) --</option>
+              @for (p of clientLoans(); track p.id) {
+                <option [value]="p.id">PF-{{ p.id }} • Capital: L. {{ p.capital | number:'1.2-2' }} ({{ p.status }})</option>
+              }
+            </select>
+          </div>
+
+          <!-- Tipo -->
+          <div class="form-group">
+            <label class="form-label">Tipo de Bien *</label>
+            <select 
+              class="form-input form-select"
+              [value]="formTipo()"
+              (change)="formTipo.set($any($event.target).value)"
+              required
+            >
+              @for (t of tiposGarantia; track t.value) {
+                <option [value]="t.value">{{ t.icon }} {{ t.label }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Valor Estimado -->
+          <div class="form-group">
+            <label class="form-label">Valor de Tasación / Avalúo (L.) *</label>
+            <div class="input-currency-wrapper">
+              <span class="currency-symbol">L.</span>
+              <input 
+                type="number" 
+                step="0.01"
+                class="form-input font-mono font-bold" 
+                [value]="formValorEstimado() || ''"
+                (input)="formValorEstimado.set(+$any($event.target).value || null)"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="form-group col-span-2">
+            <label class="form-label">Descripción del Bien *</label>
+            <input 
+              type="text" 
+              class="form-input" 
+              [value]="formDescripcion()"
+              (input)="formDescripcion.set($any($event.target).value)"
+              required
+            />
+          </div>
+
+          <!-- Serie / VIN -->
+          <div class="form-group">
+            <label class="form-label">N° Serie / VIN / Matrícula</label>
+            <input 
+              type="text" 
+              class="form-input font-mono" 
+              [value]="formNumeroSerie()"
+              (input)="formNumeroSerie.set($any($event.target).value)"
+            />
+          </div>
+
+          <!-- Ubicación Bodega -->
+          <div class="form-group">
+            <label class="form-label">Ubicación Física en Custodia *</label>
+            <input 
+              type="text" 
+              class="form-input" 
+              [value]="formUbicacionFisica()"
+              (input)="formUbicacionFisica.set($any($event.target).value)"
+              required
+            />
+          </div>
+
+          <!-- Foto Upload -->
+          <div class="form-group col-span-2">
+            <label class="form-label">Fotografía del Bien</label>
+            <div class="photo-upload-container">
+              @if (formFotoUrl()) {
+                <div class="photo-preview-box">
+                  <img [src]="formFotoUrl()" alt="Preview" class="photo-preview-img" />
+                  <button type="button" class="btn-remove-photo" (click)="formFotoUrl.set('')">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <span>Cambiar / Quitar foto</span>
+                  </button>
+                </div>
+              } @else {
+                <label class="upload-dropzone">
+                  <input type="file" accept="image/*" (change)="onPhotoSelected($event)" style="display: none;" />
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="dropzone-icon"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                  <span class="dropzone-text">Subir nueva fotografía (JPG, PNG)</span>
+                </label>
+              }
+            </div>
+          </div>
+
+          <!-- Observaciones -->
+          <div class="form-group col-span-2">
+            <label class="form-label">Observaciones</label>
+            <textarea 
+              rows="2" 
+              class="form-input" 
+              [value]="formObservaciones()"
+              (input)="formObservaciones.set($any($event.target).value)"
+            ></textarea>
+          </div>
+
+        </div>
+
+        <div class="modal-actions" style="margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" (click)="showEditModal.set(false)">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary" style="height: 44px; padding: 0 24px;">
+            Guardar Cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- MODAL: FICHA DETALLADA DE CUSTODIA -->
+@if (showDetailsModal()) {
+  @if (selectedGarantia(); as g) {
+    <div class="modal-backdrop" (click)="showDetailsModal.set(false)">
+      <div class="modal-card modal-lg" (click)="$event.stopPropagation()">
+        
+        <div class="modal-header">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="header-icon-box">{{ getIconByTipo(g.tipo) }}</div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <h3 class="modal-title font-mono">{{ g.codigo }}</h3>
+                <span 
+                  class="badge-status"
+                  [class.status-custodia]="g.estadoCustodia === 'En Custodia'"
+                  [class.status-devuelta]="g.estadoCustodia === 'Devuelta'"
+                  [class.status-remate]="g.estadoCustodia === 'En Remate'"
+                  [class.status-liquidada]="g.estadoCustodia === 'Liquidada'"
+                >
+                  {{ g.estadoCustodia }}
+                </span>
+              </div>
+              <span class="modal-subtitle">{{ g.descripcion }}</span>
+            </div>
+          </div>
+          <button class="modal-close" (click)="showDetailsModal.set(false)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <div class="modal-body" style="padding: 24px;">
+          <div class="details-grid-layout">
+            
+            <!-- Columna Izquierda: Foto y Resumen de Valor -->
+            <div class="details-media-col">
+              @if (g.fotoUrl) {
+                <div class="details-big-img-wrapper" (click)="viewImage(g.fotoUrl)">
+                  <img [src]="g.fotoUrl" [alt]="g.descripcion" class="details-big-img" />
+                  <span class="click-to-zoom">🔍 Clic para ampliar</span>
+                </div>
+              } @else {
+                <div class="details-img-placeholder">
+                  <span>{{ getIconByTipo(g.tipo) }}</span>
+                  <p>Sin fotografía adjunta</p>
+                </div>
+              }
+
+              <div class="details-valuation-box">
+                <span class="val-label">VALOR DE TASACIÓN</span>
+                <strong class="val-amount font-mono">L. {{ g.valorEstimado | number:'1.2-2' }}</strong>
+                <span class="val-sub">Ubicación: <strong>{{ g.ubicacionFisica }}</strong></span>
+              </div>
+            </div>
+
+            <!-- Columna Derecha: Expediente y Vínculo -->
+            <div class="details-info-col">
+              
+              <!-- Propietario -->
+              <div class="info-section-card">
+                <h4 class="section-card-title">👤 Cliente Propietario</h4>
+                <div class="info-row">
+                  <span class="info-lbl">Nombre:</span>
+                  <span class="info-val font-bold">{{ g.clienteNombre }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-lbl">Identidad:</span>
+                  <span class="info-val font-mono">{{ g.clienteIdentidad }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-lbl">Teléfono:</span>
+                  <span class="info-val font-mono">{{ g.clientePhone }}</span>
+                </div>
+              </div>
+
+              <!-- Préstamo Vinculado -->
+              <div class="info-section-card">
+                <h4 class="section-card-title">💼 Préstamo Respaldado</h4>
+                @if (g.prestamoCodigo) {
+                  <div class="info-row">
+                    <span class="info-lbl">Código Crédito:</span>
+                    <span class="info-val font-mono font-bold text-primary">{{ g.prestamoCodigo }}</span>
+                  </div>
+                  @if (g.prestamoSaldoRestante !== null && g.prestamoSaldoRestante !== undefined) {
+                    <div class="info-row">
+                      <span class="info-lbl">Saldo Pendiente:</span>
+                      <span class="info-val font-mono font-bold" [class.text-emerald]="g.prestamoSaldoRestante === 0">
+                        L. {{ g.prestamoSaldoRestante | number:'1.2-2' }}
+                      </span>
+                    </div>
+                  }
+                } @else {
+                  <p class="text-muted" style="margin: 0; font-size: 0.85rem;">
+                    Esta garantía está bajo custodia general sin estar vinculada a un crédito específico.
+                  </p>
+                }
+              </div>
+
+              <!-- Fechas y Auditoría -->
+              <div class="info-section-card">
+                <h4 class="section-card-title">📅 Trazabilidad de Custodia</h4>
+                <div class="info-row">
+                  <span class="info-lbl">Fecha Ingreso:</span>
+                  <span class="info-val">{{ g.fechaIngreso | date:'dd/MM/yyyy hh:mm a' }}</span>
+                </div>
+                @if (g.fechaDevolucion) {
+                  <div class="info-row">
+                    <span class="info-lbl">Fecha Devolución:</span>
+                    <span class="info-val text-emerald font-bold">{{ g.fechaDevolucion | date:'dd/MM/yyyy hh:mm a' }}</span>
+                  </div>
+                }
+                <div class="info-row">
+                  <span class="info-lbl">Registrado por:</span>
+                  <span class="info-val">{{ g.creadoPor }}</span>
+                </div>
+                @if (g.numeroSerie) {
+                  <div class="info-row">
+                    <span class="info-lbl">Serie / Matrícula:</span>
+                    <span class="info-val font-mono font-bold">{{ g.numeroSerie }}</span>
+                  </div>
+                }
+              </div>
+
+              <!-- Observaciones -->
+              @if (g.observaciones) {
+                <div class="info-section-card">
+                  <h4 class="section-card-title">📝 Observaciones Físicas</h4>
+                  <p style="margin: 0; font-size: 0.85rem; color: var(--text-primary); line-height: 1.45;">
+                    {{ g.observaciones }}
+                  </p>
+                </div>
+              }
+
+            </div>
+
+          </div>
+        </div>
+
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-top: 1px solid var(--border-color);">
+          <button 
+            type="button" 
+            class="btn btn-secondary text-danger" 
+            (click)="eliminarGarantia(g)"
+            title="Eliminar de inventario"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <span>Eliminar</span>
+          </button>
+
+          <div style="display: flex; gap: 10px;">
+            <button type="button" class="btn btn-secondary" (click)="openActaCustodia(g)">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+              <span>Imprimir Acta</span>
+            </button>
+            <button type="button" class="btn btn-primary" (click)="openStatusModal(g)">
+              <span>Cambiar Estado</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  }
+}
+
+<!-- MODAL: CAMBIAR ESTADO DE CUSTODIA -->
+@if (showStatusModal()) {
+  @if (selectedGarantia(); as g) {
+    <div class="modal-backdrop" (click)="showStatusModal.set(false)">
+      <div class="modal-card" style="max-width: 480px;" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div>
+            <h3 class="modal-title">Cambiar Estado de Custodia</h3>
+            <span class="modal-subtitle">Garantía {{ g.codigo }} • {{ g.descripcion }}</span>
+          </div>
+          <button class="modal-close" (click)="showStatusModal.set(false)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <form (submit)="submitChangeStatus(); $event.preventDefault()" class="modal-body" style="padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+          
+          <div class="form-group">
+            <label class="form-label">Nuevo Estado de la Prenda *</label>
+            <select 
+              class="form-input form-select font-bold"
+              [value]="newStatus()"
+              (change)="newStatus.set($any($event.target).value)"
+              required
+            >
+              <option value="En Custodia">🟢 En Custodia (Activa en Bodega)</option>
+              <option value="Devuelta">⚪ Devuelta al Cliente (Crédito Cancelado)</option>
+              <option value="En Remate">🔴 En Remate / Ejecución (Por Incumplimiento)</option>
+              <option value="Liquidada">🟣 Liquidada / Vendida</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Motivo / Bitácora del Cambio</label>
+            <textarea 
+              rows="3" 
+              class="form-input" 
+              placeholder="Ej. Se hace entrega del vehículo al titular tras haber cancelado la totalidad del crédito PF-0002."
+              [value]="statusObservaciones()"
+              (input)="statusObservaciones.set($any($event.target).value)"
+            ></textarea>
+          </div>
+
+          <div class="modal-actions" style="margin-top: 10px;">
+            <button type="button" class="btn btn-secondary" (click)="showStatusModal.set(false)">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary" style="height: 42px; padding: 0 20px;">
+              Confirmar Cambio
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+}
+
+<!-- MODAL: VISOR DE FOTOGRAFÍA A PANTALLA COMPLETA -->
+@if (showImageModal()) {
+  @if (previewImageUrl(); as img) {
+    <div class="modal-backdrop" (click)="showImageModal.set(false)" style="z-index: 3000;">
+      <div class="image-viewer-container" (click)="$event.stopPropagation()">
+        <button class="image-viewer-close" (click)="showImageModal.set(false)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        <img [src]="img" alt="Foto Ampliada" class="full-view-image" />
+      </div>
+    </div>
+  }
+}
+
+<!-- MODAL / VISTA DE IMPRESIÓN: ACTA DE RECEPCIÓN Y CUSTODIA -->
+@if (showActaModal()) {
+  @if (selectedGarantia(); as g) {
+    <div class="modal-backdrop acta-backdrop" (click)="showActaModal.set(false)">
+      <div class="acta-container" (click)="$event.stopPropagation()">
+        
+        <!-- Documento Acta Imprimible -->
+        <div class="acta-sheet">
+          
+          <!-- Encabezado del Acta -->
+          <div class="acta-header">
+            <div class="acta-brand">
+              <h2 class="acta-company">{{ settingsService.empresaNombre() || 'PRESTAFLOW HONDURAS' }}</h2>
+              <span class="acta-rtn">RTN: {{ settingsService.empresaRtn() || '08011990000000' }}</span>
+              <span class="acta-phone">Tel: {{ settingsService.empresaTelefono() || '+504 9999-9999' }}</span>
+            </div>
+            <div class="acta-meta text-right">
+              <span class="acta-doc-title">ACTA DE RECEPCIÓN Y CUSTODIA</span>
+              <span class="acta-doc-code font-mono font-bold">{{ g.codigo }}</span>
+              <span class="acta-doc-date">Fecha: {{ g.fechaIngreso | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+
+          <div class="acta-divider"></div>
+
+          <!-- Declaración -->
+          <div class="acta-body">
+            <p class="acta-intro">
+              Por medio del presente documento, se hace constar que <strong>{{ settingsService.empresaNombre() || 'PRESTAFLOW' }}</strong> recibe en calidad de <strong>GARANTÍA PRENDARIA Y CUSTODIA</strong> el bien detallado a continuación, entregado voluntariamente por el deudor para respaldar las obligaciones crediticias pactadas.
+            </p>
+
+            <!-- Ficha del Deudor -->
+            <div class="acta-box">
+              <h4 class="acta-box-title">1. DATOS DEL CLIENTE / DEUDOR</h4>
+              <div class="acta-row-grid">
+                <div><span>Nombre Completo:</span> <strong>{{ g.clienteNombre }}</strong></div>
+                <div><span>N° Identidad:</span> <strong class="font-mono">{{ g.clienteIdentidad }}</strong></div>
+                <div><span>Teléfono:</span> <strong class="font-mono">{{ g.clientePhone }}</strong></div>
+                @if (g.prestamoCodigo) {
+                  <div><span>Préstamo Respaldado:</span> <strong class="font-mono">{{ g.prestamoCodigo }}</strong></div>
+                }
+              </div>
+            </div>
+
+            <!-- Ficha del Bien en Garantía -->
+            <div class="acta-box" style="margin-top: 14px;">
+              <h4 class="acta-box-title">2. DESCRIPCIÓN DEL BIEN ENTREGADO EN CUSTODIA</h4>
+              <div class="acta-row-grid">
+                <div><span>Tipo de Bien:</span> <strong>{{ g.tipo }}</strong></div>
+                <div><span>Valor de Avalúo / Tasación:</span> <strong class="font-mono">L. {{ g.valorEstimado | number:'1.2-2' }}</strong></div>
+                <div class="col-span-2"><span>Descripción:</span> <strong>{{ g.descripcion }}</strong></div>
+                @if (g.numeroSerie) {
+                  <div><span>N° Serie / Matrícula / VIN:</span> <strong class="font-mono">{{ g.numeroSerie }}</strong></div>
+                }
+                <div><span>Ubicación en Bodega:</span> <strong>{{ g.ubicacionFisica }}</strong></div>
+              </div>
+              @if (g.observaciones) {
+                <div style="margin-top: 8px; font-size: 0.8125rem; color: #475569;">
+                  <span>Estado Físico / Observaciones:</span> {{ g.observaciones }}
+                </div>
+              }
+            </div>
+
+            <!-- Cláusulas Legales -->
+            <div class="acta-terms">
+              <h4>CLÁUSULAS DE CUSTODIA:</h4>
+              <ol>
+                <li>La empresa se compromete a resguardar y mantener en custodia física el bien antes descrito en las instalaciones de su bodega.</li>
+                <li>El bien será devuelto íntegramente al cliente una vez cancelado en su totalidad el saldo principal, intereses y recargos del préstamo correspondiente.</li>
+                <li>En caso de mora grave o abandono según las leyes de comercio vigentes, la empresa queda facultada para proceder a la ejecución o liquidación de la prenda para saldar la deuda pendiente.</li>
+              </ol>
+            </div>
+
+            <!-- Firmas -->
+            <div class="acta-signatures">
+              <div class="sig-col">
+                <div class="sig-line"></div>
+                <strong class="sig-name">{{ g.clienteNombre }}</strong>
+                <span class="sig-sub">FIRMA DEL DEUDOR / PROPIETARIO</span>
+                <span class="sig-id font-mono">ID: {{ g.clienteIdentidad }}</span>
+              </div>
+
+              <div class="sig-col">
+                <div class="sig-line"></div>
+                <strong class="sig-name">{{ g.creadoPor }}</strong>
+                <span class="sig-sub">POR {{ settingsService.empresaNombre() || 'PRESTAFLOW' }}</span>
+                <span class="sig-id">Custodio / Administrador</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Botones de Acción (Se ocultan al imprimir) -->
+        <div class="acta-actions hide-for-print">
+          <button type="button" class="btn btn-secondary" (click)="showActaModal.set(false)">
+            Cerrar
+          </button>
+          <button type="button" class="btn btn-primary" (click)="printActa()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+            <span>Imprimir Acta de Custodia</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+}
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container">
+  @for (toast of toasts(); track toast.id) {
+    <div class="toast" [class.success]="toast.type === 'success'" [class.info]="toast.type === 'info'" [class.warning]="toast.type === 'warning'">
+      <div class="toast-icon">
+        @switch (toast.type) {
+          @case ('success') {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          }
+          @case ('warning') {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          }
+          @case ('info') {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          }
+        }
+      </div>
+      <div class="toast-content">
+        <h4 class="toast-title">{{ toast.title }}</h4>
+        <p class="toast-message">{{ toast.message }}</p>
+      </div>
+      <button class="toast-close" (click)="removeToast(toast.id)" aria-label="Cerrar notificación">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+  }
+</div>

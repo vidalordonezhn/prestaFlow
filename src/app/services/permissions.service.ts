@@ -7,6 +7,7 @@ export interface UserPermissions {
   verCobros: boolean;
   verPrestamos: boolean;
   verClientes: boolean;
+  verGarantias: boolean;
   verPagos: boolean;
   verCajaBancos: boolean;
   verReportes: boolean;
@@ -15,6 +16,7 @@ export interface UserPermissions {
   // Acciones y Facultades Operativas
   crearPrestamos: boolean;
   crearClientes: boolean;
+  gestionarGarantias: boolean;
   registrarAbonos: boolean;
   anularPagos: boolean;
   exportarExcel: boolean;
@@ -25,12 +27,14 @@ export const ADMIN_PRESET: UserPermissions = {
   verCobros: true,
   verPrestamos: true,
   verClientes: true,
+  verGarantias: true,
   verPagos: true,
   verCajaBancos: true,
   verReportes: true,
   verConfiguracion: true,
   crearPrestamos: true,
   crearClientes: true,
+  gestionarGarantias: true,
   registrarAbonos: true,
   anularPagos: true,
   exportarExcel: true
@@ -41,12 +45,14 @@ export const COBRADOR_PRESET: UserPermissions = {
   verCobros: true,
   verPrestamos: true,
   verClientes: true,
+  verGarantias: true,
   verPagos: true,
   verCajaBancos: false,
   verReportes: false,
   verConfiguracion: false,
   crearPrestamos: false,
   crearClientes: true,
+  gestionarGarantias: false,
   registrarAbonos: true,
   anularPagos: false,
   exportarExcel: true
@@ -57,12 +63,14 @@ export const SUPERVISOR_PRESET: UserPermissions = {
   verCobros: true,
   verPrestamos: true,
   verClientes: true,
+  verGarantias: true,
   verPagos: true,
   verCajaBancos: false,
   verReportes: true,
   verConfiguracion: false,
   crearPrestamos: true,
   crearClientes: true,
+  gestionarGarantias: true,
   registrarAbonos: true,
   anularPagos: false,
   exportarExcel: true
@@ -241,6 +249,7 @@ export class PermissionsService {
       case '/cobros': return p.verCobros;
       case '/prestamos': return p.verPrestamos;
       case '/clientes': return p.verClientes;
+      case '/garantias': return p.verGarantias;
       case '/pagos': return p.verPagos;
       case '/caja-bancos': return p.verCajaBancos;
       case '/reportes': return p.verReportes;

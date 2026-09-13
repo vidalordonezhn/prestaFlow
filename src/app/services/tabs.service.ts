@@ -72,6 +72,16 @@ export class TabsService {
       closable: true
     },
     {
+      id: 'garantias',
+      title: 'Garantías y Custodia',
+      shortTitle: 'Garantías',
+      route: '/garantias',
+      category: 'Gestión de Cartera',
+      description: 'Inventario de prendas, vehículos, empeños, tasación y custodia en bodega.',
+      iconPath: 'shield',
+      closable: true
+    },
+    {
       id: 'pagos',
       title: 'Historial de Pagos',
       shortTitle: 'Historial Pagos',
