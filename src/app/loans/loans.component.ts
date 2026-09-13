@@ -787,7 +787,7 @@ export class LoansComponent implements OnInit {
 
   // Anular Pago de un Préstamo (Auditoría)
   protected anularPago(pagoId: number): void {
-    if (!this.permissions.hasPermission('anularPagos') && !this.auth.isAdmin()) {
+    if (!this.permissions.hasPermission('anularPagos')) {
       this.triggerToast('warning', 'Acceso Restringido', 'Solo administradores o usuarios con permiso pueden anular registros de pago.');
       return;
     }
