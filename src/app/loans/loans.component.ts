@@ -106,6 +106,16 @@ export class LoansComponent implements OnInit {
   // Selected Loan for Detail View
   protected readonly selectedLoan = signal<Loan | null>(null);
 
+  // WhatsApp Confirmation Modal Signals
+  protected readonly showWhatsAppConfirmModal = signal(false);
+  protected readonly waConfirmData = signal<{
+    title: string;
+    clientName: string;
+    phone: string;
+    message: string;
+    url: string;
+  } | null>(null);
+
   // Quick Payment Modal Signals
   protected readonly showPaymentModal = signal(false);
   protected readonly paymentLoan = signal<Loan | null>(null);
@@ -411,13 +421,22 @@ export class LoansComponent implements OnInit {
     const user = this.auth.currentUser();
     const cobradorName = user ? user.nombre : 'Tu Asesor';
 
-    if (!confirm(`¿Deseas enviar el recordatorio de cobro por WhatsApp a ${loan.clientName} (+${formattedPhone})?`)) {
-      return;
-    }
-
     const message = `Hola *${loan.clientName}*, te saluda *${cobradorName}* de *PrestaFlow*. Te recordamos el estado de tu préstamo *${loan.id}* con cuota de *L. ${loan.cuotaMonto.toLocaleString('es-HN', { minimumFractionDigits: 2 })}* (Saldo restante: L. ${loan.saldoRestante.toLocaleString('es-HN', { minimumFractionDigits: 2 })}). ¡Quedamos atentos a tu atención!`;
     const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+
+    this.waConfirmData.set({
+      title: 'Recordatorio de Cobro por WhatsApp',
+      clientName: loan.clientName,
+      phone: formattedPhone,
+      message: message,
+      url: url
+    });
+    this.showWhatsAppConfirmModal.set(true);
+  }
+
+  protected confirmAndOpenWhatsApp(url: string): void {
     window.open(url, '_blank');
+    this.showWhatsAppConfirmModal.set(false);
   }
 
   // Amortization Table mapped from physical db cuotas

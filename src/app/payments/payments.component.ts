@@ -30,6 +30,16 @@ export class PaymentsComponent implements OnInit {
   protected readonly showReceiptModal = signal(false);
   protected readonly selectedPayment = signal<PagoResponse | null>(null);
 
+  // WhatsApp Confirmation Modal Signals
+  protected readonly showWhatsAppConfirmModal = signal(false);
+  protected readonly waConfirmData = signal<{
+    clientName: string;
+    phone: string;
+    message: string;
+    url: string;
+    title: string;
+  } | null>(null);
+
   // Sidebar Menu Items
   protected readonly menuItems = [
     { name: 'Dashboard', icon: 'dashboard', active: false, route: '/' },
@@ -110,10 +120,6 @@ export class PaymentsComponent implements OnInit {
   protected shareOnWhatsApp(payment: PagoResponse): void {
     const cleanPhone = (payment.clientePhone || '').replace(/[^0-9]/g, '');
     const formattedPhone = cleanPhone.startsWith('504') ? cleanPhone : `504${cleanPhone}`;
-    
-    if (!confirm(`¿Deseas enviar el comprobante de pago por WhatsApp a ${payment.clienteNombre} (+${formattedPhone})?`)) {
-      return;
-    }
 
     const dateFormatted = new Date(payment.fechaPago).toLocaleDateString('es-HN', {
       day: '2-digit',
@@ -142,6 +148,19 @@ export class PaymentsComponent implements OnInit {
       `_PrestaFlow - Sistema de Gestión Financiera_`;
     
     const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+
+    this.waConfirmData.set({
+      clientName: payment.clienteNombre,
+      phone: formattedPhone,
+      message: message,
+      url: url,
+      title: 'Comprobante de Pago por WhatsApp'
+    });
+    this.showWhatsAppConfirmModal.set(true);
+  }
+
+  protected confirmAndOpenWhatsApp(url: string): void {
+    this.showWhatsAppConfirmModal.set(false);
     window.open(url, '_blank');
   }
 

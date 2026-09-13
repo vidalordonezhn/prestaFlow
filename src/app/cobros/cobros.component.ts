@@ -87,6 +87,16 @@ export class CobrosComponent implements OnInit {
   protected readonly showReceiptModal = signal(false);
   protected readonly selectedPayment = signal<any | null>(null);
 
+  // WhatsApp Confirmation Modal Signals
+  protected readonly showWhatsAppConfirmModal = signal(false);
+  protected readonly waConfirmData = signal<{
+    title: string;
+    clientName: string;
+    phone: string;
+    message: string;
+    url: string;
+  } | null>(null);
+
   // Client Data Signal
   protected readonly clients = signal<Client[]>([]);
 
@@ -412,13 +422,17 @@ export class CobrosComponent implements OnInit {
     const user = this.auth.currentUser();
     const cobradorName = user ? user.nombre : 'Tu Asesor';
 
-    if (!confirm(`¿Deseas enviar el recordatorio de cobro por WhatsApp a ${client.name} (+${formattedPhone})?`)) {
-      return;
-    }
-
     const message = `Hola *${client.name}*, te saluda *${cobradorName}* de *PrestaFlow*. Te recordamos que hoy está programada la visita para la cuota de tu préstamo *${client.id}* por un valor de *L. ${client.cuota.toLocaleString('es-HN', { minimumFractionDigits: 2 })}*. ¡Quedamos atentos a tu atención!`;
     const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
+
+    this.waConfirmData.set({
+      title: 'Recordatorio de Cobro por WhatsApp',
+      clientName: client.name,
+      phone: formattedPhone,
+      message: message,
+      url: url
+    });
+    this.showWhatsAppConfirmModal.set(true);
   }
 
   protected verReciboHoy(client: Client): void {
@@ -490,10 +504,6 @@ export class CobrosComponent implements OnInit {
     if (!payment) return;
     const cleanPhone = (payment.clientePhone || '').replace(/[^0-9]/g, '');
     const formattedPhone = cleanPhone.startsWith('504') ? cleanPhone : `504${cleanPhone}`;
-    
-    if (!confirm(`¿Deseas enviar el comprobante de pago por WhatsApp a ${payment.clienteNombre} (+${formattedPhone})?`)) {
-      return;
-    }
 
     const dateFormatted = new Date(payment.fechaPago).toLocaleDateString('es-HN', {
       day: '2-digit',
@@ -527,7 +537,21 @@ export class CobrosComponent implements OnInit {
       `_PrestaFlow - Sistema de Gestión Financiera_`;
     
     const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+
+    this.waConfirmData.set({
+      title: 'Enviar Comprobante por WhatsApp',
+      clientName: payment.clienteNombre,
+      phone: formattedPhone,
+      message: message,
+      url: url
+    });
+    this.showWhatsAppConfirmModal.set(true);
+  }
+
+  // Confirm and Open WhatsApp
+  protected confirmAndOpenWhatsApp(url: string): void {
     window.open(url, '_blank');
+    this.showWhatsAppConfirmModal.set(false);
   }
 
   // Print Receipt (Thermal POS & Standard)
