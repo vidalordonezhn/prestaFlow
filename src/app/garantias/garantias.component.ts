@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiGarantiasService, Garantia, CrearGarantiaRequest, ActualizarGarantiaRequest } from '../services/api-garantias.service';
-import { ApiClientsService, ClientResponse } from '../services/api-clients.service';
+import { ApiClientsService, ClienteResponse } from '../services/api-clients.service';
 import { ApiPrestamosService, PrestamoResponse } from '../services/api-prestamos.service';
 import { ApiAuthService } from '../services/api-auth.service';
 import { PermissionsService } from '../services/permissions.service';
@@ -35,7 +35,7 @@ export class GarantiasComponent implements OnInit {
 
   // State Signals
   protected readonly garantias = signal<Garantia[]>([]);
-  protected readonly clients = signal<ClientResponse[]>([]);
+  protected readonly clients = signal<ClienteResponse[]>([]);
   protected readonly prestamos = signal<PrestamoResponse[]>([]);
   protected readonly isLoading = signal(false);
 
@@ -159,9 +159,9 @@ export class GarantiasComponent implements OnInit {
       }
     });
 
-    this.apiClients.getClients().subscribe({
-      next: (res) => this.clients.set(res),
-      error: (err) => console.error('Error al cargar clientes:', err)
+    this.apiClients.getClientes().subscribe({
+      next: (res: ClienteResponse[]) => this.clients.set(res),
+      error: (err: any) => console.error('Error al cargar clientes:', err)
     });
 
     this.apiPrestamos.getPrestamos().subscribe({

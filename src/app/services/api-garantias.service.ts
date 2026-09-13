@@ -60,7 +60,7 @@ export interface CambiarEstadoGarantiaRequest {
 })
 export class ApiGarantiasService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiUrl}/garantias`;
+  private readonly baseUrl = `${environment.apiUrl}/api/garantias`;
 
   getGarantias(query?: string, estado?: string, tipo?: string): Observable<Garantia[]> {
     let params = new HttpParams();
